@@ -1,0 +1,11 @@
+[
+  {
+    "name": "com.ibm.cos.v2.crt.s3.S3Client",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  }
+]

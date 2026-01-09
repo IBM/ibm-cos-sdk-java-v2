@@ -1,0 +1,3457 @@
+/*
+ * Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
+ * the License. A copy of the License is located at
+ * 
+ * http://aws.amazon.com/apache2.0
+ * 
+ * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
+ * and limitations under the License.
+ */
+
+package com.ibm.cos.v2.services.s3.model;
+
+import java.time.Instant;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.function.BiConsumer;
+import java.util.function.Function;
+import com.ibm.cos.v2.annotations.Generated;
+import com.ibm.cos.v2.annotations.Mutable;
+import com.ibm.cos.v2.annotations.NotThreadSafe;
+import com.ibm.cos.v2.core.SdkField;
+import com.ibm.cos.v2.core.SdkPojo;
+import com.ibm.cos.v2.core.protocol.MarshallLocation;
+import com.ibm.cos.v2.core.protocol.MarshallingType;
+import com.ibm.cos.v2.core.traits.DataTypeConversionFailureHandlingTrait;
+import com.ibm.cos.v2.core.traits.LocationTrait;
+import com.ibm.cos.v2.core.traits.MapTrait;
+import com.ibm.cos.v2.core.traits.TimestampFormatTrait;
+import com.ibm.cos.v2.core.util.DefaultSdkAutoConstructMap;
+import com.ibm.cos.v2.core.util.SdkAutoConstructMap;
+import com.ibm.cos.v2.utils.ToString;
+import com.ibm.cos.v2.utils.builder.CopyableBuilder;
+import com.ibm.cos.v2.utils.builder.ToCopyableBuilder;
+
+/**
+ */
+@Generated("com.ibm.cos.v2:codegen")
+public final class GetObjectResponse extends S3Response implements
+        ToCopyableBuilder<GetObjectResponse.Builder, GetObjectResponse> {
+    private static final SdkField<Boolean> DELETE_MARKER_FIELD = SdkField
+            .<Boolean> builder(MarshallingType.BOOLEAN)
+            .memberName("DeleteMarker")
+            .getter(getter(GetObjectResponse::deleteMarker))
+            .setter(setter(Builder::deleteMarker))
+            .traits(LocationTrait.builder().location(MarshallLocation.HEADER).locationName("x-amz-delete-marker")
+                    .unmarshallLocationName("x-amz-delete-marker").build()).build();
+
+    private static final SdkField<String> ACCEPT_RANGES_FIELD = SdkField
+            .<String> builder(MarshallingType.STRING)
+            .memberName("AcceptRanges")
+            .getter(getter(GetObjectResponse::acceptRanges))
+            .setter(setter(Builder::acceptRanges))
+            .traits(LocationTrait.builder().location(MarshallLocation.HEADER).locationName("accept-ranges")
+                    .unmarshallLocationName("accept-ranges").build()).build();
+
+    private static final SdkField<String> EXPIRATION_FIELD = SdkField
+            .<String> builder(MarshallingType.STRING)
+            .memberName("Expiration")
+            .getter(getter(GetObjectResponse::expiration))
+            .setter(setter(Builder::expiration))
+            .traits(LocationTrait.builder().location(MarshallLocation.HEADER).locationName("x-amz-expiration")
+                    .unmarshallLocationName("x-amz-expiration").build()).build();
+
+    private static final SdkField<String> RESTORE_FIELD = SdkField
+            .<String> builder(MarshallingType.STRING)
+            .memberName("Restore")
+            .getter(getter(GetObjectResponse::restore))
+            .setter(setter(Builder::restore))
+            .traits(LocationTrait.builder().location(MarshallLocation.HEADER).locationName("x-amz-restore")
+                    .unmarshallLocationName("x-amz-restore").build()).build();
+
+    private static final SdkField<Instant> LAST_MODIFIED_FIELD = SdkField
+            .<Instant> builder(MarshallingType.INSTANT)
+            .memberName("LastModified")
+            .getter(getter(GetObjectResponse::lastModified))
+            .setter(setter(Builder::lastModified))
+            .traits(LocationTrait.builder().location(MarshallLocation.HEADER).locationName("Last-Modified")
+                    .unmarshallLocationName("Last-Modified").build()).build();
+
+    private static final SdkField<Long> CONTENT_LENGTH_FIELD = SdkField
+            .<Long> builder(MarshallingType.LONG)
+            .memberName("ContentLength")
+            .getter(getter(GetObjectResponse::contentLength))
+            .setter(setter(Builder::contentLength))
+            .traits(LocationTrait.builder().location(MarshallLocation.HEADER).locationName("Content-Length")
+                    .unmarshallLocationName("Content-Length").build()).build();
+
+    private static final SdkField<String> E_TAG_FIELD = SdkField
+            .<String> builder(MarshallingType.STRING)
+            .memberName("ETag")
+            .getter(getter(GetObjectResponse::eTag))
+            .setter(setter(Builder::eTag))
+            .traits(LocationTrait.builder().location(MarshallLocation.HEADER).locationName("ETag").unmarshallLocationName("ETag")
+                    .build()).build();
+
+    private static final SdkField<String> CHECKSUM_CRC32_FIELD = SdkField
+            .<String> builder(MarshallingType.STRING)
+            .memberName("ChecksumCRC32")
+            .getter(getter(GetObjectResponse::checksumCRC32))
+            .setter(setter(Builder::checksumCRC32))
+            .traits(LocationTrait.builder().location(MarshallLocation.HEADER).locationName("x-amz-checksum-crc32")
+                    .unmarshallLocationName("x-amz-checksum-crc32").build()).build();
+
+    private static final SdkField<String> CHECKSUM_CRC32_C_FIELD = SdkField
+            .<String> builder(MarshallingType.STRING)
+            .memberName("ChecksumCRC32C")
+            .getter(getter(GetObjectResponse::checksumCRC32C))
+            .setter(setter(Builder::checksumCRC32C))
+            .traits(LocationTrait.builder().location(MarshallLocation.HEADER).locationName("x-amz-checksum-crc32c")
+                    .unmarshallLocationName("x-amz-checksum-crc32c").build()).build();
+
+    private static final SdkField<String> CHECKSUM_CRC64_NVME_FIELD = SdkField
+            .<String> builder(MarshallingType.STRING)
+            .memberName("ChecksumCRC64NVME")
+            .getter(getter(GetObjectResponse::checksumCRC64NVME))
+            .setter(setter(Builder::checksumCRC64NVME))
+            .traits(LocationTrait.builder().location(MarshallLocation.HEADER).locationName("x-amz-checksum-crc64nvme")
+                    .unmarshallLocationName("x-amz-checksum-crc64nvme").build()).build();
+
+    private static final SdkField<String> CHECKSUM_SHA1_FIELD = SdkField
+            .<String> builder(MarshallingType.STRING)
+            .memberName("ChecksumSHA1")
+            .getter(getter(GetObjectResponse::checksumSHA1))
+            .setter(setter(Builder::checksumSHA1))
+            .traits(LocationTrait.builder().location(MarshallLocation.HEADER).locationName("x-amz-checksum-sha1")
+                    .unmarshallLocationName("x-amz-checksum-sha1").build()).build();
+
+    private static final SdkField<String> CHECKSUM_SHA256_FIELD = SdkField
+            .<String> builder(MarshallingType.STRING)
+            .memberName("ChecksumSHA256")
+            .getter(getter(GetObjectResponse::checksumSHA256))
+            .setter(setter(Builder::checksumSHA256))
+            .traits(LocationTrait.builder().location(MarshallLocation.HEADER).locationName("x-amz-checksum-sha256")
+                    .unmarshallLocationName("x-amz-checksum-sha256").build()).build();
+
+    private static final SdkField<String> CHECKSUM_TYPE_FIELD = SdkField
+            .<String> builder(MarshallingType.STRING)
+            .memberName("ChecksumType")
+            .getter(getter(GetObjectResponse::checksumTypeAsString))
+            .setter(setter(Builder::checksumType))
+            .traits(LocationTrait.builder().location(MarshallLocation.HEADER).locationName("x-amz-checksum-type")
+                    .unmarshallLocationName("x-amz-checksum-type").build()).build();
+
+    private static final SdkField<Integer> MISSING_META_FIELD = SdkField
+            .<Integer> builder(MarshallingType.INTEGER)
+            .memberName("MissingMeta")
+            .getter(getter(GetObjectResponse::missingMeta))
+            .setter(setter(Builder::missingMeta))
+            .traits(LocationTrait.builder().location(MarshallLocation.HEADER).locationName("x-amz-missing-meta")
+                    .unmarshallLocationName("x-amz-missing-meta").build()).build();
+
+    private static final SdkField<String> VERSION_ID_FIELD = SdkField
+            .<String> builder(MarshallingType.STRING)
+            .memberName("VersionId")
+            .getter(getter(GetObjectResponse::versionId))
+            .setter(setter(Builder::versionId))
+            .traits(LocationTrait.builder().location(MarshallLocation.HEADER).locationName("x-amz-version-id")
+                    .unmarshallLocationName("x-amz-version-id").build()).build();
+
+    private static final SdkField<String> CACHE_CONTROL_FIELD = SdkField
+            .<String> builder(MarshallingType.STRING)
+            .memberName("CacheControl")
+            .getter(getter(GetObjectResponse::cacheControl))
+            .setter(setter(Builder::cacheControl))
+            .traits(LocationTrait.builder().location(MarshallLocation.HEADER).locationName("Cache-Control")
+                    .unmarshallLocationName("Cache-Control").build()).build();
+
+    private static final SdkField<String> CONTENT_DISPOSITION_FIELD = SdkField
+            .<String> builder(MarshallingType.STRING)
+            .memberName("ContentDisposition")
+            .getter(getter(GetObjectResponse::contentDisposition))
+            .setter(setter(Builder::contentDisposition))
+            .traits(LocationTrait.builder().location(MarshallLocation.HEADER).locationName("Content-Disposition")
+                    .unmarshallLocationName("Content-Disposition").build()).build();
+
+    private static final SdkField<String> CONTENT_ENCODING_FIELD = SdkField
+            .<String> builder(MarshallingType.STRING)
+            .memberName("ContentEncoding")
+            .getter(getter(GetObjectResponse::contentEncoding))
+            .setter(setter(Builder::contentEncoding))
+            .traits(LocationTrait.builder().location(MarshallLocation.HEADER).locationName("Content-Encoding")
+                    .unmarshallLocationName("Content-Encoding").build()).build();
+
+    private static final SdkField<String> CONTENT_LANGUAGE_FIELD = SdkField
+            .<String> builder(MarshallingType.STRING)
+            .memberName("ContentLanguage")
+            .getter(getter(GetObjectResponse::contentLanguage))
+            .setter(setter(Builder::contentLanguage))
+            .traits(LocationTrait.builder().location(MarshallLocation.HEADER).locationName("Content-Language")
+                    .unmarshallLocationName("Content-Language").build()).build();
+
+    private static final SdkField<String> CONTENT_RANGE_FIELD = SdkField
+            .<String> builder(MarshallingType.STRING)
+            .memberName("ContentRange")
+            .getter(getter(GetObjectResponse::contentRange))
+            .setter(setter(Builder::contentRange))
+            .traits(LocationTrait.builder().location(MarshallLocation.HEADER).locationName("Content-Range")
+                    .unmarshallLocationName("Content-Range").build()).build();
+
+    private static final SdkField<String> CONTENT_TYPE_FIELD = SdkField
+            .<String> builder(MarshallingType.STRING)
+            .memberName("ContentType")
+            .getter(getter(GetObjectResponse::contentType))
+            .setter(setter(Builder::contentType))
+            .traits(LocationTrait.builder().location(MarshallLocation.HEADER).locationName("Content-Type")
+                    .unmarshallLocationName("Content-Type").build()).build();
+
+    private static final SdkField<Instant> EXPIRES_FIELD = SdkField
+            .<Instant> builder(MarshallingType.INSTANT)
+            .memberName("Expires")
+            .getter(getter(GetObjectResponse::expires))
+            .setter(setter(Builder::expires))
+            .traits(LocationTrait.builder().location(MarshallLocation.HEADER).locationName("Expires")
+                    .unmarshallLocationName("Expires").build(), new DataTypeConversionFailureHandlingTrait()).build();
+
+    private static final SdkField<String> WEBSITE_REDIRECT_LOCATION_FIELD = SdkField
+            .<String> builder(MarshallingType.STRING)
+            .memberName("WebsiteRedirectLocation")
+            .getter(getter(GetObjectResponse::websiteRedirectLocation))
+            .setter(setter(Builder::websiteRedirectLocation))
+            .traits(LocationTrait.builder().location(MarshallLocation.HEADER).locationName("x-amz-website-redirect-location")
+                    .unmarshallLocationName("x-amz-website-redirect-location").build()).build();
+
+    private static final SdkField<String> SERVER_SIDE_ENCRYPTION_FIELD = SdkField
+            .<String> builder(MarshallingType.STRING)
+            .memberName("ServerSideEncryption")
+            .getter(getter(GetObjectResponse::serverSideEncryptionAsString))
+            .setter(setter(Builder::serverSideEncryption))
+            .traits(LocationTrait.builder().location(MarshallLocation.HEADER).locationName("x-amz-server-side-encryption")
+                    .unmarshallLocationName("x-amz-server-side-encryption").build()).build();
+
+    private static final SdkField<Map<String, String>> METADATA_FIELD = SdkField
+            .<Map<String, String>> builder(MarshallingType.MAP)
+            .memberName("Metadata")
+            .getter(getter(GetObjectResponse::metadata))
+            .setter(setter(Builder::metadata))
+            .traits(LocationTrait.builder().location(MarshallLocation.HEADER).locationName("x-amz-meta-")
+                    .unmarshallLocationName("x-amz-meta-").build(),
+                    MapTrait.builder()
+                            .keyLocationName("key")
+                            .valueLocationName("value")
+                            .valueFieldInfo(
+                                    SdkField.<String> builder(MarshallingType.STRING)
+                                            .traits(LocationTrait.builder().location(MarshallLocation.PAYLOAD)
+                                                    .locationName("value").unmarshallLocationName("value").build()).build())
+                            .build()).build();
+
+    private static final SdkField<String> SSE_CUSTOMER_ALGORITHM_FIELD = SdkField
+            .<String> builder(MarshallingType.STRING)
+            .memberName("SSECustomerAlgorithm")
+            .getter(getter(GetObjectResponse::sseCustomerAlgorithm))
+            .setter(setter(Builder::sseCustomerAlgorithm))
+            .traits(LocationTrait.builder().location(MarshallLocation.HEADER)
+                    .locationName("x-amz-server-side-encryption-customer-algorithm")
+                    .unmarshallLocationName("x-amz-server-side-encryption-customer-algorithm").build()).build();
+
+    private static final SdkField<String> SSE_CUSTOMER_KEY_MD5_FIELD = SdkField
+            .<String> builder(MarshallingType.STRING)
+            .memberName("SSECustomerKeyMD5")
+            .getter(getter(GetObjectResponse::sseCustomerKeyMD5))
+            .setter(setter(Builder::sseCustomerKeyMD5))
+            .traits(LocationTrait.builder().location(MarshallLocation.HEADER)
+                    .locationName("x-amz-server-side-encryption-customer-key-MD5")
+                    .unmarshallLocationName("x-amz-server-side-encryption-customer-key-MD5").build()).build();
+
+    private static final SdkField<String> SSEKMS_KEY_ID_FIELD = SdkField
+            .<String> builder(MarshallingType.STRING)
+            .memberName("SSEKMSKeyId")
+            .getter(getter(GetObjectResponse::ssekmsKeyId))
+            .setter(setter(Builder::ssekmsKeyId))
+            .traits(LocationTrait.builder().location(MarshallLocation.HEADER)
+                    .locationName("x-amz-server-side-encryption-aws-kms-key-id")
+                    .unmarshallLocationName("x-amz-server-side-encryption-aws-kms-key-id").build()).build();
+
+    private static final SdkField<Boolean> BUCKET_KEY_ENABLED_FIELD = SdkField
+            .<Boolean> builder(MarshallingType.BOOLEAN)
+            .memberName("BucketKeyEnabled")
+            .getter(getter(GetObjectResponse::bucketKeyEnabled))
+            .setter(setter(Builder::bucketKeyEnabled))
+            .traits(LocationTrait.builder().location(MarshallLocation.HEADER)
+                    .locationName("x-amz-server-side-encryption-bucket-key-enabled")
+                    .unmarshallLocationName("x-amz-server-side-encryption-bucket-key-enabled").build()).build();
+
+    private static final SdkField<String> STORAGE_CLASS_FIELD = SdkField
+            .<String> builder(MarshallingType.STRING)
+            .memberName("StorageClass")
+            .getter(getter(GetObjectResponse::storageClassAsString))
+            .setter(setter(Builder::storageClass))
+            .traits(LocationTrait.builder().location(MarshallLocation.HEADER).locationName("x-amz-storage-class")
+                    .unmarshallLocationName("x-amz-storage-class").build()).build();
+
+    private static final SdkField<String> REQUEST_CHARGED_FIELD = SdkField
+            .<String> builder(MarshallingType.STRING)
+            .memberName("RequestCharged")
+            .getter(getter(GetObjectResponse::requestChargedAsString))
+            .setter(setter(Builder::requestCharged))
+            .traits(LocationTrait.builder().location(MarshallLocation.HEADER).locationName("x-amz-request-charged")
+                    .unmarshallLocationName("x-amz-request-charged").build()).build();
+
+    private static final SdkField<String> REPLICATION_STATUS_FIELD = SdkField
+            .<String> builder(MarshallingType.STRING)
+            .memberName("ReplicationStatus")
+            .getter(getter(GetObjectResponse::replicationStatusAsString))
+            .setter(setter(Builder::replicationStatus))
+            .traits(LocationTrait.builder().location(MarshallLocation.HEADER).locationName("x-amz-replication-status")
+                    .unmarshallLocationName("x-amz-replication-status").build()).build();
+
+    private static final SdkField<Integer> PARTS_COUNT_FIELD = SdkField
+            .<Integer> builder(MarshallingType.INTEGER)
+            .memberName("PartsCount")
+            .getter(getter(GetObjectResponse::partsCount))
+            .setter(setter(Builder::partsCount))
+            .traits(LocationTrait.builder().location(MarshallLocation.HEADER).locationName("x-amz-mp-parts-count")
+                    .unmarshallLocationName("x-amz-mp-parts-count").build()).build();
+
+    private static final SdkField<Integer> TAG_COUNT_FIELD = SdkField
+            .<Integer> builder(MarshallingType.INTEGER)
+            .memberName("TagCount")
+            .getter(getter(GetObjectResponse::tagCount))
+            .setter(setter(Builder::tagCount))
+            .traits(LocationTrait.builder().location(MarshallLocation.HEADER).locationName("x-amz-tagging-count")
+                    .unmarshallLocationName("x-amz-tagging-count").build()).build();
+
+    private static final SdkField<String> OBJECT_LOCK_MODE_FIELD = SdkField
+            .<String> builder(MarshallingType.STRING)
+            .memberName("ObjectLockMode")
+            .getter(getter(GetObjectResponse::objectLockModeAsString))
+            .setter(setter(Builder::objectLockMode))
+            .traits(LocationTrait.builder().location(MarshallLocation.HEADER).locationName("x-amz-object-lock-mode")
+                    .unmarshallLocationName("x-amz-object-lock-mode").build()).build();
+
+    private static final SdkField<Instant> OBJECT_LOCK_RETAIN_UNTIL_DATE_FIELD = SdkField
+            .<Instant> builder(MarshallingType.INSTANT)
+            .memberName("ObjectLockRetainUntilDate")
+            .getter(getter(GetObjectResponse::objectLockRetainUntilDate))
+            .setter(setter(Builder::objectLockRetainUntilDate))
+            .traits(LocationTrait.builder().location(MarshallLocation.HEADER).locationName("x-amz-object-lock-retain-until-date")
+                    .unmarshallLocationName("x-amz-object-lock-retain-until-date").build(),
+                    TimestampFormatTrait.create(TimestampFormatTrait.Format.ISO_8601)).build();
+
+    private static final SdkField<String> OBJECT_LOCK_LEGAL_HOLD_STATUS_FIELD = SdkField
+            .<String> builder(MarshallingType.STRING)
+            .memberName("ObjectLockLegalHoldStatus")
+            .getter(getter(GetObjectResponse::objectLockLegalHoldStatusAsString))
+            .setter(setter(Builder::objectLockLegalHoldStatus))
+            .traits(LocationTrait.builder().location(MarshallLocation.HEADER).locationName("x-amz-object-lock-legal-hold")
+                    .unmarshallLocationName("x-amz-object-lock-legal-hold").build()).build();
+
+    private static final SdkField<String> EXPIRES_STRING_FIELD = SdkField
+            .<String> builder(MarshallingType.STRING)
+            .memberName("ExpiresString")
+            .getter(getter(GetObjectResponse::expiresString))
+            .setter(setter(Builder::expiresString))
+            .traits(LocationTrait.builder().location(MarshallLocation.HEADER).locationName("Expires")
+                    .unmarshallLocationName("Expires").build()).build();
+
+    /***************************************** IBM Supported fields ************************************************/
+    private static final SdkField<Boolean> IBM_SSE_KP_ENABLED_FILED = SdkField
+        .<Boolean> builder(MarshallingType.BOOLEAN)
+        .memberName("IBMSSEKPEnabled")
+        .getter(getter(GetObjectResponse::ibmSSEKPEnabled))
+        .setter(setter((b, v) -> b.ibmSSEKPEnabled(v != null && v))) //using lambda instaed of primitive to handle NULL
+        .traits(LocationTrait.builder().location(MarshallLocation.HEADER).locationName("ibm-sse-kp-enabled")
+                             .unmarshallLocationName("ibm-sse-kp-enabled").build()).build();
+
+    private static final SdkField<String> IBM_SSE_KP_CRK_FILED = SdkField
+        .<String> builder(MarshallingType.STRING)
+        .memberName("IBMSSEKPCrk")
+        .getter(getter(GetObjectResponse::ibmSSEKPCrk))
+        .setter(setter(GetObjectResponse.Builder::ibmSSEKPCrk))
+        .traits(LocationTrait.builder().location(MarshallLocation.HEADER).locationName("ibm-sse-kp-crk-id")
+                             .unmarshallLocationName("ibm-sse-kp-crk-id").build()).build();
+
+    /** IBM Retention Expiration Date header */
+    private static final SdkField<Instant> IBM_RETENTION_EXPIRATION_DATE_FIELD = SdkField
+        .<Instant> builder(MarshallingType.INSTANT)
+        .memberName("RetentionExpirationDate")
+        .getter(getter(GetObjectResponse::retentionExpirationDate))
+        .setter(setter(GetObjectResponse.Builder::retentionExpirationDate))
+        .traits(LocationTrait.builder().location(MarshallLocation.HEADER).locationName("retention-expiration-date")
+                             .unmarshallLocationName("retention-expiration-date").build()).build();
+
+    /** IBM Retention Legal Hold Count header */
+    private static final SdkField<Integer> IBM_RETENTION_LEGAL_HOLD_COUNT_FIELD = SdkField
+        .<Integer> builder(MarshallingType.INTEGER)
+        .memberName("RetentionLegalHoldCount")
+        .getter(getter(GetObjectResponse::retentionLegalHoldCount))
+        .setter(setter(GetObjectResponse.Builder::retentionLegalHoldCount))
+        .traits(LocationTrait.builder().location(MarshallLocation.HEADER).locationName("retention-legal-hold-count")
+                             .unmarshallLocationName("retention-legal-hold-count").build()).build();
+
+    /** IBM Retention period header */
+    private static final SdkField<Long> IBM_RETENTION_PERIOD_FIELD = SdkField
+        .<Long> builder(MarshallingType.LONG)
+        .memberName("RetentionPeriod")
+        .getter(getter(GetObjectResponse::retentionPeriod))
+        .setter(setter(GetObjectResponse.Builder::retentionPeriod))
+        .traits(LocationTrait.builder().location(MarshallLocation.HEADER).locationName("retention-period")
+                             .unmarshallLocationName("retention-period").build()).build();
+
+    private static final List<SdkField<?>> SDK_FIELDS = Collections.unmodifiableList(Arrays.asList(DELETE_MARKER_FIELD,
+            ACCEPT_RANGES_FIELD, EXPIRATION_FIELD, RESTORE_FIELD, LAST_MODIFIED_FIELD, CONTENT_LENGTH_FIELD, E_TAG_FIELD,
+            CHECKSUM_CRC32_FIELD, CHECKSUM_CRC32_C_FIELD, CHECKSUM_CRC64_NVME_FIELD, CHECKSUM_SHA1_FIELD, CHECKSUM_SHA256_FIELD,
+            CHECKSUM_TYPE_FIELD, MISSING_META_FIELD, VERSION_ID_FIELD, CACHE_CONTROL_FIELD, CONTENT_DISPOSITION_FIELD,
+            CONTENT_ENCODING_FIELD, CONTENT_LANGUAGE_FIELD, CONTENT_RANGE_FIELD, CONTENT_TYPE_FIELD, EXPIRES_FIELD,
+            WEBSITE_REDIRECT_LOCATION_FIELD, SERVER_SIDE_ENCRYPTION_FIELD, METADATA_FIELD, SSE_CUSTOMER_ALGORITHM_FIELD,
+            SSE_CUSTOMER_KEY_MD5_FIELD, SSEKMS_KEY_ID_FIELD, BUCKET_KEY_ENABLED_FIELD, STORAGE_CLASS_FIELD,
+            REQUEST_CHARGED_FIELD, REPLICATION_STATUS_FIELD, PARTS_COUNT_FIELD, TAG_COUNT_FIELD, OBJECT_LOCK_MODE_FIELD,
+            OBJECT_LOCK_RETAIN_UNTIL_DATE_FIELD, OBJECT_LOCK_LEGAL_HOLD_STATUS_FIELD, EXPIRES_STRING_FIELD,
+            IBM_SSE_KP_ENABLED_FILED, IBM_SSE_KP_CRK_FILED, IBM_RETENTION_EXPIRATION_DATE_FIELD,
+            IBM_RETENTION_LEGAL_HOLD_COUNT_FIELD,IBM_RETENTION_PERIOD_FIELD));
+
+    private static final Map<String, SdkField<?>> SDK_NAME_TO_FIELD = memberNameToFieldInitializer();
+
+    private final Boolean deleteMarker;
+
+    private final String acceptRanges;
+
+    private final String expiration;
+
+    private final String restore;
+
+    private final Instant lastModified;
+
+    private final Long contentLength;
+
+    private final String eTag;
+
+    private final String checksumCRC32;
+
+    private final String checksumCRC32C;
+
+    private final String checksumCRC64NVME;
+
+    private final String checksumSHA1;
+
+    private final String checksumSHA256;
+
+    private final String checksumType;
+
+    private final Integer missingMeta;
+
+    private final String versionId;
+
+    private final String cacheControl;
+
+    private final String contentDisposition;
+
+    private final String contentEncoding;
+
+    private final String contentLanguage;
+
+    private final String contentRange;
+
+    private final String contentType;
+
+    private final Instant expires;
+
+    private final String websiteRedirectLocation;
+
+    private final String serverSideEncryption;
+
+    private final Map<String, String> metadata;
+
+    private final String sseCustomerAlgorithm;
+
+    private final String sseCustomerKeyMD5;
+
+    private final String ssekmsKeyId;
+
+    private final Boolean bucketKeyEnabled;
+
+    private final String storageClass;
+
+    private final String requestCharged;
+
+    private final String replicationStatus;
+
+    private final Integer partsCount;
+
+    private final Integer tagCount;
+
+    private final String objectLockMode;
+
+    private final Instant objectLockRetainUntilDate;
+
+    private final String objectLockLegalHoldStatus;
+
+    private final String expiresString;
+
+    /************* IBM fields ***********/
+    private boolean ibmSSEKPEnabled;
+
+    private String ibmSSEKPCrk;
+
+    private final Instant ibmRetentionExpirationDate;
+
+    private final Integer ibmRetentionLegalHoldCount;
+
+    private final Long ibmRetentionPeriod;
+
+    private GetObjectResponse(BuilderImpl builder) {
+        super(builder);
+        this.deleteMarker = builder.deleteMarker;
+        this.acceptRanges = builder.acceptRanges;
+        this.expiration = builder.expiration;
+        this.restore = builder.restore;
+        this.lastModified = builder.lastModified;
+        this.contentLength = builder.contentLength;
+        this.eTag = builder.eTag;
+        this.checksumCRC32 = builder.checksumCRC32;
+        this.checksumCRC32C = builder.checksumCRC32C;
+        this.checksumCRC64NVME = builder.checksumCRC64NVME;
+        this.checksumSHA1 = builder.checksumSHA1;
+        this.checksumSHA256 = builder.checksumSHA256;
+        this.checksumType = builder.checksumType;
+        this.missingMeta = builder.missingMeta;
+        this.versionId = builder.versionId;
+        this.cacheControl = builder.cacheControl;
+        this.contentDisposition = builder.contentDisposition;
+        this.contentEncoding = builder.contentEncoding;
+        this.contentLanguage = builder.contentLanguage;
+        this.contentRange = builder.contentRange;
+        this.contentType = builder.contentType;
+        this.expires = builder.expires;
+        this.websiteRedirectLocation = builder.websiteRedirectLocation;
+        this.serverSideEncryption = builder.serverSideEncryption;
+        this.metadata = builder.metadata;
+        this.sseCustomerAlgorithm = builder.sseCustomerAlgorithm;
+        this.sseCustomerKeyMD5 = builder.sseCustomerKeyMD5;
+        this.ssekmsKeyId = builder.ssekmsKeyId;
+        this.bucketKeyEnabled = builder.bucketKeyEnabled;
+        this.storageClass = builder.storageClass;
+        this.requestCharged = builder.requestCharged;
+        this.replicationStatus = builder.replicationStatus;
+        this.partsCount = builder.partsCount;
+        this.tagCount = builder.tagCount;
+        this.objectLockMode = builder.objectLockMode;
+        this.objectLockRetainUntilDate = builder.objectLockRetainUntilDate;
+        this.objectLockLegalHoldStatus = builder.objectLockLegalHoldStatus;
+        this.expiresString = builder.expiresString;
+        this.ibmSSEKPEnabled = builder.ibmSSEKPEnabled;
+        this.ibmSSEKPCrk = builder.ibmSSEKPCrk;
+        this.ibmRetentionExpirationDate = builder.ibmRetentionExpirationDate;
+        this.ibmRetentionLegalHoldCount = builder.ibmRetentionLegalHoldCount;
+        this.ibmRetentionPeriod = builder.ibmRetentionPeriod;
+    }
+
+    /**
+     * <p>
+     * Indicates whether the object retrieved was (true) or was not (false) a Delete Marker. If false, this response
+     * header does not appear in the response.
+     * </p>
+     * <note>
+     * <ul>
+     * <li>
+     * <p>
+     * If the current version of the object is a delete marker, Amazon S3 behaves as if the object was deleted and
+     * includes <code>x-amz-delete-marker: true</code> in the response.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * If the specified version in the request is a delete marker, the response returns a
+     * <code>405 Method Not Allowed</code> error and the <code>Last-Modified: timestamp</code> response header.
+     * </p>
+     * </li>
+     * </ul>
+     * </note>
+     * 
+     * @return Indicates whether the object retrieved was (true) or was not (false) a Delete Marker. If false, this
+     *         response header does not appear in the response.</p> <note>
+     *         <ul>
+     *         <li>
+     *         <p>
+     *         If the current version of the object is a delete marker, Amazon S3 behaves as if the object was deleted
+     *         and includes <code>x-amz-delete-marker: true</code> in the response.
+     *         </p>
+     *         </li>
+     *         <li>
+     *         <p>
+     *         If the specified version in the request is a delete marker, the response returns a
+     *         <code>405 Method Not Allowed</code> error and the <code>Last-Modified: timestamp</code> response header.
+     *         </p>
+     *         </li>
+     *         </ul>
+     */
+    public final Boolean deleteMarker() {
+        return deleteMarker;
+    }
+
+    /**
+     * <p>
+     * Indicates that a range of bytes was specified in the request.
+     * </p>
+     * 
+     * @return Indicates that a range of bytes was specified in the request.
+     */
+    public final String acceptRanges() {
+        return acceptRanges;
+    }
+
+    /**
+     * <p>
+     * If the object expiration is configured (see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketLifecycleConfiguration.html">
+     * <code>PutBucketLifecycleConfiguration</code> </a>), the response includes this header. It includes the
+     * <code>expiry-date</code> and <code>rule-id</code> key-value pairs providing object expiration information. The
+     * value of the <code>rule-id</code> is URL-encoded.
+     * </p>
+     * <note>
+     * <p>
+     * Object expiration information is not returned in directory buckets and this header returns the value "
+     * <code>NotImplemented</code>" in all responses for directory buckets.
+     * </p>
+     * </note>
+     * 
+     * @return If the object expiration is configured (see <a
+     *         href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketLifecycleConfiguration.html">
+     *         <code>PutBucketLifecycleConfiguration</code> </a>), the response includes this header. It includes the
+     *         <code>expiry-date</code> and <code>rule-id</code> key-value pairs providing object expiration
+     *         information. The value of the <code>rule-id</code> is URL-encoded.</p> <note>
+     *         <p>
+     *         Object expiration information is not returned in directory buckets and this header returns the value "
+     *         <code>NotImplemented</code>" in all responses for directory buckets.
+     *         </p>
+     */
+    public final String expiration() {
+        return expiration;
+    }
+
+    /**
+     * <p>
+     * Provides information about object restoration action and expiration time of the restored object copy.
+     * </p>
+     * <note>
+     * <p>
+     * This functionality is not supported for directory buckets. Directory buckets only support
+     * <code>EXPRESS_ONEZONE</code> (the S3 Express One Zone storage class) in Availability Zones and
+     * <code>ONEZONE_IA</code> (the S3 One Zone-Infrequent Access storage class) in Dedicated Local Zones.
+     * </p>
+     * </note>
+     * 
+     * @return Provides information about object restoration action and expiration time of the restored object copy.</p>
+     *         <note>
+     *         <p>
+     *         This functionality is not supported for directory buckets. Directory buckets only support
+     *         <code>EXPRESS_ONEZONE</code> (the S3 Express One Zone storage class) in Availability Zones and
+     *         <code>ONEZONE_IA</code> (the S3 One Zone-Infrequent Access storage class) in Dedicated Local Zones.
+     *         </p>
+     */
+    public final String restore() {
+        return restore;
+    }
+
+    /**
+     * <p>
+     * Date and time when the object was last modified.
+     * </p>
+     * <p>
+     * <b>General purpose buckets </b> - When you specify a <code>versionId</code> of the object in your request, if the
+     * specified version in the request is a delete marker, the response returns a <code>405 Method Not Allowed</code>
+     * error and the <code>Last-Modified: timestamp</code> response header.
+     * </p>
+     * 
+     * @return Date and time when the object was last modified.</p>
+     *         <p>
+     *         <b>General purpose buckets </b> - When you specify a <code>versionId</code> of the object in your
+     *         request, if the specified version in the request is a delete marker, the response returns a
+     *         <code>405 Method Not Allowed</code> error and the <code>Last-Modified: timestamp</code> response header.
+     */
+    public final Instant lastModified() {
+        return lastModified;
+    }
+
+    /**
+     * <p>
+     * Size of the body in bytes.
+     * </p>
+     * 
+     * @return Size of the body in bytes.
+     */
+    public final Long contentLength() {
+        return contentLength;
+    }
+
+    /**
+     * <p>
+     * An entity tag (ETag) is an opaque identifier assigned by a web server to a specific version of a resource found
+     * at a URL.
+     * </p>
+     * 
+     * @return An entity tag (ETag) is an opaque identifier assigned by a web server to a specific version of a resource
+     *         found at a URL.
+     */
+    public final String eTag() {
+        return eTag;
+    }
+
+    /**
+     * <p>
+     * The Base64 encoded, 32-bit <code>CRC32</code> checksum of the object. This checksum is only present if the object
+     * was uploaded with the object. For more information, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/checking-object-integrity.html"> Checking object
+     * integrity</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * 
+     * @return The Base64 encoded, 32-bit <code>CRC32</code> checksum of the object. This checksum is only present if
+     *         the object was uploaded with the object. For more information, see <a
+     *         href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/checking-object-integrity.html"> Checking
+     *         object integrity</a> in the <i>Amazon S3 User Guide</i>.
+     */
+    public final String checksumCRC32() {
+        return checksumCRC32;
+    }
+
+    /**
+     * <p>
+     * The Base64 encoded, 32-bit <code>CRC32C</code> checksum of the object. This will only be present if the object
+     * was uploaded with the object. For more information, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/checking-object-integrity.html"> Checking object
+     * integrity</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * 
+     * @return The Base64 encoded, 32-bit <code>CRC32C</code> checksum of the object. This will only be present if the
+     *         object was uploaded with the object. For more information, see <a
+     *         href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/checking-object-integrity.html"> Checking
+     *         object integrity</a> in the <i>Amazon S3 User Guide</i>.
+     */
+    public final String checksumCRC32C() {
+        return checksumCRC32C;
+    }
+
+    /**
+     * <p>
+     * The Base64 encoded, 64-bit <code>CRC64NVME</code> checksum of the object. For more information, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/checking-object-integrity.html">Checking object
+     * integrity in the Amazon S3 User Guide</a>.
+     * </p>
+     * 
+     * @return The Base64 encoded, 64-bit <code>CRC64NVME</code> checksum of the object. For more information, see <a
+     *         href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/checking-object-integrity.html">Checking
+     *         object integrity in the Amazon S3 User Guide</a>.
+     */
+    public final String checksumCRC64NVME() {
+        return checksumCRC64NVME;
+    }
+
+    /**
+     * <p>
+     * The Base64 encoded, 160-bit <code>SHA1</code> digest of the object. This will only be present if the object was
+     * uploaded with the object. For more information, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/checking-object-integrity.html"> Checking object
+     * integrity</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * 
+     * @return The Base64 encoded, 160-bit <code>SHA1</code> digest of the object. This will only be present if the
+     *         object was uploaded with the object. For more information, see <a
+     *         href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/checking-object-integrity.html"> Checking
+     *         object integrity</a> in the <i>Amazon S3 User Guide</i>.
+     */
+    public final String checksumSHA1() {
+        return checksumSHA1;
+    }
+
+    /**
+     * <p>
+     * The Base64 encoded, 256-bit <code>SHA256</code> digest of the object. This will only be present if the object was
+     * uploaded with the object. For more information, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/checking-object-integrity.html"> Checking object
+     * integrity</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * 
+     * @return The Base64 encoded, 256-bit <code>SHA256</code> digest of the object. This will only be present if the
+     *         object was uploaded with the object. For more information, see <a
+     *         href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/checking-object-integrity.html"> Checking
+     *         object integrity</a> in the <i>Amazon S3 User Guide</i>.
+     */
+    public final String checksumSHA256() {
+        return checksumSHA256;
+    }
+
+    /**
+     * <p>
+     * The checksum type, which determines how part-level checksums are combined to create an object-level checksum for
+     * multipart objects. You can use this header response to verify that the checksum type that is received is the same
+     * checksum type that was specified in the <code>CreateMultipartUpload</code> request. For more information, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/checking-object-integrity.html">Checking object
+     * integrity</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * <p>
+     * If the service returns an enum value that is not available in the current SDK version, {@link #checksumType} will
+     * return {@link ChecksumType#UNKNOWN_TO_SDK_VERSION}. The raw value returned by the service is available from
+     * {@link #checksumTypeAsString}.
+     * </p>
+     * 
+     * @return The checksum type, which determines how part-level checksums are combined to create an object-level
+     *         checksum for multipart objects. You can use this header response to verify that the checksum type that is
+     *         received is the same checksum type that was specified in the <code>CreateMultipartUpload</code> request.
+     *         For more information, see <a
+     *         href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/checking-object-integrity.html">Checking
+     *         object integrity</a> in the <i>Amazon S3 User Guide</i>.
+     * @see ChecksumType
+     */
+    public final ChecksumType checksumType() {
+        return ChecksumType.fromValue(checksumType);
+    }
+
+    /**
+     * <p>
+     * The checksum type, which determines how part-level checksums are combined to create an object-level checksum for
+     * multipart objects. You can use this header response to verify that the checksum type that is received is the same
+     * checksum type that was specified in the <code>CreateMultipartUpload</code> request. For more information, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/checking-object-integrity.html">Checking object
+     * integrity</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * <p>
+     * If the service returns an enum value that is not available in the current SDK version, {@link #checksumType} will
+     * return {@link ChecksumType#UNKNOWN_TO_SDK_VERSION}. The raw value returned by the service is available from
+     * {@link #checksumTypeAsString}.
+     * </p>
+     * 
+     * @return The checksum type, which determines how part-level checksums are combined to create an object-level
+     *         checksum for multipart objects. You can use this header response to verify that the checksum type that is
+     *         received is the same checksum type that was specified in the <code>CreateMultipartUpload</code> request.
+     *         For more information, see <a
+     *         href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/checking-object-integrity.html">Checking
+     *         object integrity</a> in the <i>Amazon S3 User Guide</i>.
+     * @see ChecksumType
+     */
+    public final String checksumTypeAsString() {
+        return checksumType;
+    }
+
+    /**
+     * <p>
+     * This is set to the number of metadata entries not returned in the headers that are prefixed with
+     * <code>x-amz-meta-</code>. This can happen if you create metadata using an API like SOAP that supports more
+     * flexible metadata than the REST API. For example, using SOAP, you can create metadata whose values are not legal
+     * HTTP headers.
+     * </p>
+     * <note>
+     * <p>
+     * This functionality is not supported for directory buckets.
+     * </p>
+     * </note>
+     * 
+     * @return This is set to the number of metadata entries not returned in the headers that are prefixed with
+     *         <code>x-amz-meta-</code>. This can happen if you create metadata using an API like SOAP that supports
+     *         more flexible metadata than the REST API. For example, using SOAP, you can create metadata whose values
+     *         are not legal HTTP headers.</p> <note>
+     *         <p>
+     *         This functionality is not supported for directory buckets.
+     *         </p>
+     */
+    public final Integer missingMeta() {
+        return missingMeta;
+    }
+
+    /**
+     * <p>
+     * Version ID of the object.
+     * </p>
+     * <note>
+     * <p>
+     * This functionality is not supported for directory buckets.
+     * </p>
+     * </note>
+     * 
+     * @return Version ID of the object.</p> <note>
+     *         <p>
+     *         This functionality is not supported for directory buckets.
+     *         </p>
+     */
+    public final String versionId() {
+        return versionId;
+    }
+
+    /**
+     * <p>
+     * Specifies caching behavior along the request/reply chain.
+     * </p>
+     * 
+     * @return Specifies caching behavior along the request/reply chain.
+     */
+    public final String cacheControl() {
+        return cacheControl;
+    }
+
+    /**
+     * <p>
+     * Specifies presentational information for the object.
+     * </p>
+     * 
+     * @return Specifies presentational information for the object.
+     */
+    public final String contentDisposition() {
+        return contentDisposition;
+    }
+
+    /**
+     * <p>
+     * Indicates what content encodings have been applied to the object and thus what decoding mechanisms must be
+     * applied to obtain the media-type referenced by the Content-Type header field.
+     * </p>
+     * 
+     * @return Indicates what content encodings have been applied to the object and thus what decoding mechanisms must
+     *         be applied to obtain the media-type referenced by the Content-Type header field.
+     */
+    public final String contentEncoding() {
+        return contentEncoding;
+    }
+
+    /**
+     * <p>
+     * The language the content is in.
+     * </p>
+     * 
+     * @return The language the content is in.
+     */
+    public final String contentLanguage() {
+        return contentLanguage;
+    }
+
+    /**
+     * <p>
+     * The portion of the object returned in the response.
+     * </p>
+     * 
+     * @return The portion of the object returned in the response.
+     */
+    public final String contentRange() {
+        return contentRange;
+    }
+
+    /**
+     * <p>
+     * A standard MIME type describing the format of the object data.
+     * </p>
+     * 
+     * @return A standard MIME type describing the format of the object data.
+     */
+    public final String contentType() {
+        return contentType;
+    }
+
+    /**
+     * <p>
+     * The date and time at which the object is no longer cacheable.
+     * </p>
+     * 
+     * @return The date and time at which the object is no longer cacheable.
+     * @deprecated Usage of the Expires field is deprecated in favor of the more flexible and less error prone
+     *             ExpiresString
+     */
+    @Deprecated
+    public final Instant expires() {
+        return expires;
+    }
+
+    /**
+     * <p>
+     * If the bucket is configured as a website, redirects requests for this object to another object in the same bucket
+     * or to an external URL. Amazon S3 stores the value of this header in the object metadata.
+     * </p>
+     * <note>
+     * <p>
+     * This functionality is not supported for directory buckets.
+     * </p>
+     * </note>
+     * 
+     * @return If the bucket is configured as a website, redirects requests for this object to another object in the
+     *         same bucket or to an external URL. Amazon S3 stores the value of this header in the object metadata.</p>
+     *         <note>
+     *         <p>
+     *         This functionality is not supported for directory buckets.
+     *         </p>
+     */
+    public final String websiteRedirectLocation() {
+        return websiteRedirectLocation;
+    }
+
+    /**
+     * <p>
+     * The server-side encryption algorithm used when you store this object in Amazon S3.
+     * </p>
+     * <p>
+     * If the service returns an enum value that is not available in the current SDK version,
+     * {@link #serverSideEncryption} will return {@link ServerSideEncryption#UNKNOWN_TO_SDK_VERSION}. The raw value
+     * returned by the service is available from {@link #serverSideEncryptionAsString}.
+     * </p>
+     * 
+     * @return The server-side encryption algorithm used when you store this object in Amazon S3.
+     * @see ServerSideEncryption
+     */
+    public final ServerSideEncryption serverSideEncryption() {
+        return ServerSideEncryption.fromValue(serverSideEncryption);
+    }
+
+    /**
+     * <p>
+     * The server-side encryption algorithm used when you store this object in Amazon S3.
+     * </p>
+     * <p>
+     * If the service returns an enum value that is not available in the current SDK version,
+     * {@link #serverSideEncryption} will return {@link ServerSideEncryption#UNKNOWN_TO_SDK_VERSION}. The raw value
+     * returned by the service is available from {@link #serverSideEncryptionAsString}.
+     * </p>
+     * 
+     * @return The server-side encryption algorithm used when you store this object in Amazon S3.
+     * @see ServerSideEncryption
+     */
+    public final String serverSideEncryptionAsString() {
+        return serverSideEncryption;
+    }
+
+    /**
+     * For responses, this returns true if the service returned a value for the Metadata property. This DOES NOT check
+     * that the value is non-empty (for which, you should check the {@code isEmpty()} method on the property). This is
+     * useful because the SDK will never return a null collection or map, but you may need to differentiate between the
+     * service returning nothing (or null) and the service returning an empty collection or map. For requests, this
+     * returns true if a value for the property was specified in the request builder, and false if a value was not
+     * specified.
+     */
+    public final boolean hasMetadata() {
+        return metadata != null && !(metadata instanceof SdkAutoConstructMap);
+    }
+
+    /**
+     * <p>
+     * A map of metadata to store with the object in S3.
+     * </p>
+     * <p>
+     * Attempts to modify the collection returned by this method will result in an UnsupportedOperationException.
+     * </p>
+     * <p>
+     * This method will never return null. If you would like to know whether the service returned this field (so that
+     * you can differentiate between null and empty), you can use the {@link #hasMetadata} method.
+     * </p>
+     * 
+     * @return A map of metadata to store with the object in S3.
+     */
+    public final Map<String, String> metadata() {
+        return metadata;
+    }
+
+    /**
+     * <p>
+     * If server-side encryption with a customer-provided encryption key was requested, the response will include this
+     * header to confirm the encryption algorithm that's used.
+     * </p>
+     * <note>
+     * <p>
+     * This functionality is not supported for directory buckets.
+     * </p>
+     * </note>
+     * 
+     * @return If server-side encryption with a customer-provided encryption key was requested, the response will
+     *         include this header to confirm the encryption algorithm that's used.</p> <note>
+     *         <p>
+     *         This functionality is not supported for directory buckets.
+     *         </p>
+     */
+    public final String sseCustomerAlgorithm() {
+        return sseCustomerAlgorithm;
+    }
+
+    /**
+     * <p>
+     * If server-side encryption with a customer-provided encryption key was requested, the response will include this
+     * header to provide the round-trip message integrity verification of the customer-provided encryption key.
+     * </p>
+     * <note>
+     * <p>
+     * This functionality is not supported for directory buckets.
+     * </p>
+     * </note>
+     * 
+     * @return If server-side encryption with a customer-provided encryption key was requested, the response will
+     *         include this header to provide the round-trip message integrity verification of the customer-provided
+     *         encryption key.</p> <note>
+     *         <p>
+     *         This functionality is not supported for directory buckets.
+     *         </p>
+     */
+    public final String sseCustomerKeyMD5() {
+        return sseCustomerKeyMD5;
+    }
+
+    /**
+     * <p>
+     * If present, indicates the ID of the KMS key that was used for object encryption.
+     * </p>
+     * 
+     * @return If present, indicates the ID of the KMS key that was used for object encryption.
+     */
+    public final String ssekmsKeyId() {
+        return ssekmsKeyId;
+    }
+
+    /**
+     * <p>
+     * Indicates whether the object uses an S3 Bucket Key for server-side encryption with Key Management Service (KMS)
+     * keys (SSE-KMS).
+     * </p>
+     * 
+     * @return Indicates whether the object uses an S3 Bucket Key for server-side encryption with Key Management Service
+     *         (KMS) keys (SSE-KMS).
+     */
+    public final Boolean bucketKeyEnabled() {
+        return bucketKeyEnabled;
+    }
+
+    /**
+     * <p>
+     * Provides storage class information of the object. Amazon S3 returns this header for all objects except for S3
+     * Standard storage class objects.
+     * </p>
+     * <note>
+     * <p>
+     * <b>Directory buckets </b> - Directory buckets only support <code>EXPRESS_ONEZONE</code> (the S3 Express One Zone
+     * storage class) in Availability Zones and <code>ONEZONE_IA</code> (the S3 One Zone-Infrequent Access storage
+     * class) in Dedicated Local Zones.
+     * </p>
+     * </note>
+     * <p>
+     * If the service returns an enum value that is not available in the current SDK version, {@link #storageClass} will
+     * return {@link StorageClass#UNKNOWN_TO_SDK_VERSION}. The raw value returned by the service is available from
+     * {@link #storageClassAsString}.
+     * </p>
+     * 
+     * @return Provides storage class information of the object. Amazon S3 returns this header for all objects except
+     *         for S3 Standard storage class objects.</p> <note>
+     *         <p>
+     *         <b>Directory buckets </b> - Directory buckets only support <code>EXPRESS_ONEZONE</code> (the S3 Express
+     *         One Zone storage class) in Availability Zones and <code>ONEZONE_IA</code> (the S3 One Zone-Infrequent
+     *         Access storage class) in Dedicated Local Zones.
+     *         </p>
+     * @see StorageClass
+     */
+    public final StorageClass storageClass() {
+        return StorageClass.fromValue(storageClass);
+    }
+
+    /**
+     * <p>
+     * Provides storage class information of the object. Amazon S3 returns this header for all objects except for S3
+     * Standard storage class objects.
+     * </p>
+     * <note>
+     * <p>
+     * <b>Directory buckets </b> - Directory buckets only support <code>EXPRESS_ONEZONE</code> (the S3 Express One Zone
+     * storage class) in Availability Zones and <code>ONEZONE_IA</code> (the S3 One Zone-Infrequent Access storage
+     * class) in Dedicated Local Zones.
+     * </p>
+     * </note>
+     * <p>
+     * If the service returns an enum value that is not available in the current SDK version, {@link #storageClass} will
+     * return {@link StorageClass#UNKNOWN_TO_SDK_VERSION}. The raw value returned by the service is available from
+     * {@link #storageClassAsString}.
+     * </p>
+     * 
+     * @return Provides storage class information of the object. Amazon S3 returns this header for all objects except
+     *         for S3 Standard storage class objects.</p> <note>
+     *         <p>
+     *         <b>Directory buckets </b> - Directory buckets only support <code>EXPRESS_ONEZONE</code> (the S3 Express
+     *         One Zone storage class) in Availability Zones and <code>ONEZONE_IA</code> (the S3 One Zone-Infrequent
+     *         Access storage class) in Dedicated Local Zones.
+     *         </p>
+     * @see StorageClass
+     */
+    public final String storageClassAsString() {
+        return storageClass;
+    }
+
+    /**
+     * Returns the value of the RequestCharged property for this object.
+     * <p>
+     * If the service returns an enum value that is not available in the current SDK version, {@link #requestCharged}
+     * will return {@link RequestCharged#UNKNOWN_TO_SDK_VERSION}. The raw value returned by the service is available
+     * from {@link #requestChargedAsString}.
+     * </p>
+     * 
+     * @return The value of the RequestCharged property for this object.
+     * @see RequestCharged
+     */
+    public final RequestCharged requestCharged() {
+        return RequestCharged.fromValue(requestCharged);
+    }
+
+    /**
+     * Returns the value of the RequestCharged property for this object.
+     * <p>
+     * If the service returns an enum value that is not available in the current SDK version, {@link #requestCharged}
+     * will return {@link RequestCharged#UNKNOWN_TO_SDK_VERSION}. The raw value returned by the service is available
+     * from {@link #requestChargedAsString}.
+     * </p>
+     * 
+     * @return The value of the RequestCharged property for this object.
+     * @see RequestCharged
+     */
+    public final String requestChargedAsString() {
+        return requestCharged;
+    }
+
+    /**
+     * <p>
+     * Amazon S3 can return this if your request involves a bucket that is either a source or destination in a
+     * replication rule.
+     * </p>
+     * <note>
+     * <p>
+     * This functionality is not supported for directory buckets.
+     * </p>
+     * </note>
+     * <p>
+     * If the service returns an enum value that is not available in the current SDK version, {@link #replicationStatus}
+     * will return {@link ReplicationStatus#UNKNOWN_TO_SDK_VERSION}. The raw value returned by the service is available
+     * from {@link #replicationStatusAsString}.
+     * </p>
+     * 
+     * @return Amazon S3 can return this if your request involves a bucket that is either a source or destination in a
+     *         replication rule.</p> <note>
+     *         <p>
+     *         This functionality is not supported for directory buckets.
+     *         </p>
+     * @see ReplicationStatus
+     */
+    public final ReplicationStatus replicationStatus() {
+        return ReplicationStatus.fromValue(replicationStatus);
+    }
+
+    /**
+     * <p>
+     * Amazon S3 can return this if your request involves a bucket that is either a source or destination in a
+     * replication rule.
+     * </p>
+     * <note>
+     * <p>
+     * This functionality is not supported for directory buckets.
+     * </p>
+     * </note>
+     * <p>
+     * If the service returns an enum value that is not available in the current SDK version, {@link #replicationStatus}
+     * will return {@link ReplicationStatus#UNKNOWN_TO_SDK_VERSION}. The raw value returned by the service is available
+     * from {@link #replicationStatusAsString}.
+     * </p>
+     * 
+     * @return Amazon S3 can return this if your request involves a bucket that is either a source or destination in a
+     *         replication rule.</p> <note>
+     *         <p>
+     *         This functionality is not supported for directory buckets.
+     *         </p>
+     * @see ReplicationStatus
+     */
+    public final String replicationStatusAsString() {
+        return replicationStatus;
+    }
+
+    /**
+     * <p>
+     * The count of parts this object has. This value is only returned if you specify <code>partNumber</code> in your
+     * request and the object was uploaded as a multipart upload.
+     * </p>
+     * 
+     * @return The count of parts this object has. This value is only returned if you specify <code>partNumber</code> in
+     *         your request and the object was uploaded as a multipart upload.
+     */
+    public final Integer partsCount() {
+        return partsCount;
+    }
+
+    /**
+     * <p>
+     * The number of tags, if any, on the object, when you have the relevant permission to read object tags.
+     * </p>
+     * <p>
+     * You can use <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetObjectTagging.html">GetObjectTagging</a> to retrieve
+     * the tag set associated with an object.
+     * </p>
+     * <note>
+     * <p>
+     * This functionality is not supported for directory buckets.
+     * </p>
+     * </note>
+     * 
+     * @return The number of tags, if any, on the object, when you have the relevant permission to read object tags.</p>
+     *         <p>
+     *         You can use <a
+     *         href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetObjectTagging.html">GetObjectTagging</a> to
+     *         retrieve the tag set associated with an object.
+     *         </p>
+     *         <note>
+     *         <p>
+     *         This functionality is not supported for directory buckets.
+     *         </p>
+     */
+    public final Integer tagCount() {
+        return tagCount;
+    }
+
+    /**
+     * <p>
+     * The Object Lock mode that's currently in place for this object.
+     * </p>
+     * <note>
+     * <p>
+     * This functionality is not supported for directory buckets.
+     * </p>
+     * </note>
+     * <p>
+     * If the service returns an enum value that is not available in the current SDK version, {@link #objectLockMode}
+     * will return {@link ObjectLockMode#UNKNOWN_TO_SDK_VERSION}. The raw value returned by the service is available
+     * from {@link #objectLockModeAsString}.
+     * </p>
+     * 
+     * @return The Object Lock mode that's currently in place for this object.</p> <note>
+     *         <p>
+     *         This functionality is not supported for directory buckets.
+     *         </p>
+     * @see ObjectLockMode
+     */
+    public final ObjectLockMode objectLockMode() {
+        return ObjectLockMode.fromValue(objectLockMode);
+    }
+
+    /**
+     * <p>
+     * The Object Lock mode that's currently in place for this object.
+     * </p>
+     * <note>
+     * <p>
+     * This functionality is not supported for directory buckets.
+     * </p>
+     * </note>
+     * <p>
+     * If the service returns an enum value that is not available in the current SDK version, {@link #objectLockMode}
+     * will return {@link ObjectLockMode#UNKNOWN_TO_SDK_VERSION}. The raw value returned by the service is available
+     * from {@link #objectLockModeAsString}.
+     * </p>
+     * 
+     * @return The Object Lock mode that's currently in place for this object.</p> <note>
+     *         <p>
+     *         This functionality is not supported for directory buckets.
+     *         </p>
+     * @see ObjectLockMode
+     */
+    public final String objectLockModeAsString() {
+        return objectLockMode;
+    }
+
+    /**
+     * <p>
+     * The date and time when this object's Object Lock will expire.
+     * </p>
+     * <note>
+     * <p>
+     * This functionality is not supported for directory buckets.
+     * </p>
+     * </note>
+     * 
+     * @return The date and time when this object's Object Lock will expire.</p> <note>
+     *         <p>
+     *         This functionality is not supported for directory buckets.
+     *         </p>
+     */
+    public final Instant objectLockRetainUntilDate() {
+        return objectLockRetainUntilDate;
+    }
+
+    /**
+     * <p>
+     * Indicates whether this object has an active legal hold. This field is only returned if you have permission to
+     * view an object's legal hold status.
+     * </p>
+     * <note>
+     * <p>
+     * This functionality is not supported for directory buckets.
+     * </p>
+     * </note>
+     * <p>
+     * If the service returns an enum value that is not available in the current SDK version,
+     * {@link #objectLockLegalHoldStatus} will return {@link ObjectLockLegalHoldStatus#UNKNOWN_TO_SDK_VERSION}. The raw
+     * value returned by the service is available from {@link #objectLockLegalHoldStatusAsString}.
+     * </p>
+     * 
+     * @return Indicates whether this object has an active legal hold. This field is only returned if you have
+     *         permission to view an object's legal hold status. </p> <note>
+     *         <p>
+     *         This functionality is not supported for directory buckets.
+     *         </p>
+     * @see ObjectLockLegalHoldStatus
+     */
+    public final ObjectLockLegalHoldStatus objectLockLegalHoldStatus() {
+        return ObjectLockLegalHoldStatus.fromValue(objectLockLegalHoldStatus);
+    }
+
+    /**
+     * <p>
+     * Indicates whether this object has an active legal hold. This field is only returned if you have permission to
+     * view an object's legal hold status.
+     * </p>
+     * <note>
+     * <p>
+     * This functionality is not supported for directory buckets.
+     * </p>
+     * </note>
+     * <p>
+     * If the service returns an enum value that is not available in the current SDK version,
+     * {@link #objectLockLegalHoldStatus} will return {@link ObjectLockLegalHoldStatus#UNKNOWN_TO_SDK_VERSION}. The raw
+     * value returned by the service is available from {@link #objectLockLegalHoldStatusAsString}.
+     * </p>
+     * 
+     * @return Indicates whether this object has an active legal hold. This field is only returned if you have
+     *         permission to view an object's legal hold status. </p> <note>
+     *         <p>
+     *         This functionality is not supported for directory buckets.
+     *         </p>
+     * @see ObjectLockLegalHoldStatus
+     */
+    public final String objectLockLegalHoldStatusAsString() {
+        return objectLockLegalHoldStatus;
+    }
+
+    /**
+     * <p>
+     * The date and time at which the object is no longer cacheable
+     * </p>
+     * 
+     * @return The date and time at which the object is no longer cacheable
+     */
+    public final String expiresString() {
+        return expiresString;
+    }
+
+    /**
+     * <p>
+     * Indicates whether key protect has been enabled on bucket.
+     *
+     * @return Indicates whether the bucket's key protect has been enabled.</p>
+     */
+    public final Boolean ibmSSEKPEnabled() { return ibmSSEKPEnabled; }
+
+    /**
+     * <p>
+     * Indicates the CRK header of the HEAD request
+     *
+     * @return the CRK header of the HEAD request.</p>
+     */
+    public final String ibmSSEKPCrk() { return ibmSSEKPCrk; }
+
+    /**
+     * IBM-specific
+     * @return The IBM Retention Expiration Date header
+     */
+    public final Instant retentionExpirationDate() {return  this.ibmRetentionExpirationDate; }
+
+    /**
+     * IBM-specific
+     * @return The IBM Retention Legal Hold Count header
+     */
+    public final Integer retentionLegalHoldCount() { return this.ibmRetentionLegalHoldCount; }
+
+    /**
+     * IBM-specific
+     * @return The IBM Retention Period header
+     */
+    public final Long retentionPeriod() { return this.ibmRetentionPeriod; }
+
+    @Override
+    public Builder toBuilder() {
+        return new BuilderImpl(this);
+    }
+
+    public static Builder builder() {
+        return new BuilderImpl();
+    }
+
+    public static Class<? extends Builder> serializableBuilderClass() {
+        return BuilderImpl.class;
+    }
+
+    @Override
+    public final int hashCode() {
+        int hashCode = 1;
+        hashCode = 31 * hashCode + super.hashCode();
+        hashCode = 31 * hashCode + Objects.hashCode(deleteMarker());
+        hashCode = 31 * hashCode + Objects.hashCode(acceptRanges());
+        hashCode = 31 * hashCode + Objects.hashCode(expiration());
+        hashCode = 31 * hashCode + Objects.hashCode(restore());
+        hashCode = 31 * hashCode + Objects.hashCode(lastModified());
+        hashCode = 31 * hashCode + Objects.hashCode(contentLength());
+        hashCode = 31 * hashCode + Objects.hashCode(eTag());
+        hashCode = 31 * hashCode + Objects.hashCode(checksumCRC32());
+        hashCode = 31 * hashCode + Objects.hashCode(checksumCRC32C());
+        hashCode = 31 * hashCode + Objects.hashCode(checksumCRC64NVME());
+        hashCode = 31 * hashCode + Objects.hashCode(checksumSHA1());
+        hashCode = 31 * hashCode + Objects.hashCode(checksumSHA256());
+        hashCode = 31 * hashCode + Objects.hashCode(checksumTypeAsString());
+        hashCode = 31 * hashCode + Objects.hashCode(missingMeta());
+        hashCode = 31 * hashCode + Objects.hashCode(versionId());
+        hashCode = 31 * hashCode + Objects.hashCode(cacheControl());
+        hashCode = 31 * hashCode + Objects.hashCode(contentDisposition());
+        hashCode = 31 * hashCode + Objects.hashCode(contentEncoding());
+        hashCode = 31 * hashCode + Objects.hashCode(contentLanguage());
+        hashCode = 31 * hashCode + Objects.hashCode(contentRange());
+        hashCode = 31 * hashCode + Objects.hashCode(contentType());
+        hashCode = 31 * hashCode + Objects.hashCode(expires());
+        hashCode = 31 * hashCode + Objects.hashCode(websiteRedirectLocation());
+        hashCode = 31 * hashCode + Objects.hashCode(serverSideEncryptionAsString());
+        hashCode = 31 * hashCode + Objects.hashCode(hasMetadata() ? metadata() : null);
+        hashCode = 31 * hashCode + Objects.hashCode(sseCustomerAlgorithm());
+        hashCode = 31 * hashCode + Objects.hashCode(sseCustomerKeyMD5());
+        hashCode = 31 * hashCode + Objects.hashCode(ssekmsKeyId());
+        hashCode = 31 * hashCode + Objects.hashCode(bucketKeyEnabled());
+        hashCode = 31 * hashCode + Objects.hashCode(storageClassAsString());
+        hashCode = 31 * hashCode + Objects.hashCode(requestChargedAsString());
+        hashCode = 31 * hashCode + Objects.hashCode(replicationStatusAsString());
+        hashCode = 31 * hashCode + Objects.hashCode(partsCount());
+        hashCode = 31 * hashCode + Objects.hashCode(tagCount());
+        hashCode = 31 * hashCode + Objects.hashCode(objectLockModeAsString());
+        hashCode = 31 * hashCode + Objects.hashCode(objectLockRetainUntilDate());
+        hashCode = 31 * hashCode + Objects.hashCode(objectLockLegalHoldStatusAsString());
+        hashCode = 31 * hashCode + Objects.hashCode(expiresString());
+        hashCode = 31 * hashCode + Objects.hashCode(ibmSSEKPEnabled());
+        hashCode = 31 * hashCode + Objects.hashCode(ibmSSEKPCrk());
+        hashCode = 31 * hashCode + Objects.hashCode(retentionExpirationDate());
+        hashCode = 31 * hashCode + Objects.hashCode(retentionLegalHoldCount());
+        hashCode = 31 * hashCode + Objects.hashCode(retentionPeriod());
+        return hashCode;
+    }
+
+    @Override
+    public final boolean equals(Object obj) {
+        return super.equals(obj) && equalsBySdkFields(obj);
+    }
+
+    @Override
+    public final boolean equalsBySdkFields(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (!(obj instanceof GetObjectResponse)) {
+            return false;
+        }
+        GetObjectResponse other = (GetObjectResponse) obj;
+        return Objects.equals(deleteMarker(), other.deleteMarker()) && Objects.equals(acceptRanges(), other.acceptRanges())
+                && Objects.equals(expiration(), other.expiration()) && Objects.equals(restore(), other.restore())
+                && Objects.equals(lastModified(), other.lastModified()) && Objects.equals(contentLength(), other.contentLength())
+                && Objects.equals(eTag(), other.eTag()) && Objects.equals(checksumCRC32(), other.checksumCRC32())
+                && Objects.equals(checksumCRC32C(), other.checksumCRC32C())
+                && Objects.equals(checksumCRC64NVME(), other.checksumCRC64NVME())
+                && Objects.equals(checksumSHA1(), other.checksumSHA1())
+                && Objects.equals(checksumSHA256(), other.checksumSHA256())
+                && Objects.equals(checksumTypeAsString(), other.checksumTypeAsString())
+                && Objects.equals(missingMeta(), other.missingMeta()) && Objects.equals(versionId(), other.versionId())
+                && Objects.equals(cacheControl(), other.cacheControl())
+                && Objects.equals(contentDisposition(), other.contentDisposition())
+                && Objects.equals(contentEncoding(), other.contentEncoding())
+                && Objects.equals(contentLanguage(), other.contentLanguage())
+                && Objects.equals(contentRange(), other.contentRange()) && Objects.equals(contentType(), other.contentType())
+                && Objects.equals(expires(), other.expires())
+                && Objects.equals(websiteRedirectLocation(), other.websiteRedirectLocation())
+                && Objects.equals(serverSideEncryptionAsString(), other.serverSideEncryptionAsString())
+                && hasMetadata() == other.hasMetadata() && Objects.equals(metadata(), other.metadata())
+                && Objects.equals(sseCustomerAlgorithm(), other.sseCustomerAlgorithm())
+                && Objects.equals(sseCustomerKeyMD5(), other.sseCustomerKeyMD5())
+                && Objects.equals(ssekmsKeyId(), other.ssekmsKeyId())
+                && Objects.equals(bucketKeyEnabled(), other.bucketKeyEnabled())
+                && Objects.equals(storageClassAsString(), other.storageClassAsString())
+                && Objects.equals(requestChargedAsString(), other.requestChargedAsString())
+                && Objects.equals(replicationStatusAsString(), other.replicationStatusAsString())
+                && Objects.equals(partsCount(), other.partsCount()) && Objects.equals(tagCount(), other.tagCount())
+                && Objects.equals(objectLockModeAsString(), other.objectLockModeAsString())
+                && Objects.equals(objectLockRetainUntilDate(), other.objectLockRetainUntilDate())
+                && Objects.equals(objectLockLegalHoldStatusAsString(), other.objectLockLegalHoldStatusAsString())
+                && Objects.equals(expiresString(), other.expiresString())
+                && Objects.equals(ibmSSEKPEnabled(), other.ibmSSEKPEnabled())
+                && Objects.equals(ibmSSEKPCrk(), other.ibmSSEKPCrk())
+               && Objects.equals(retentionExpirationDate(), other.retentionExpirationDate())
+               && Objects.equals(retentionPeriod(), other.retentionPeriod())
+               && Objects.equals(retentionLegalHoldCount(), other.retentionLegalHoldCount());
+    }
+
+    /**
+     * Returns a string representation of this object. This is useful for testing and debugging. Sensitive data will be
+     * redacted from this string using a placeholder value.
+     */
+    @Override
+    public final String toString() {
+        return ToString.builder("GetObjectResponse").add("DeleteMarker", deleteMarker()).add("AcceptRanges", acceptRanges())
+                .add("Expiration", expiration()).add("Restore", restore()).add("LastModified", lastModified())
+                .add("ContentLength", contentLength()).add("ETag", eTag()).add("ChecksumCRC32", checksumCRC32())
+                .add("ChecksumCRC32C", checksumCRC32C()).add("ChecksumCRC64NVME", checksumCRC64NVME())
+                .add("ChecksumSHA1", checksumSHA1()).add("ChecksumSHA256", checksumSHA256())
+                .add("ChecksumType", checksumTypeAsString()).add("MissingMeta", missingMeta()).add("VersionId", versionId())
+                .add("CacheControl", cacheControl()).add("ContentDisposition", contentDisposition())
+                .add("ContentEncoding", contentEncoding()).add("ContentLanguage", contentLanguage())
+                .add("ContentRange", contentRange()).add("ContentType", contentType()).add("Expires", expires())
+                .add("WebsiteRedirectLocation", websiteRedirectLocation())
+                .add("ServerSideEncryption", serverSideEncryptionAsString()).add("Metadata", hasMetadata() ? metadata() : null)
+                .add("SSECustomerAlgorithm", sseCustomerAlgorithm()).add("SSECustomerKeyMD5", sseCustomerKeyMD5())
+                .add("SSEKMSKeyId", ssekmsKeyId() == null ? null : "*** Sensitive Data Redacted ***")
+                .add("BucketKeyEnabled", bucketKeyEnabled()).add("StorageClass", storageClassAsString())
+                .add("RequestCharged", requestChargedAsString()).add("ReplicationStatus", replicationStatusAsString())
+                .add("PartsCount", partsCount()).add("TagCount", tagCount()).add("ObjectLockMode", objectLockModeAsString())
+                .add("ObjectLockRetainUntilDate", objectLockRetainUntilDate())
+                .add("ObjectLockLegalHoldStatus", objectLockLegalHoldStatusAsString()).add("ExpiresString", expiresString())
+                .add("IBMSSEKPEnabled", ibmSSEKPEnabled())
+                .add("IBMSSEKPCrk", ibmSSEKPCrk()).add("RetentionExpirationDate", retentionExpirationDate())
+                .add("RetentionPeriod", retentionPeriod()).add("RetentionLegalHoldCount", retentionLegalHoldCount())
+                .build();
+
+    }
+
+    public final <T> Optional<T> getValueForField(String fieldName, Class<T> clazz) {
+        switch (fieldName) {
+        case "DeleteMarker":
+            return Optional.ofNullable(clazz.cast(deleteMarker()));
+        case "AcceptRanges":
+            return Optional.ofNullable(clazz.cast(acceptRanges()));
+        case "Expiration":
+            return Optional.ofNullable(clazz.cast(expiration()));
+        case "Restore":
+            return Optional.ofNullable(clazz.cast(restore()));
+        case "LastModified":
+            return Optional.ofNullable(clazz.cast(lastModified()));
+        case "ContentLength":
+            return Optional.ofNullable(clazz.cast(contentLength()));
+        case "ETag":
+            return Optional.ofNullable(clazz.cast(eTag()));
+        case "ChecksumCRC32":
+            return Optional.ofNullable(clazz.cast(checksumCRC32()));
+        case "ChecksumCRC32C":
+            return Optional.ofNullable(clazz.cast(checksumCRC32C()));
+        case "ChecksumCRC64NVME":
+            return Optional.ofNullable(clazz.cast(checksumCRC64NVME()));
+        case "ChecksumSHA1":
+            return Optional.ofNullable(clazz.cast(checksumSHA1()));
+        case "ChecksumSHA256":
+            return Optional.ofNullable(clazz.cast(checksumSHA256()));
+        case "ChecksumType":
+            return Optional.ofNullable(clazz.cast(checksumTypeAsString()));
+        case "MissingMeta":
+            return Optional.ofNullable(clazz.cast(missingMeta()));
+        case "VersionId":
+            return Optional.ofNullable(clazz.cast(versionId()));
+        case "CacheControl":
+            return Optional.ofNullable(clazz.cast(cacheControl()));
+        case "ContentDisposition":
+            return Optional.ofNullable(clazz.cast(contentDisposition()));
+        case "ContentEncoding":
+            return Optional.ofNullable(clazz.cast(contentEncoding()));
+        case "ContentLanguage":
+            return Optional.ofNullable(clazz.cast(contentLanguage()));
+        case "ContentRange":
+            return Optional.ofNullable(clazz.cast(contentRange()));
+        case "ContentType":
+            return Optional.ofNullable(clazz.cast(contentType()));
+        case "Expires":
+            return Optional.ofNullable(clazz.cast(expires()));
+        case "WebsiteRedirectLocation":
+            return Optional.ofNullable(clazz.cast(websiteRedirectLocation()));
+        case "ServerSideEncryption":
+            return Optional.ofNullable(clazz.cast(serverSideEncryptionAsString()));
+        case "Metadata":
+            return Optional.ofNullable(clazz.cast(metadata()));
+        case "SSECustomerAlgorithm":
+            return Optional.ofNullable(clazz.cast(sseCustomerAlgorithm()));
+        case "SSECustomerKeyMD5":
+            return Optional.ofNullable(clazz.cast(sseCustomerKeyMD5()));
+        case "SSEKMSKeyId":
+            return Optional.ofNullable(clazz.cast(ssekmsKeyId()));
+        case "BucketKeyEnabled":
+            return Optional.ofNullable(clazz.cast(bucketKeyEnabled()));
+        case "StorageClass":
+            return Optional.ofNullable(clazz.cast(storageClassAsString()));
+        case "RequestCharged":
+            return Optional.ofNullable(clazz.cast(requestChargedAsString()));
+        case "ReplicationStatus":
+            return Optional.ofNullable(clazz.cast(replicationStatusAsString()));
+        case "PartsCount":
+            return Optional.ofNullable(clazz.cast(partsCount()));
+        case "TagCount":
+            return Optional.ofNullable(clazz.cast(tagCount()));
+        case "ObjectLockMode":
+            return Optional.ofNullable(clazz.cast(objectLockModeAsString()));
+        case "ObjectLockRetainUntilDate":
+            return Optional.ofNullable(clazz.cast(objectLockRetainUntilDate()));
+        case "ObjectLockLegalHoldStatus":
+            return Optional.ofNullable(clazz.cast(objectLockLegalHoldStatusAsString()));
+        case "ExpiresString":
+            return Optional.ofNullable(clazz.cast(expiresString()));
+        case "IBMSSEKPEnabled":
+            return Optional.of(clazz.cast(ibmSSEKPEnabled()));
+        case "IBMSSEKPCrk":
+            return Optional.ofNullable(clazz.cast(ibmSSEKPCrk()));
+        case "RetentionExpirationDate":
+            return Optional.ofNullable(clazz.cast(retentionExpirationDate()));
+        case "RetentionPeriod":
+            return Optional.ofNullable(clazz.cast(retentionPeriod()));
+        case "RetentionLegalHoldCount":
+            return Optional.ofNullable(clazz.cast(retentionLegalHoldCount()));
+        default:
+            return Optional.empty();
+        }
+    }
+
+    @Override
+    public final List<SdkField<?>> sdkFields() {
+        return SDK_FIELDS;
+    }
+
+    @Override
+    public final Map<String, SdkField<?>> sdkFieldNameToField() {
+        return SDK_NAME_TO_FIELD;
+    }
+
+    private static Map<String, SdkField<?>> memberNameToFieldInitializer() {
+        Map<String, SdkField<?>> map = new HashMap<>();
+        map.put("x-amz-delete-marker", DELETE_MARKER_FIELD);
+        map.put("accept-ranges", ACCEPT_RANGES_FIELD);
+        map.put("x-amz-expiration", EXPIRATION_FIELD);
+        map.put("x-amz-restore", RESTORE_FIELD);
+        map.put("Last-Modified", LAST_MODIFIED_FIELD);
+        map.put("Content-Length", CONTENT_LENGTH_FIELD);
+        map.put("ETag", E_TAG_FIELD);
+        map.put("x-amz-checksum-crc32", CHECKSUM_CRC32_FIELD);
+        map.put("x-amz-checksum-crc32c", CHECKSUM_CRC32_C_FIELD);
+        map.put("x-amz-checksum-crc64nvme", CHECKSUM_CRC64_NVME_FIELD);
+        map.put("x-amz-checksum-sha1", CHECKSUM_SHA1_FIELD);
+        map.put("x-amz-checksum-sha256", CHECKSUM_SHA256_FIELD);
+        map.put("x-amz-checksum-type", CHECKSUM_TYPE_FIELD);
+        map.put("x-amz-missing-meta", MISSING_META_FIELD);
+        map.put("x-amz-version-id", VERSION_ID_FIELD);
+        map.put("Cache-Control", CACHE_CONTROL_FIELD);
+        map.put("Content-Disposition", CONTENT_DISPOSITION_FIELD);
+        map.put("Content-Encoding", CONTENT_ENCODING_FIELD);
+        map.put("Content-Language", CONTENT_LANGUAGE_FIELD);
+        map.put("Content-Range", CONTENT_RANGE_FIELD);
+        map.put("Content-Type", CONTENT_TYPE_FIELD);
+        map.put("Expires", EXPIRES_STRING_FIELD);
+        map.put("x-amz-website-redirect-location", WEBSITE_REDIRECT_LOCATION_FIELD);
+        map.put("x-amz-server-side-encryption", SERVER_SIDE_ENCRYPTION_FIELD);
+        map.put("x-amz-meta-", METADATA_FIELD);
+        map.put("x-amz-server-side-encryption-customer-algorithm", SSE_CUSTOMER_ALGORITHM_FIELD);
+        map.put("x-amz-server-side-encryption-customer-key-MD5", SSE_CUSTOMER_KEY_MD5_FIELD);
+        map.put("x-amz-server-side-encryption-aws-kms-key-id", SSEKMS_KEY_ID_FIELD);
+        map.put("x-amz-server-side-encryption-bucket-key-enabled", BUCKET_KEY_ENABLED_FIELD);
+        map.put("x-amz-storage-class", STORAGE_CLASS_FIELD);
+        map.put("x-amz-request-charged", REQUEST_CHARGED_FIELD);
+        map.put("x-amz-replication-status", REPLICATION_STATUS_FIELD);
+        map.put("x-amz-mp-parts-count", PARTS_COUNT_FIELD);
+        map.put("x-amz-tagging-count", TAG_COUNT_FIELD);
+        map.put("x-amz-object-lock-mode", OBJECT_LOCK_MODE_FIELD);
+        map.put("x-amz-object-lock-retain-until-date", OBJECT_LOCK_RETAIN_UNTIL_DATE_FIELD);
+        map.put("x-amz-object-lock-legal-hold", OBJECT_LOCK_LEGAL_HOLD_STATUS_FIELD);
+        map.put("ibm-sse-kp-enabled", IBM_SSE_KP_ENABLED_FILED);
+        map.put("ibm-sse-kp-crk-id", IBM_SSE_KP_CRK_FILED);
+        map.put("retention-expiration-date", IBM_RETENTION_EXPIRATION_DATE_FIELD);
+        map.put("retention-legal-hold-count", IBM_RETENTION_LEGAL_HOLD_COUNT_FIELD);
+        map.put("retention-period", IBM_RETENTION_PERIOD_FIELD);
+        return Collections.unmodifiableMap(map);
+    }
+
+    private static <T> Function<Object, T> getter(Function<GetObjectResponse, T> g) {
+        return obj -> g.apply((GetObjectResponse) obj);
+    }
+
+    private static <T> BiConsumer<Object, T> setter(BiConsumer<Builder, T> s) {
+        return (obj, val) -> s.accept((Builder) obj, val);
+    }
+
+    @Mutable
+    @NotThreadSafe
+    public interface Builder extends S3Response.Builder, SdkPojo, CopyableBuilder<Builder, GetObjectResponse> {
+        /**
+         * <p>
+         * Indicates whether the object retrieved was (true) or was not (false) a Delete Marker. If false, this response
+         * header does not appear in the response.
+         * </p>
+         * <note>
+         * <ul>
+         * <li>
+         * <p>
+         * If the current version of the object is a delete marker, Amazon S3 behaves as if the object was deleted and
+         * includes <code>x-amz-delete-marker: true</code> in the response.
+         * </p>
+         * </li>
+         * <li>
+         * <p>
+         * If the specified version in the request is a delete marker, the response returns a
+         * <code>405 Method Not Allowed</code> error and the <code>Last-Modified: timestamp</code> response header.
+         * </p>
+         * </li>
+         * </ul>
+         * </note>
+         * 
+         * @param deleteMarker
+         *        Indicates whether the object retrieved was (true) or was not (false) a Delete Marker. If false, this
+         *        response header does not appear in the response.</p> <note>
+         *        <ul>
+         *        <li>
+         *        <p>
+         *        If the current version of the object is a delete marker, Amazon S3 behaves as if the object was
+         *        deleted and includes <code>x-amz-delete-marker: true</code> in the response.
+         *        </p>
+         *        </li>
+         *        <li>
+         *        <p>
+         *        If the specified version in the request is a delete marker, the response returns a
+         *        <code>405 Method Not Allowed</code> error and the <code>Last-Modified: timestamp</code> response
+         *        header.
+         *        </p>
+         *        </li>
+         *        </ul>
+         * @return Returns a reference to this object so that method calls can be chained together.
+         */
+        Builder deleteMarker(Boolean deleteMarker);
+
+        /**
+         * <p>
+         * Indicates that a range of bytes was specified in the request.
+         * </p>
+         * 
+         * @param acceptRanges
+         *        Indicates that a range of bytes was specified in the request.
+         * @return Returns a reference to this object so that method calls can be chained together.
+         */
+        Builder acceptRanges(String acceptRanges);
+
+        /**
+         * <p>
+         * If the object expiration is configured (see <a
+         * href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketLifecycleConfiguration.html">
+         * <code>PutBucketLifecycleConfiguration</code> </a>), the response includes this header. It includes the
+         * <code>expiry-date</code> and <code>rule-id</code> key-value pairs providing object expiration information.
+         * The value of the <code>rule-id</code> is URL-encoded.
+         * </p>
+         * <note>
+         * <p>
+         * Object expiration information is not returned in directory buckets and this header returns the value "
+         * <code>NotImplemented</code>" in all responses for directory buckets.
+         * </p>
+         * </note>
+         * 
+         * @param expiration
+         *        If the object expiration is configured (see <a
+         *        href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketLifecycleConfiguration.html">
+         *        <code>PutBucketLifecycleConfiguration</code> </a>), the response includes this header. It includes the
+         *        <code>expiry-date</code> and <code>rule-id</code> key-value pairs providing object expiration
+         *        information. The value of the <code>rule-id</code> is URL-encoded.</p> <note>
+         *        <p>
+         *        Object expiration information is not returned in directory buckets and this header returns the value "
+         *        <code>NotImplemented</code>" in all responses for directory buckets.
+         *        </p>
+         * @return Returns a reference to this object so that method calls can be chained together.
+         */
+        Builder expiration(String expiration);
+
+        /**
+         * <p>
+         * Provides information about object restoration action and expiration time of the restored object copy.
+         * </p>
+         * <note>
+         * <p>
+         * This functionality is not supported for directory buckets. Directory buckets only support
+         * <code>EXPRESS_ONEZONE</code> (the S3 Express One Zone storage class) in Availability Zones and
+         * <code>ONEZONE_IA</code> (the S3 One Zone-Infrequent Access storage class) in Dedicated Local Zones.
+         * </p>
+         * </note>
+         * 
+         * @param restore
+         *        Provides information about object restoration action and expiration time of the restored object
+         *        copy.</p> <note>
+         *        <p>
+         *        This functionality is not supported for directory buckets. Directory buckets only support
+         *        <code>EXPRESS_ONEZONE</code> (the S3 Express One Zone storage class) in Availability Zones and
+         *        <code>ONEZONE_IA</code> (the S3 One Zone-Infrequent Access storage class) in Dedicated Local Zones.
+         *        </p>
+         * @return Returns a reference to this object so that method calls can be chained together.
+         */
+        Builder restore(String restore);
+
+        /**
+         * <p>
+         * Date and time when the object was last modified.
+         * </p>
+         * <p>
+         * <b>General purpose buckets </b> - When you specify a <code>versionId</code> of the object in your request, if
+         * the specified version in the request is a delete marker, the response returns a
+         * <code>405 Method Not Allowed</code> error and the <code>Last-Modified: timestamp</code> response header.
+         * </p>
+         * 
+         * @param lastModified
+         *        Date and time when the object was last modified.</p>
+         *        <p>
+         *        <b>General purpose buckets </b> - When you specify a <code>versionId</code> of the object in your
+         *        request, if the specified version in the request is a delete marker, the response returns a
+         *        <code>405 Method Not Allowed</code> error and the <code>Last-Modified: timestamp</code> response
+         *        header.
+         * @return Returns a reference to this object so that method calls can be chained together.
+         */
+        Builder lastModified(Instant lastModified);
+
+        /**
+         * <p>
+         * Size of the body in bytes.
+         * </p>
+         * 
+         * @param contentLength
+         *        Size of the body in bytes.
+         * @return Returns a reference to this object so that method calls can be chained together.
+         */
+        Builder contentLength(Long contentLength);
+
+        /**
+         * <p>
+         * An entity tag (ETag) is an opaque identifier assigned by a web server to a specific version of a resource
+         * found at a URL.
+         * </p>
+         * 
+         * @param eTag
+         *        An entity tag (ETag) is an opaque identifier assigned by a web server to a specific version of a
+         *        resource found at a URL.
+         * @return Returns a reference to this object so that method calls can be chained together.
+         */
+        Builder eTag(String eTag);
+
+        /**
+         * <p>
+         * The Base64 encoded, 32-bit <code>CRC32</code> checksum of the object. This checksum is only present if the
+         * object was uploaded with the object. For more information, see <a
+         * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/checking-object-integrity.html"> Checking object
+         * integrity</a> in the <i>Amazon S3 User Guide</i>.
+         * </p>
+         * 
+         * @param checksumCRC32
+         *        The Base64 encoded, 32-bit <code>CRC32</code> checksum of the object. This checksum is only present if
+         *        the object was uploaded with the object. For more information, see <a
+         *        href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/checking-object-integrity.html"> Checking
+         *        object integrity</a> in the <i>Amazon S3 User Guide</i>.
+         * @return Returns a reference to this object so that method calls can be chained together.
+         */
+        Builder checksumCRC32(String checksumCRC32);
+
+        /**
+         * <p>
+         * The Base64 encoded, 32-bit <code>CRC32C</code> checksum of the object. This will only be present if the
+         * object was uploaded with the object. For more information, see <a
+         * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/checking-object-integrity.html"> Checking object
+         * integrity</a> in the <i>Amazon S3 User Guide</i>.
+         * </p>
+         * 
+         * @param checksumCRC32C
+         *        The Base64 encoded, 32-bit <code>CRC32C</code> checksum of the object. This will only be present if
+         *        the object was uploaded with the object. For more information, see <a
+         *        href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/checking-object-integrity.html"> Checking
+         *        object integrity</a> in the <i>Amazon S3 User Guide</i>.
+         * @return Returns a reference to this object so that method calls can be chained together.
+         */
+        Builder checksumCRC32C(String checksumCRC32C);
+
+        /**
+         * <p>
+         * The Base64 encoded, 64-bit <code>CRC64NVME</code> checksum of the object. For more information, see <a
+         * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/checking-object-integrity.html">Checking object
+         * integrity in the Amazon S3 User Guide</a>.
+         * </p>
+         * 
+         * @param checksumCRC64NVME
+         *        The Base64 encoded, 64-bit <code>CRC64NVME</code> checksum of the object. For more information, see <a
+         *        href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/checking-object-integrity.html">Checking
+         *        object integrity in the Amazon S3 User Guide</a>.
+         * @return Returns a reference to this object so that method calls can be chained together.
+         */
+        Builder checksumCRC64NVME(String checksumCRC64NVME);
+
+        /**
+         * <p>
+         * The Base64 encoded, 160-bit <code>SHA1</code> digest of the object. This will only be present if the object
+         * was uploaded with the object. For more information, see <a
+         * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/checking-object-integrity.html"> Checking object
+         * integrity</a> in the <i>Amazon S3 User Guide</i>.
+         * </p>
+         * 
+         * @param checksumSHA1
+         *        The Base64 encoded, 160-bit <code>SHA1</code> digest of the object. This will only be present if the
+         *        object was uploaded with the object. For more information, see <a
+         *        href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/checking-object-integrity.html"> Checking
+         *        object integrity</a> in the <i>Amazon S3 User Guide</i>.
+         * @return Returns a reference to this object so that method calls can be chained together.
+         */
+        Builder checksumSHA1(String checksumSHA1);
+
+        /**
+         * <p>
+         * The Base64 encoded, 256-bit <code>SHA256</code> digest of the object. This will only be present if the object
+         * was uploaded with the object. For more information, see <a
+         * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/checking-object-integrity.html"> Checking object
+         * integrity</a> in the <i>Amazon S3 User Guide</i>.
+         * </p>
+         * 
+         * @param checksumSHA256
+         *        The Base64 encoded, 256-bit <code>SHA256</code> digest of the object. This will only be present if the
+         *        object was uploaded with the object. For more information, see <a
+         *        href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/checking-object-integrity.html"> Checking
+         *        object integrity</a> in the <i>Amazon S3 User Guide</i>.
+         * @return Returns a reference to this object so that method calls can be chained together.
+         */
+        Builder checksumSHA256(String checksumSHA256);
+
+        /**
+         * <p>
+         * The checksum type, which determines how part-level checksums are combined to create an object-level checksum
+         * for multipart objects. You can use this header response to verify that the checksum type that is received is
+         * the same checksum type that was specified in the <code>CreateMultipartUpload</code> request. For more
+         * information, see <a
+         * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/checking-object-integrity.html">Checking object
+         * integrity</a> in the <i>Amazon S3 User Guide</i>.
+         * </p>
+         * 
+         * @param checksumType
+         *        The checksum type, which determines how part-level checksums are combined to create an object-level
+         *        checksum for multipart objects. You can use this header response to verify that the checksum type that
+         *        is received is the same checksum type that was specified in the <code>CreateMultipartUpload</code>
+         *        request. For more information, see <a
+         *        href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/checking-object-integrity.html">Checking
+         *        object integrity</a> in the <i>Amazon S3 User Guide</i>.
+         * @see ChecksumType
+         * @return Returns a reference to this object so that method calls can be chained together.
+         * @see ChecksumType
+         */
+        Builder checksumType(String checksumType);
+
+        /**
+         * <p>
+         * The checksum type, which determines how part-level checksums are combined to create an object-level checksum
+         * for multipart objects. You can use this header response to verify that the checksum type that is received is
+         * the same checksum type that was specified in the <code>CreateMultipartUpload</code> request. For more
+         * information, see <a
+         * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/checking-object-integrity.html">Checking object
+         * integrity</a> in the <i>Amazon S3 User Guide</i>.
+         * </p>
+         * 
+         * @param checksumType
+         *        The checksum type, which determines how part-level checksums are combined to create an object-level
+         *        checksum for multipart objects. You can use this header response to verify that the checksum type that
+         *        is received is the same checksum type that was specified in the <code>CreateMultipartUpload</code>
+         *        request. For more information, see <a
+         *        href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/checking-object-integrity.html">Checking
+         *        object integrity</a> in the <i>Amazon S3 User Guide</i>.
+         * @see ChecksumType
+         * @return Returns a reference to this object so that method calls can be chained together.
+         * @see ChecksumType
+         */
+        Builder checksumType(ChecksumType checksumType);
+
+        /**
+         * <p>
+         * This is set to the number of metadata entries not returned in the headers that are prefixed with
+         * <code>x-amz-meta-</code>. This can happen if you create metadata using an API like SOAP that supports more
+         * flexible metadata than the REST API. For example, using SOAP, you can create metadata whose values are not
+         * legal HTTP headers.
+         * </p>
+         * <note>
+         * <p>
+         * This functionality is not supported for directory buckets.
+         * </p>
+         * </note>
+         * 
+         * @param missingMeta
+         *        This is set to the number of metadata entries not returned in the headers that are prefixed with
+         *        <code>x-amz-meta-</code>. This can happen if you create metadata using an API like SOAP that supports
+         *        more flexible metadata than the REST API. For example, using SOAP, you can create metadata whose
+         *        values are not legal HTTP headers.</p> <note>
+         *        <p>
+         *        This functionality is not supported for directory buckets.
+         *        </p>
+         * @return Returns a reference to this object so that method calls can be chained together.
+         */
+        Builder missingMeta(Integer missingMeta);
+
+        /**
+         * <p>
+         * Version ID of the object.
+         * </p>
+         * <note>
+         * <p>
+         * This functionality is not supported for directory buckets.
+         * </p>
+         * </note>
+         * 
+         * @param versionId
+         *        Version ID of the object.</p> <note>
+         *        <p>
+         *        This functionality is not supported for directory buckets.
+         *        </p>
+         * @return Returns a reference to this object so that method calls can be chained together.
+         */
+        Builder versionId(String versionId);
+
+        /**
+         * <p>
+         * Specifies caching behavior along the request/reply chain.
+         * </p>
+         * 
+         * @param cacheControl
+         *        Specifies caching behavior along the request/reply chain.
+         * @return Returns a reference to this object so that method calls can be chained together.
+         */
+        Builder cacheControl(String cacheControl);
+
+        /**
+         * <p>
+         * Specifies presentational information for the object.
+         * </p>
+         * 
+         * @param contentDisposition
+         *        Specifies presentational information for the object.
+         * @return Returns a reference to this object so that method calls can be chained together.
+         */
+        Builder contentDisposition(String contentDisposition);
+
+        /**
+         * <p>
+         * Indicates what content encodings have been applied to the object and thus what decoding mechanisms must be
+         * applied to obtain the media-type referenced by the Content-Type header field.
+         * </p>
+         * 
+         * @param contentEncoding
+         *        Indicates what content encodings have been applied to the object and thus what decoding mechanisms
+         *        must be applied to obtain the media-type referenced by the Content-Type header field.
+         * @return Returns a reference to this object so that method calls can be chained together.
+         */
+        Builder contentEncoding(String contentEncoding);
+
+        /**
+         * <p>
+         * The language the content is in.
+         * </p>
+         * 
+         * @param contentLanguage
+         *        The language the content is in.
+         * @return Returns a reference to this object so that method calls can be chained together.
+         */
+        Builder contentLanguage(String contentLanguage);
+
+        /**
+         * <p>
+         * The portion of the object returned in the response.
+         * </p>
+         * 
+         * @param contentRange
+         *        The portion of the object returned in the response.
+         * @return Returns a reference to this object so that method calls can be chained together.
+         */
+        Builder contentRange(String contentRange);
+
+        /**
+         * <p>
+         * A standard MIME type describing the format of the object data.
+         * </p>
+         * 
+         * @param contentType
+         *        A standard MIME type describing the format of the object data.
+         * @return Returns a reference to this object so that method calls can be chained together.
+         */
+        Builder contentType(String contentType);
+
+        /**
+         * <p>
+         * The date and time at which the object is no longer cacheable.
+         * </p>
+         * 
+         * @param expires
+         *        The date and time at which the object is no longer cacheable.
+         * @return Returns a reference to this object so that method calls can be chained together.
+         * @deprecated Usage of the Expires field is deprecated in favor of the more flexible and less error prone
+         *             ExpiresString
+         */
+        @Deprecated
+        Builder expires(Instant expires);
+
+        /**
+         * <p>
+         * If the bucket is configured as a website, redirects requests for this object to another object in the same
+         * bucket or to an external URL. Amazon S3 stores the value of this header in the object metadata.
+         * </p>
+         * <note>
+         * <p>
+         * This functionality is not supported for directory buckets.
+         * </p>
+         * </note>
+         * 
+         * @param websiteRedirectLocation
+         *        If the bucket is configured as a website, redirects requests for this object to another object in the
+         *        same bucket or to an external URL. Amazon S3 stores the value of this header in the object
+         *        metadata.</p> <note>
+         *        <p>
+         *        This functionality is not supported for directory buckets.
+         *        </p>
+         * @return Returns a reference to this object so that method calls can be chained together.
+         */
+        Builder websiteRedirectLocation(String websiteRedirectLocation);
+
+        /**
+         * <p>
+         * The server-side encryption algorithm used when you store this object in Amazon S3.
+         * </p>
+         * 
+         * @param serverSideEncryption
+         *        The server-side encryption algorithm used when you store this object in Amazon S3.
+         * @see ServerSideEncryption
+         * @return Returns a reference to this object so that method calls can be chained together.
+         * @see ServerSideEncryption
+         */
+        Builder serverSideEncryption(String serverSideEncryption);
+
+        /**
+         * <p>
+         * The server-side encryption algorithm used when you store this object in Amazon S3.
+         * </p>
+         * 
+         * @param serverSideEncryption
+         *        The server-side encryption algorithm used when you store this object in Amazon S3.
+         * @see ServerSideEncryption
+         * @return Returns a reference to this object so that method calls can be chained together.
+         * @see ServerSideEncryption
+         */
+        Builder serverSideEncryption(ServerSideEncryption serverSideEncryption);
+
+        /**
+         * <p>
+         * A map of metadata to store with the object in S3.
+         * </p>
+         * 
+         * @param metadata
+         *        A map of metadata to store with the object in S3.
+         * @return Returns a reference to this object so that method calls can be chained together.
+         */
+        Builder metadata(Map<String, String> metadata);
+
+        /**
+         * <p>
+         * If server-side encryption with a customer-provided encryption key was requested, the response will include
+         * this header to confirm the encryption algorithm that's used.
+         * </p>
+         * <note>
+         * <p>
+         * This functionality is not supported for directory buckets.
+         * </p>
+         * </note>
+         * 
+         * @param sseCustomerAlgorithm
+         *        If server-side encryption with a customer-provided encryption key was requested, the response will
+         *        include this header to confirm the encryption algorithm that's used.</p> <note>
+         *        <p>
+         *        This functionality is not supported for directory buckets.
+         *        </p>
+         * @return Returns a reference to this object so that method calls can be chained together.
+         */
+        Builder sseCustomerAlgorithm(String sseCustomerAlgorithm);
+
+        /**
+         * <p>
+         * If server-side encryption with a customer-provided encryption key was requested, the response will include
+         * this header to provide the round-trip message integrity verification of the customer-provided encryption key.
+         * </p>
+         * <note>
+         * <p>
+         * This functionality is not supported for directory buckets.
+         * </p>
+         * </note>
+         * 
+         * @param sseCustomerKeyMD5
+         *        If server-side encryption with a customer-provided encryption key was requested, the response will
+         *        include this header to provide the round-trip message integrity verification of the customer-provided
+         *        encryption key.</p> <note>
+         *        <p>
+         *        This functionality is not supported for directory buckets.
+         *        </p>
+         * @return Returns a reference to this object so that method calls can be chained together.
+         */
+        Builder sseCustomerKeyMD5(String sseCustomerKeyMD5);
+
+        /**
+         * <p>
+         * If present, indicates the ID of the KMS key that was used for object encryption.
+         * </p>
+         * 
+         * @param ssekmsKeyId
+         *        If present, indicates the ID of the KMS key that was used for object encryption.
+         * @return Returns a reference to this object so that method calls can be chained together.
+         */
+        Builder ssekmsKeyId(String ssekmsKeyId);
+
+        /**
+         * <p>
+         * Indicates whether the object uses an S3 Bucket Key for server-side encryption with Key Management Service
+         * (KMS) keys (SSE-KMS).
+         * </p>
+         * 
+         * @param bucketKeyEnabled
+         *        Indicates whether the object uses an S3 Bucket Key for server-side encryption with Key Management
+         *        Service (KMS) keys (SSE-KMS).
+         * @return Returns a reference to this object so that method calls can be chained together.
+         */
+        Builder bucketKeyEnabled(Boolean bucketKeyEnabled);
+
+        /**
+         * <p>
+         * Provides storage class information of the object. Amazon S3 returns this header for all objects except for S3
+         * Standard storage class objects.
+         * </p>
+         * <note>
+         * <p>
+         * <b>Directory buckets </b> - Directory buckets only support <code>EXPRESS_ONEZONE</code> (the S3 Express One
+         * Zone storage class) in Availability Zones and <code>ONEZONE_IA</code> (the S3 One Zone-Infrequent Access
+         * storage class) in Dedicated Local Zones.
+         * </p>
+         * </note>
+         * 
+         * @param storageClass
+         *        Provides storage class information of the object. Amazon S3 returns this header for all objects except
+         *        for S3 Standard storage class objects.</p> <note>
+         *        <p>
+         *        <b>Directory buckets </b> - Directory buckets only support <code>EXPRESS_ONEZONE</code> (the S3
+         *        Express One Zone storage class) in Availability Zones and <code>ONEZONE_IA</code> (the S3 One
+         *        Zone-Infrequent Access storage class) in Dedicated Local Zones.
+         *        </p>
+         * @see StorageClass
+         * @return Returns a reference to this object so that method calls can be chained together.
+         * @see StorageClass
+         */
+        Builder storageClass(String storageClass);
+
+        /**
+         * <p>
+         * Provides storage class information of the object. Amazon S3 returns this header for all objects except for S3
+         * Standard storage class objects.
+         * </p>
+         * <note>
+         * <p>
+         * <b>Directory buckets </b> - Directory buckets only support <code>EXPRESS_ONEZONE</code> (the S3 Express One
+         * Zone storage class) in Availability Zones and <code>ONEZONE_IA</code> (the S3 One Zone-Infrequent Access
+         * storage class) in Dedicated Local Zones.
+         * </p>
+         * </note>
+         * 
+         * @param storageClass
+         *        Provides storage class information of the object. Amazon S3 returns this header for all objects except
+         *        for S3 Standard storage class objects.</p> <note>
+         *        <p>
+         *        <b>Directory buckets </b> - Directory buckets only support <code>EXPRESS_ONEZONE</code> (the S3
+         *        Express One Zone storage class) in Availability Zones and <code>ONEZONE_IA</code> (the S3 One
+         *        Zone-Infrequent Access storage class) in Dedicated Local Zones.
+         *        </p>
+         * @see StorageClass
+         * @return Returns a reference to this object so that method calls can be chained together.
+         * @see StorageClass
+         */
+        Builder storageClass(StorageClass storageClass);
+
+        /**
+         * Sets the value of the RequestCharged property for this object.
+         *
+         * @param requestCharged
+         *        The new value for the RequestCharged property for this object.
+         * @see RequestCharged
+         * @return Returns a reference to this object so that method calls can be chained together.
+         * @see RequestCharged
+         */
+        Builder requestCharged(String requestCharged);
+
+        /**
+         * Sets the value of the RequestCharged property for this object.
+         *
+         * @param requestCharged
+         *        The new value for the RequestCharged property for this object.
+         * @see RequestCharged
+         * @return Returns a reference to this object so that method calls can be chained together.
+         * @see RequestCharged
+         */
+        Builder requestCharged(RequestCharged requestCharged);
+
+        /**
+         * <p>
+         * Amazon S3 can return this if your request involves a bucket that is either a source or destination in a
+         * replication rule.
+         * </p>
+         * <note>
+         * <p>
+         * This functionality is not supported for directory buckets.
+         * </p>
+         * </note>
+         * 
+         * @param replicationStatus
+         *        Amazon S3 can return this if your request involves a bucket that is either a source or destination in
+         *        a replication rule.</p> <note>
+         *        <p>
+         *        This functionality is not supported for directory buckets.
+         *        </p>
+         * @see ReplicationStatus
+         * @return Returns a reference to this object so that method calls can be chained together.
+         * @see ReplicationStatus
+         */
+        Builder replicationStatus(String replicationStatus);
+
+        /**
+         * <p>
+         * Amazon S3 can return this if your request involves a bucket that is either a source or destination in a
+         * replication rule.
+         * </p>
+         * <note>
+         * <p>
+         * This functionality is not supported for directory buckets.
+         * </p>
+         * </note>
+         * 
+         * @param replicationStatus
+         *        Amazon S3 can return this if your request involves a bucket that is either a source or destination in
+         *        a replication rule.</p> <note>
+         *        <p>
+         *        This functionality is not supported for directory buckets.
+         *        </p>
+         * @see ReplicationStatus
+         * @return Returns a reference to this object so that method calls can be chained together.
+         * @see ReplicationStatus
+         */
+        Builder replicationStatus(ReplicationStatus replicationStatus);
+
+        /**
+         * <p>
+         * The count of parts this object has. This value is only returned if you specify <code>partNumber</code> in
+         * your request and the object was uploaded as a multipart upload.
+         * </p>
+         * 
+         * @param partsCount
+         *        The count of parts this object has. This value is only returned if you specify <code>partNumber</code>
+         *        in your request and the object was uploaded as a multipart upload.
+         * @return Returns a reference to this object so that method calls can be chained together.
+         */
+        Builder partsCount(Integer partsCount);
+
+        /**
+         * <p>
+         * The number of tags, if any, on the object, when you have the relevant permission to read object tags.
+         * </p>
+         * <p>
+         * You can use <a
+         * href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetObjectTagging.html">GetObjectTagging</a> to
+         * retrieve the tag set associated with an object.
+         * </p>
+         * <note>
+         * <p>
+         * This functionality is not supported for directory buckets.
+         * </p>
+         * </note>
+         * 
+         * @param tagCount
+         *        The number of tags, if any, on the object, when you have the relevant permission to read object
+         *        tags.</p>
+         *        <p>
+         *        You can use <a
+         *        href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetObjectTagging.html">GetObjectTagging</a>
+         *        to retrieve the tag set associated with an object.
+         *        </p>
+         *        <note>
+         *        <p>
+         *        This functionality is not supported for directory buckets.
+         *        </p>
+         * @return Returns a reference to this object so that method calls can be chained together.
+         */
+        Builder tagCount(Integer tagCount);
+
+        /**
+         * <p>
+         * The Object Lock mode that's currently in place for this object.
+         * </p>
+         * <note>
+         * <p>
+         * This functionality is not supported for directory buckets.
+         * </p>
+         * </note>
+         * 
+         * @param objectLockMode
+         *        The Object Lock mode that's currently in place for this object.</p> <note>
+         *        <p>
+         *        This functionality is not supported for directory buckets.
+         *        </p>
+         * @see ObjectLockMode
+         * @return Returns a reference to this object so that method calls can be chained together.
+         * @see ObjectLockMode
+         */
+        Builder objectLockMode(String objectLockMode);
+
+        /**
+         * <p>
+         * The Object Lock mode that's currently in place for this object.
+         * </p>
+         * <note>
+         * <p>
+         * This functionality is not supported for directory buckets.
+         * </p>
+         * </note>
+         * 
+         * @param objectLockMode
+         *        The Object Lock mode that's currently in place for this object.</p> <note>
+         *        <p>
+         *        This functionality is not supported for directory buckets.
+         *        </p>
+         * @see ObjectLockMode
+         * @return Returns a reference to this object so that method calls can be chained together.
+         * @see ObjectLockMode
+         */
+        Builder objectLockMode(ObjectLockMode objectLockMode);
+
+        /**
+         * <p>
+         * The date and time when this object's Object Lock will expire.
+         * </p>
+         * <note>
+         * <p>
+         * This functionality is not supported for directory buckets.
+         * </p>
+         * </note>
+         * 
+         * @param objectLockRetainUntilDate
+         *        The date and time when this object's Object Lock will expire.</p> <note>
+         *        <p>
+         *        This functionality is not supported for directory buckets.
+         *        </p>
+         * @return Returns a reference to this object so that method calls can be chained together.
+         */
+        Builder objectLockRetainUntilDate(Instant objectLockRetainUntilDate);
+
+        /**
+         * <p>
+         * Indicates whether this object has an active legal hold. This field is only returned if you have permission to
+         * view an object's legal hold status.
+         * </p>
+         * <note>
+         * <p>
+         * This functionality is not supported for directory buckets.
+         * </p>
+         * </note>
+         * 
+         * @param objectLockLegalHoldStatus
+         *        Indicates whether this object has an active legal hold. This field is only returned if you have
+         *        permission to view an object's legal hold status. </p> <note>
+         *        <p>
+         *        This functionality is not supported for directory buckets.
+         *        </p>
+         * @see ObjectLockLegalHoldStatus
+         * @return Returns a reference to this object so that method calls can be chained together.
+         * @see ObjectLockLegalHoldStatus
+         */
+        Builder objectLockLegalHoldStatus(String objectLockLegalHoldStatus);
+
+        /**
+         * <p>
+         * Indicates whether this object has an active legal hold. This field is only returned if you have permission to
+         * view an object's legal hold status.
+         * </p>
+         * <note>
+         * <p>
+         * This functionality is not supported for directory buckets.
+         * </p>
+         * </note>
+         * 
+         * @param objectLockLegalHoldStatus
+         *        Indicates whether this object has an active legal hold. This field is only returned if you have
+         *        permission to view an object's legal hold status. </p> <note>
+         *        <p>
+         *        This functionality is not supported for directory buckets.
+         *        </p>
+         * @see ObjectLockLegalHoldStatus
+         * @return Returns a reference to this object so that method calls can be chained together.
+         * @see ObjectLockLegalHoldStatus
+         */
+        Builder objectLockLegalHoldStatus(ObjectLockLegalHoldStatus objectLockLegalHoldStatus);
+
+        /**
+         * <p>
+         * The date and time at which the object is no longer cacheable
+         * </p>
+         * 
+         * @param expiresString
+         *        The date and time at which the object is no longer cacheable
+         * @return Returns a reference to this object so that method calls can be chained together.
+         */
+        Builder expiresString(String expiresString);
+
+        /**
+         * Sets if KP is enabled
+         * @param ibmSSEKPEnabled
+         */
+       Builder ibmSSEKPEnabled (Boolean ibmSSEKPEnabled);
+
+        /**
+         * Sets the CRK value
+         * @param ibmSSEKPCrk
+         */
+       Builder ibmSSEKPCrk (String ibmSSEKPCrk);
+
+        /**
+         * <p>
+         *  Date on which it will be legal to delete or modify the object.
+         * </p>
+         *
+         * @param retentionExpirationDate
+         *
+         * @return Returns a reference to this object so that method calls can be chained together.
+         */
+        Builder retentionExpirationDate(Instant retentionExpirationDate);
+
+        /**
+         * <p>
+         * The number of legal holds applied to the object.
+         * </p>
+         *
+         * @param retentionLegalHoldCount
+         *
+         * @return Returns a reference to this object so that method calls can be chained together.
+         */
+        Builder retentionLegalHoldCount(Integer retentionLegalHoldCount);
+
+        /**
+         * <p>
+         * Retention period to store on the object in seconds.
+         * </p>
+         *
+         * @param retentionPeriod
+         *
+         * @return Returns a reference to this object so that method calls can be chained together.
+         */
+        Builder retentionPeriod(Long retentionPeriod);
+    }
+
+    static final class BuilderImpl extends S3Response.BuilderImpl implements Builder {
+        private Boolean deleteMarker;
+
+        private String acceptRanges;
+
+        private String expiration;
+
+        private String restore;
+
+        private Instant lastModified;
+
+        private Long contentLength;
+
+        private String eTag;
+
+        private String checksumCRC32;
+
+        private String checksumCRC32C;
+
+        private String checksumCRC64NVME;
+
+        private String checksumSHA1;
+
+        private String checksumSHA256;
+
+        private String checksumType;
+
+        private Integer missingMeta;
+
+        private String versionId;
+
+        private String cacheControl;
+
+        private String contentDisposition;
+
+        private String contentEncoding;
+
+        private String contentLanguage;
+
+        private String contentRange;
+
+        private String contentType;
+
+        private Instant expires;
+
+        private String websiteRedirectLocation;
+
+        private String serverSideEncryption;
+
+        private Map<String, String> metadata = DefaultSdkAutoConstructMap.getInstance();
+
+        private String sseCustomerAlgorithm;
+
+        private String sseCustomerKeyMD5;
+
+        private String ssekmsKeyId;
+
+        private Boolean bucketKeyEnabled;
+
+        private String storageClass;
+
+        private String requestCharged;
+
+        private String replicationStatus;
+
+        private Integer partsCount;
+
+        private Integer tagCount;
+
+        private String objectLockMode;
+
+        private Instant objectLockRetainUntilDate;
+
+        private String objectLockLegalHoldStatus;
+
+        private String expiresString;
+
+        /********** IBM fields ***************/
+        private Boolean ibmSSEKPEnabled;
+
+        private String ibmSSEKPCrk;
+
+        private Instant ibmRetentionExpirationDate;
+
+        private Integer ibmRetentionLegalHoldCount;
+
+        private  Long ibmRetentionPeriod;
+
+        private BuilderImpl() {
+        }
+
+        private BuilderImpl(GetObjectResponse model) {
+            super(model);
+            deleteMarker(model.deleteMarker);
+            acceptRanges(model.acceptRanges);
+            expiration(model.expiration);
+            restore(model.restore);
+            lastModified(model.lastModified);
+            contentLength(model.contentLength);
+            eTag(model.eTag);
+            checksumCRC32(model.checksumCRC32);
+            checksumCRC32C(model.checksumCRC32C);
+            checksumCRC64NVME(model.checksumCRC64NVME);
+            checksumSHA1(model.checksumSHA1);
+            checksumSHA256(model.checksumSHA256);
+            checksumType(model.checksumType);
+            missingMeta(model.missingMeta);
+            versionId(model.versionId);
+            cacheControl(model.cacheControl);
+            contentDisposition(model.contentDisposition);
+            contentEncoding(model.contentEncoding);
+            contentLanguage(model.contentLanguage);
+            contentRange(model.contentRange);
+            contentType(model.contentType);
+            expires(model.expires);
+            websiteRedirectLocation(model.websiteRedirectLocation);
+            serverSideEncryption(model.serverSideEncryption);
+            metadata(model.metadata);
+            sseCustomerAlgorithm(model.sseCustomerAlgorithm);
+            sseCustomerKeyMD5(model.sseCustomerKeyMD5);
+            ssekmsKeyId(model.ssekmsKeyId);
+            bucketKeyEnabled(model.bucketKeyEnabled);
+            storageClass(model.storageClass);
+            requestCharged(model.requestCharged);
+            replicationStatus(model.replicationStatus);
+            partsCount(model.partsCount);
+            tagCount(model.tagCount);
+            objectLockMode(model.objectLockMode);
+            objectLockRetainUntilDate(model.objectLockRetainUntilDate);
+            objectLockLegalHoldStatus(model.objectLockLegalHoldStatus);
+            expiresString(model.expiresString);
+            ibmSSEKPEnabled(model.ibmSSEKPEnabled);
+            ibmSSEKPCrk(model.ibmSSEKPCrk);
+            retentionExpirationDate(model.ibmRetentionExpirationDate);
+            retentionLegalHoldCount(model.ibmRetentionLegalHoldCount);
+            retentionPeriod(model.ibmRetentionPeriod);
+        }
+
+        public final Boolean getDeleteMarker() {
+            return deleteMarker;
+        }
+
+        public final void setDeleteMarker(Boolean deleteMarker) {
+            this.deleteMarker = deleteMarker;
+        }
+
+        @Override
+        public final Builder deleteMarker(Boolean deleteMarker) {
+            this.deleteMarker = deleteMarker;
+            return this;
+        }
+
+        public final String getAcceptRanges() {
+            return acceptRanges;
+        }
+
+        public final void setAcceptRanges(String acceptRanges) {
+            this.acceptRanges = acceptRanges;
+        }
+
+        @Override
+        public final Builder acceptRanges(String acceptRanges) {
+            this.acceptRanges = acceptRanges;
+            return this;
+        }
+
+        public final String getExpiration() {
+            return expiration;
+        }
+
+        public final void setExpiration(String expiration) {
+            this.expiration = expiration;
+        }
+
+        @Override
+        public final Builder expiration(String expiration) {
+            this.expiration = expiration;
+            return this;
+        }
+
+        public final String getRestore() {
+            return restore;
+        }
+
+        public final void setRestore(String restore) {
+            this.restore = restore;
+        }
+
+        @Override
+        public final Builder restore(String restore) {
+            this.restore = restore;
+            return this;
+        }
+
+        public final Instant getLastModified() {
+            return lastModified;
+        }
+
+        public final void setLastModified(Instant lastModified) {
+            this.lastModified = lastModified;
+        }
+
+        @Override
+        public final Builder lastModified(Instant lastModified) {
+            this.lastModified = lastModified;
+            return this;
+        }
+
+        public final Long getContentLength() {
+            return contentLength;
+        }
+
+        public final void setContentLength(Long contentLength) {
+            this.contentLength = contentLength;
+        }
+
+        @Override
+        public final Builder contentLength(Long contentLength) {
+            this.contentLength = contentLength;
+            return this;
+        }
+
+        public final String getETag() {
+            return eTag;
+        }
+
+        public final void setETag(String eTag) {
+            this.eTag = eTag;
+        }
+
+        @Override
+        public final Builder eTag(String eTag) {
+            this.eTag = eTag;
+            return this;
+        }
+
+        public final String getChecksumCRC32() {
+            return checksumCRC32;
+        }
+
+        public final void setChecksumCRC32(String checksumCRC32) {
+            this.checksumCRC32 = checksumCRC32;
+        }
+
+        @Override
+        public final Builder checksumCRC32(String checksumCRC32) {
+            this.checksumCRC32 = checksumCRC32;
+            return this;
+        }
+
+        public final String getChecksumCRC32C() {
+            return checksumCRC32C;
+        }
+
+        public final void setChecksumCRC32C(String checksumCRC32C) {
+            this.checksumCRC32C = checksumCRC32C;
+        }
+
+        @Override
+        public final Builder checksumCRC32C(String checksumCRC32C) {
+            this.checksumCRC32C = checksumCRC32C;
+            return this;
+        }
+
+        public final String getChecksumCRC64NVME() {
+            return checksumCRC64NVME;
+        }
+
+        public final void setChecksumCRC64NVME(String checksumCRC64NVME) {
+            this.checksumCRC64NVME = checksumCRC64NVME;
+        }
+
+        @Override
+        public final Builder checksumCRC64NVME(String checksumCRC64NVME) {
+            this.checksumCRC64NVME = checksumCRC64NVME;
+            return this;
+        }
+
+        public final String getChecksumSHA1() {
+            return checksumSHA1;
+        }
+
+        public final void setChecksumSHA1(String checksumSHA1) {
+            this.checksumSHA1 = checksumSHA1;
+        }
+
+        @Override
+        public final Builder checksumSHA1(String checksumSHA1) {
+            this.checksumSHA1 = checksumSHA1;
+            return this;
+        }
+
+        public final String getChecksumSHA256() {
+            return checksumSHA256;
+        }
+
+        public final void setChecksumSHA256(String checksumSHA256) {
+            this.checksumSHA256 = checksumSHA256;
+        }
+
+        @Override
+        public final Builder checksumSHA256(String checksumSHA256) {
+            this.checksumSHA256 = checksumSHA256;
+            return this;
+        }
+
+        public final String getChecksumType() {
+            return checksumType;
+        }
+
+        public final void setChecksumType(String checksumType) {
+            this.checksumType = checksumType;
+        }
+
+        @Override
+        public final Builder checksumType(String checksumType) {
+            this.checksumType = checksumType;
+            return this;
+        }
+
+        @Override
+        public final Builder checksumType(ChecksumType checksumType) {
+            this.checksumType(checksumType == null ? null : checksumType.toString());
+            return this;
+        }
+
+        public final Integer getMissingMeta() {
+            return missingMeta;
+        }
+
+        public final void setMissingMeta(Integer missingMeta) {
+            this.missingMeta = missingMeta;
+        }
+
+        @Override
+        public final Builder missingMeta(Integer missingMeta) {
+            this.missingMeta = missingMeta;
+            return this;
+        }
+
+        public final String getVersionId() {
+            return versionId;
+        }
+
+        public final void setVersionId(String versionId) {
+            this.versionId = versionId;
+        }
+
+        @Override
+        public final Builder versionId(String versionId) {
+            this.versionId = versionId;
+            return this;
+        }
+
+        public final String getCacheControl() {
+            return cacheControl;
+        }
+
+        public final void setCacheControl(String cacheControl) {
+            this.cacheControl = cacheControl;
+        }
+
+        @Override
+        public final Builder cacheControl(String cacheControl) {
+            this.cacheControl = cacheControl;
+            return this;
+        }
+
+        public final String getContentDisposition() {
+            return contentDisposition;
+        }
+
+        public final void setContentDisposition(String contentDisposition) {
+            this.contentDisposition = contentDisposition;
+        }
+
+        @Override
+        public final Builder contentDisposition(String contentDisposition) {
+            this.contentDisposition = contentDisposition;
+            return this;
+        }
+
+        public final String getContentEncoding() {
+            return contentEncoding;
+        }
+
+        public final void setContentEncoding(String contentEncoding) {
+            this.contentEncoding = contentEncoding;
+        }
+
+        @Override
+        public final Builder contentEncoding(String contentEncoding) {
+            this.contentEncoding = contentEncoding;
+            return this;
+        }
+
+        public final String getContentLanguage() {
+            return contentLanguage;
+        }
+
+        public final void setContentLanguage(String contentLanguage) {
+            this.contentLanguage = contentLanguage;
+        }
+
+        @Override
+        public final Builder contentLanguage(String contentLanguage) {
+            this.contentLanguage = contentLanguage;
+            return this;
+        }
+
+        public final String getContentRange() {
+            return contentRange;
+        }
+
+        public final void setContentRange(String contentRange) {
+            this.contentRange = contentRange;
+        }
+
+        @Override
+        public final Builder contentRange(String contentRange) {
+            this.contentRange = contentRange;
+            return this;
+        }
+
+        public final String getContentType() {
+            return contentType;
+        }
+
+        public final void setContentType(String contentType) {
+            this.contentType = contentType;
+        }
+
+        @Override
+        public final Builder contentType(String contentType) {
+            this.contentType = contentType;
+            return this;
+        }
+
+        @Deprecated
+        public final Instant getExpires() {
+            return expires;
+        }
+
+        @Deprecated
+        public final void setExpires(Instant expires) {
+            this.expires = expires;
+        }
+
+        @Override
+        @Deprecated
+        public final Builder expires(Instant expires) {
+            this.expires = expires;
+            return this;
+        }
+
+        public final String getWebsiteRedirectLocation() {
+            return websiteRedirectLocation;
+        }
+
+        public final void setWebsiteRedirectLocation(String websiteRedirectLocation) {
+            this.websiteRedirectLocation = websiteRedirectLocation;
+        }
+
+        @Override
+        public final Builder websiteRedirectLocation(String websiteRedirectLocation) {
+            this.websiteRedirectLocation = websiteRedirectLocation;
+            return this;
+        }
+
+        public final String getServerSideEncryption() {
+            return serverSideEncryption;
+        }
+
+        public final void setServerSideEncryption(String serverSideEncryption) {
+            this.serverSideEncryption = serverSideEncryption;
+        }
+
+        @Override
+        public final Builder serverSideEncryption(String serverSideEncryption) {
+            this.serverSideEncryption = serverSideEncryption;
+            return this;
+        }
+
+        @Override
+        public final Builder serverSideEncryption(ServerSideEncryption serverSideEncryption) {
+            this.serverSideEncryption(serverSideEncryption == null ? null : serverSideEncryption.toString());
+            return this;
+        }
+
+        public final Map<String, String> getMetadata() {
+            if (metadata instanceof SdkAutoConstructMap) {
+                return null;
+            }
+            return metadata;
+        }
+
+        public final void setMetadata(Map<String, String> metadata) {
+            this.metadata = MetadataCopier.copy(metadata);
+        }
+
+        @Override
+        public final Builder metadata(Map<String, String> metadata) {
+            this.metadata = MetadataCopier.copy(metadata);
+            return this;
+        }
+
+        public final String getSseCustomerAlgorithm() {
+            return sseCustomerAlgorithm;
+        }
+
+        public final void setSseCustomerAlgorithm(String sseCustomerAlgorithm) {
+            this.sseCustomerAlgorithm = sseCustomerAlgorithm;
+        }
+
+        @Override
+        public final Builder sseCustomerAlgorithm(String sseCustomerAlgorithm) {
+            this.sseCustomerAlgorithm = sseCustomerAlgorithm;
+            return this;
+        }
+
+        public final String getSseCustomerKeyMD5() {
+            return sseCustomerKeyMD5;
+        }
+
+        public final void setSseCustomerKeyMD5(String sseCustomerKeyMD5) {
+            this.sseCustomerKeyMD5 = sseCustomerKeyMD5;
+        }
+
+        @Override
+        public final Builder sseCustomerKeyMD5(String sseCustomerKeyMD5) {
+            this.sseCustomerKeyMD5 = sseCustomerKeyMD5;
+            return this;
+        }
+
+        public final String getSsekmsKeyId() {
+            return ssekmsKeyId;
+        }
+
+        public final void setSsekmsKeyId(String ssekmsKeyId) {
+            this.ssekmsKeyId = ssekmsKeyId;
+        }
+
+        @Override
+        public final Builder ssekmsKeyId(String ssekmsKeyId) {
+            this.ssekmsKeyId = ssekmsKeyId;
+            return this;
+        }
+
+        public final Boolean getBucketKeyEnabled() {
+            return bucketKeyEnabled;
+        }
+
+        public final void setBucketKeyEnabled(Boolean bucketKeyEnabled) {
+            this.bucketKeyEnabled = bucketKeyEnabled;
+        }
+
+        @Override
+        public final Builder bucketKeyEnabled(Boolean bucketKeyEnabled) {
+            this.bucketKeyEnabled = bucketKeyEnabled;
+            return this;
+        }
+
+        public final String getStorageClass() {
+            return storageClass;
+        }
+
+        public final void setStorageClass(String storageClass) {
+            this.storageClass = storageClass;
+        }
+
+        @Override
+        public final Builder storageClass(String storageClass) {
+            this.storageClass = storageClass;
+            return this;
+        }
+
+        @Override
+        public final Builder storageClass(StorageClass storageClass) {
+            this.storageClass(storageClass == null ? null : storageClass.toString());
+            return this;
+        }
+
+        public final String getRequestCharged() {
+            return requestCharged;
+        }
+
+        public final void setRequestCharged(String requestCharged) {
+            this.requestCharged = requestCharged;
+        }
+
+        @Override
+        public final Builder requestCharged(String requestCharged) {
+            this.requestCharged = requestCharged;
+            return this;
+        }
+
+        @Override
+        public final Builder requestCharged(RequestCharged requestCharged) {
+            this.requestCharged(requestCharged == null ? null : requestCharged.toString());
+            return this;
+        }
+
+        public final String getReplicationStatus() {
+            return replicationStatus;
+        }
+
+        public final void setReplicationStatus(String replicationStatus) {
+            this.replicationStatus = replicationStatus;
+        }
+
+        @Override
+        public final Builder replicationStatus(String replicationStatus) {
+            this.replicationStatus = replicationStatus;
+            return this;
+        }
+
+        @Override
+        public final Builder replicationStatus(ReplicationStatus replicationStatus) {
+            this.replicationStatus(replicationStatus == null ? null : replicationStatus.toString());
+            return this;
+        }
+
+        public final Integer getPartsCount() {
+            return partsCount;
+        }
+
+        public final void setPartsCount(Integer partsCount) {
+            this.partsCount = partsCount;
+        }
+
+        @Override
+        public final Builder partsCount(Integer partsCount) {
+            this.partsCount = partsCount;
+            return this;
+        }
+
+        public final Integer getTagCount() {
+            return tagCount;
+        }
+
+        public final void setTagCount(Integer tagCount) {
+            this.tagCount = tagCount;
+        }
+
+        @Override
+        public final Builder tagCount(Integer tagCount) {
+            this.tagCount = tagCount;
+            return this;
+        }
+
+        public final String getObjectLockMode() {
+            return objectLockMode;
+        }
+
+        public final void setObjectLockMode(String objectLockMode) {
+            this.objectLockMode = objectLockMode;
+        }
+
+        @Override
+        public final Builder objectLockMode(String objectLockMode) {
+            this.objectLockMode = objectLockMode;
+            return this;
+        }
+
+        @Override
+        public final Builder objectLockMode(ObjectLockMode objectLockMode) {
+            this.objectLockMode(objectLockMode == null ? null : objectLockMode.toString());
+            return this;
+        }
+
+        public final Instant getObjectLockRetainUntilDate() {
+            return objectLockRetainUntilDate;
+        }
+
+        public final void setObjectLockRetainUntilDate(Instant objectLockRetainUntilDate) {
+            this.objectLockRetainUntilDate = objectLockRetainUntilDate;
+        }
+
+        @Override
+        public final Builder objectLockRetainUntilDate(Instant objectLockRetainUntilDate) {
+            this.objectLockRetainUntilDate = objectLockRetainUntilDate;
+            return this;
+        }
+
+        public final String getObjectLockLegalHoldStatus() {
+            return objectLockLegalHoldStatus;
+        }
+
+        public final void setObjectLockLegalHoldStatus(String objectLockLegalHoldStatus) {
+            this.objectLockLegalHoldStatus = objectLockLegalHoldStatus;
+        }
+
+        @Override
+        public final Builder objectLockLegalHoldStatus(String objectLockLegalHoldStatus) {
+            this.objectLockLegalHoldStatus = objectLockLegalHoldStatus;
+            return this;
+        }
+
+        @Override
+        public final Builder objectLockLegalHoldStatus(ObjectLockLegalHoldStatus objectLockLegalHoldStatus) {
+            this.objectLockLegalHoldStatus(objectLockLegalHoldStatus == null ? null : objectLockLegalHoldStatus.toString());
+            return this;
+        }
+
+        public final String getExpiresString() {
+            return expiresString;
+        }
+
+        public final void setExpiresString(String expiresString) {
+            this.expiresString = expiresString;
+        }
+
+        @Override
+        public final Builder expiresString(String expiresString) {
+            this.expiresString = expiresString;
+            return this;
+        }
+
+        /************ IBM Builder Methods ***************/
+        public final Boolean getIBMSSEKPEnabled() {
+            return ibmSSEKPEnabled;
+        }
+
+        public final String getIBMSSEKPCrk() {
+            return ibmSSEKPCrk;
+        }
+
+        @Override
+        public final Builder ibmSSEKPCrk(String ibmSSEKPCrk){
+            this.ibmSSEKPCrk = ibmSSEKPCrk;
+            return this;
+        }
+
+        public final void setIBMSSEKPEnabled(Boolean ibmSSEKPEnabled) {
+            this.ibmSSEKPEnabled = ibmSSEKPEnabled;
+        }
+
+        public final void setIBMSSEKPCrk(String ibmSSEKPCrk) {
+            this.ibmSSEKPCrk = ibmSSEKPCrk;
+        }
+
+        @Override
+        public final Builder ibmSSEKPEnabled(Boolean IBMSSEKPEnabled){
+            this.ibmSSEKPEnabled = IBMSSEKPEnabled;
+            return this;
+        }
+
+        public final Instant getRetentionExpirationDate() {
+            return ibmRetentionExpirationDate;
+        }
+
+        public final void setRetentionExpirationDate(Instant ibmRetentionExpirationDate) {
+            this.ibmRetentionExpirationDate = ibmRetentionExpirationDate;
+        }
+
+        @Override
+        public final Builder retentionExpirationDate(Instant ibmRetentionExpirationDate) {
+            this.ibmRetentionExpirationDate = ibmRetentionExpirationDate;
+            return this;
+        }
+
+        public final Integer getIbmRetentionLegalHoldCount() {
+            return ibmRetentionLegalHoldCount;
+        }
+
+        public final void setIbmRetentionLegalHoldCount(Integer ibmRetentionLegalHoldCount) {
+            this.ibmRetentionLegalHoldCount = ibmRetentionLegalHoldCount;
+        }
+
+        @Override
+        public final Builder retentionLegalHoldCount(Integer ibmRetentionLegalHoldCount) {
+            this.ibmRetentionLegalHoldCount = ibmRetentionLegalHoldCount;
+            return this;
+        }
+
+        public final Long getRetentionPeriod() {
+            return ibmRetentionPeriod;
+        }
+
+        public final void setRetentionPeriod(Long ibmRetentionPeriod) {
+            this.ibmRetentionPeriod = ibmRetentionPeriod;
+        }
+
+        @Override
+        public final Builder retentionPeriod(Long ibmRetentionPeriod) {
+            this.ibmRetentionPeriod = ibmRetentionPeriod;
+            return this;
+        }
+
+        @Override
+        public GetObjectResponse build() {
+            return new GetObjectResponse(this);
+        }
+
+        @Override
+        public List<SdkField<?>> sdkFields() {
+            return SDK_FIELDS;
+        }
+
+        @Override
+        public Map<String, SdkField<?>> sdkFieldNameToField() {
+            return SDK_NAME_TO_FIELD;
+        }
+    }
+}

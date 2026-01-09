@@ -1,0 +1,13386 @@
+/*
+ * Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
+ * the License. A copy of the License is located at
+ * 
+ * http://aws.amazon.com/apache2.0
+ * 
+ * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
+ * and limitations under the License.
+ */
+
+package com.ibm.cos.v2.services.s3;
+
+import com.ibm.cos.v2.core.exception.SdkException;
+import com.ibm.cos.v2.services.s3.model.AddLegalHoldRequest;
+import com.ibm.cos.v2.services.s3.model.DeleteLegalHoldRequest;
+import com.ibm.cos.v2.services.s3.model.ExtendObjectRetentionRequest;
+import com.ibm.cos.v2.services.s3.model.ListBucketReplicationFailuresRequest;
+import com.ibm.cos.v2.services.s3.model.ListBucketReplicationFailuresResponse;
+import com.ibm.cos.v2.services.s3.model.ListLegalHoldsRequest;
+import com.ibm.cos.v2.services.s3.model.ListLegalHoldsResponse;
+import com.ibm.cos.v2.services.s3.model.PutBucketReplicationReattemptRequest;
+import com.ibm.cos.v2.services.s3.model.VoidHttpResponse;
+import com.ibm.cos.v2.services.s3.model.ListBucketsExtendedRequest;
+import com.ibm.cos.v2.services.s3.model.ListBucketsExtendedResponse;
+import com.ibm.cos.v2.services.s3.model.PutBucketProtectionConfigurationRequest;
+import com.ibm.cos.v2.services.s3.model.GetBucketProtectionConfigurationRequest;
+import com.ibm.cos.v2.services.s3.model.GetBucketProtectionConfigurationResponse;
+import com.ibm.cos.v2.services.s3.transform.AddLegalHoldRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.PutBucketProtectionConfigurationMarshaller;
+import com.ibm.cos.v2.services.s3.transform.DeleteLegalHoldRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.ExtendObjectRetentionRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.GetBucketProtectionConfigurationRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.ListBucketReplicationFailuresRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.ListBucketsExtendedRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.ListLegalHoldsRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.PutBucketReplicationReattemptRequestMarshaller;
+import java.time.Instant;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.function.Consumer;
+import com.ibm.cos.v2.annotations.Generated;
+import com.ibm.cos.v2.annotations.SdkInternalApi;
+import com.ibm.cos.v2.awscore.client.handler.AwsSyncClientHandler;
+import com.ibm.cos.v2.awscore.exception.AwsServiceException;
+import com.ibm.cos.v2.awscore.internal.AwsProtocolMetadata;
+import com.ibm.cos.v2.awscore.internal.AwsServiceProtocol;
+import com.ibm.cos.v2.awscore.retry.AwsRetryStrategy;
+import com.ibm.cos.v2.checksums.DefaultChecksumAlgorithm;
+import com.ibm.cos.v2.core.RequestOverrideConfiguration;
+import com.ibm.cos.v2.core.Response;
+import com.ibm.cos.v2.core.SdkPlugin;
+import com.ibm.cos.v2.core.SdkRequest;
+import com.ibm.cos.v2.core.client.config.ClientOverrideConfiguration;
+import com.ibm.cos.v2.core.client.config.SdkClientConfiguration;
+import com.ibm.cos.v2.core.client.config.SdkClientOption;
+import com.ibm.cos.v2.core.client.handler.ClientExecutionParams;
+import com.ibm.cos.v2.core.client.handler.SyncClientHandler;
+import com.ibm.cos.v2.core.exception.SdkClientException;
+import com.ibm.cos.v2.core.http.HttpResponseHandler;
+import com.ibm.cos.v2.core.interceptor.SdkInternalExecutionAttribute;
+import com.ibm.cos.v2.core.interceptor.trait.HttpChecksum;
+import com.ibm.cos.v2.core.metrics.CoreMetric;
+import com.ibm.cos.v2.core.retry.RetryMode;
+import com.ibm.cos.v2.core.runtime.transform.StreamingRequestMarshaller;
+import com.ibm.cos.v2.core.sync.RequestBody;
+import com.ibm.cos.v2.core.sync.ResponseTransformer;
+import com.ibm.cos.v2.metrics.MetricCollector;
+import com.ibm.cos.v2.metrics.MetricPublisher;
+import com.ibm.cos.v2.metrics.NoOpMetricCollector;
+import com.ibm.cos.v2.protocols.core.ExceptionMetadata;
+import com.ibm.cos.v2.protocols.xml.AwsS3ProtocolFactory;
+import com.ibm.cos.v2.protocols.xml.XmlOperationMetadata;
+import com.ibm.cos.v2.retries.api.RetryStrategy;
+import com.ibm.cos.v2.services.s3.endpoints.S3ClientContextParams;
+import com.ibm.cos.v2.services.s3.internal.CustomRequestTransformerUtils;
+import com.ibm.cos.v2.services.s3.internal.S3ServiceClientConfigurationBuilder;
+import com.ibm.cos.v2.services.s3.model.AbortMultipartUploadRequest;
+import com.ibm.cos.v2.services.s3.model.AbortMultipartUploadResponse;
+import com.ibm.cos.v2.services.s3.model.BucketAlreadyExistsException;
+import com.ibm.cos.v2.services.s3.model.BucketAlreadyOwnedByYouException;
+import com.ibm.cos.v2.services.s3.model.CompleteMultipartUploadRequest;
+import com.ibm.cos.v2.services.s3.model.CompleteMultipartUploadResponse;
+import com.ibm.cos.v2.services.s3.model.CopyObjectRequest;
+import com.ibm.cos.v2.services.s3.model.CopyObjectResponse;
+import com.ibm.cos.v2.services.s3.model.CreateBucketMetadataTableConfigurationRequest;
+import com.ibm.cos.v2.services.s3.model.CreateBucketMetadataTableConfigurationResponse;
+import com.ibm.cos.v2.services.s3.model.CreateBucketRequest;
+import com.ibm.cos.v2.services.s3.model.CreateBucketResponse;
+import com.ibm.cos.v2.services.s3.model.CreateMultipartUploadRequest;
+import com.ibm.cos.v2.services.s3.model.CreateMultipartUploadResponse;
+import com.ibm.cos.v2.services.s3.model.CreateSessionRequest;
+import com.ibm.cos.v2.services.s3.model.CreateSessionResponse;
+import com.ibm.cos.v2.services.s3.model.DeleteBucketAnalyticsConfigurationRequest;
+import com.ibm.cos.v2.services.s3.model.DeleteBucketAnalyticsConfigurationResponse;
+import com.ibm.cos.v2.services.s3.model.DeleteBucketCorsRequest;
+import com.ibm.cos.v2.services.s3.model.DeleteBucketCorsResponse;
+import com.ibm.cos.v2.services.s3.model.DeleteBucketEncryptionRequest;
+import com.ibm.cos.v2.services.s3.model.DeleteBucketEncryptionResponse;
+import com.ibm.cos.v2.services.s3.model.DeleteBucketIntelligentTieringConfigurationRequest;
+import com.ibm.cos.v2.services.s3.model.DeleteBucketIntelligentTieringConfigurationResponse;
+import com.ibm.cos.v2.services.s3.model.DeleteBucketInventoryConfigurationRequest;
+import com.ibm.cos.v2.services.s3.model.DeleteBucketInventoryConfigurationResponse;
+import com.ibm.cos.v2.services.s3.model.DeleteBucketLifecycleRequest;
+import com.ibm.cos.v2.services.s3.model.DeleteBucketLifecycleResponse;
+import com.ibm.cos.v2.services.s3.model.DeleteBucketMetadataTableConfigurationRequest;
+import com.ibm.cos.v2.services.s3.model.DeleteBucketMetadataTableConfigurationResponse;
+import com.ibm.cos.v2.services.s3.model.DeleteBucketMetricsConfigurationRequest;
+import com.ibm.cos.v2.services.s3.model.DeleteBucketMetricsConfigurationResponse;
+import com.ibm.cos.v2.services.s3.model.DeleteBucketOwnershipControlsRequest;
+import com.ibm.cos.v2.services.s3.model.DeleteBucketOwnershipControlsResponse;
+import com.ibm.cos.v2.services.s3.model.DeleteBucketPolicyRequest;
+import com.ibm.cos.v2.services.s3.model.DeleteBucketPolicyResponse;
+import com.ibm.cos.v2.services.s3.model.DeleteBucketReplicationRequest;
+import com.ibm.cos.v2.services.s3.model.DeleteBucketReplicationResponse;
+import com.ibm.cos.v2.services.s3.model.DeleteBucketRequest;
+import com.ibm.cos.v2.services.s3.model.DeleteBucketResponse;
+import com.ibm.cos.v2.services.s3.model.DeleteBucketTaggingRequest;
+import com.ibm.cos.v2.services.s3.model.DeleteBucketTaggingResponse;
+import com.ibm.cos.v2.services.s3.model.DeleteBucketWebsiteRequest;
+import com.ibm.cos.v2.services.s3.model.DeleteBucketWebsiteResponse;
+import com.ibm.cos.v2.services.s3.model.DeleteObjectRequest;
+import com.ibm.cos.v2.services.s3.model.DeleteObjectResponse;
+import com.ibm.cos.v2.services.s3.model.DeleteObjectTaggingRequest;
+import com.ibm.cos.v2.services.s3.model.DeleteObjectTaggingResponse;
+import com.ibm.cos.v2.services.s3.model.DeleteObjectsRequest;
+import com.ibm.cos.v2.services.s3.model.DeleteObjectsResponse;
+import com.ibm.cos.v2.services.s3.model.DeletePublicAccessBlockRequest;
+import com.ibm.cos.v2.services.s3.model.DeletePublicAccessBlockResponse;
+import com.ibm.cos.v2.services.s3.model.EncryptionTypeMismatchException;
+import com.ibm.cos.v2.services.s3.model.GetBucketAccelerateConfigurationRequest;
+import com.ibm.cos.v2.services.s3.model.GetBucketAccelerateConfigurationResponse;
+import com.ibm.cos.v2.services.s3.model.GetBucketAclRequest;
+import com.ibm.cos.v2.services.s3.model.GetBucketAclResponse;
+import com.ibm.cos.v2.services.s3.model.GetBucketAnalyticsConfigurationRequest;
+import com.ibm.cos.v2.services.s3.model.GetBucketAnalyticsConfigurationResponse;
+import com.ibm.cos.v2.services.s3.model.GetBucketCorsRequest;
+import com.ibm.cos.v2.services.s3.model.GetBucketCorsResponse;
+import com.ibm.cos.v2.services.s3.model.GetBucketEncryptionRequest;
+import com.ibm.cos.v2.services.s3.model.GetBucketEncryptionResponse;
+import com.ibm.cos.v2.services.s3.model.GetBucketIntelligentTieringConfigurationRequest;
+import com.ibm.cos.v2.services.s3.model.GetBucketIntelligentTieringConfigurationResponse;
+import com.ibm.cos.v2.services.s3.model.GetBucketInventoryConfigurationRequest;
+import com.ibm.cos.v2.services.s3.model.GetBucketInventoryConfigurationResponse;
+import com.ibm.cos.v2.services.s3.model.GetBucketLifecycleConfigurationRequest;
+import com.ibm.cos.v2.services.s3.model.GetBucketLifecycleConfigurationResponse;
+import com.ibm.cos.v2.services.s3.model.GetBucketLocationRequest;
+import com.ibm.cos.v2.services.s3.model.GetBucketLocationResponse;
+import com.ibm.cos.v2.services.s3.model.GetBucketLoggingRequest;
+import com.ibm.cos.v2.services.s3.model.GetBucketLoggingResponse;
+import com.ibm.cos.v2.services.s3.model.GetBucketMetadataTableConfigurationRequest;
+import com.ibm.cos.v2.services.s3.model.GetBucketMetadataTableConfigurationResponse;
+import com.ibm.cos.v2.services.s3.model.GetBucketMetricsConfigurationRequest;
+import com.ibm.cos.v2.services.s3.model.GetBucketMetricsConfigurationResponse;
+import com.ibm.cos.v2.services.s3.model.GetBucketNotificationConfigurationRequest;
+import com.ibm.cos.v2.services.s3.model.GetBucketNotificationConfigurationResponse;
+import com.ibm.cos.v2.services.s3.model.GetBucketOwnershipControlsRequest;
+import com.ibm.cos.v2.services.s3.model.GetBucketOwnershipControlsResponse;
+import com.ibm.cos.v2.services.s3.model.GetBucketPolicyRequest;
+import com.ibm.cos.v2.services.s3.model.GetBucketPolicyResponse;
+import com.ibm.cos.v2.services.s3.model.GetBucketPolicyStatusRequest;
+import com.ibm.cos.v2.services.s3.model.GetBucketPolicyStatusResponse;
+import com.ibm.cos.v2.services.s3.model.GetBucketReplicationRequest;
+import com.ibm.cos.v2.services.s3.model.GetBucketReplicationResponse;
+import com.ibm.cos.v2.services.s3.model.GetBucketRequestPaymentRequest;
+import com.ibm.cos.v2.services.s3.model.GetBucketRequestPaymentResponse;
+import com.ibm.cos.v2.services.s3.model.GetBucketTaggingRequest;
+import com.ibm.cos.v2.services.s3.model.GetBucketTaggingResponse;
+import com.ibm.cos.v2.services.s3.model.GetBucketVersioningRequest;
+import com.ibm.cos.v2.services.s3.model.GetBucketVersioningResponse;
+import com.ibm.cos.v2.services.s3.model.GetBucketWebsiteRequest;
+import com.ibm.cos.v2.services.s3.model.GetBucketWebsiteResponse;
+import com.ibm.cos.v2.services.s3.model.GetObjectAclRequest;
+import com.ibm.cos.v2.services.s3.model.GetObjectAclResponse;
+import com.ibm.cos.v2.services.s3.model.GetObjectAttributesRequest;
+import com.ibm.cos.v2.services.s3.model.GetObjectAttributesResponse;
+import com.ibm.cos.v2.services.s3.model.GetObjectLegalHoldRequest;
+import com.ibm.cos.v2.services.s3.model.GetObjectLegalHoldResponse;
+import com.ibm.cos.v2.services.s3.model.GetObjectLockConfigurationRequest;
+import com.ibm.cos.v2.services.s3.model.GetObjectLockConfigurationResponse;
+import com.ibm.cos.v2.services.s3.model.GetObjectRequest;
+import com.ibm.cos.v2.services.s3.model.GetObjectResponse;
+import com.ibm.cos.v2.services.s3.model.GetObjectRetentionRequest;
+import com.ibm.cos.v2.services.s3.model.GetObjectRetentionResponse;
+import com.ibm.cos.v2.services.s3.model.GetObjectTaggingRequest;
+import com.ibm.cos.v2.services.s3.model.GetObjectTaggingResponse;
+import com.ibm.cos.v2.services.s3.model.GetObjectTorrentRequest;
+import com.ibm.cos.v2.services.s3.model.GetObjectTorrentResponse;
+import com.ibm.cos.v2.services.s3.model.GetPublicAccessBlockRequest;
+import com.ibm.cos.v2.services.s3.model.GetPublicAccessBlockResponse;
+import com.ibm.cos.v2.services.s3.model.HeadBucketRequest;
+import com.ibm.cos.v2.services.s3.model.HeadBucketResponse;
+import com.ibm.cos.v2.services.s3.model.HeadObjectRequest;
+import com.ibm.cos.v2.services.s3.model.HeadObjectResponse;
+import com.ibm.cos.v2.services.s3.model.InvalidObjectStateException;
+import com.ibm.cos.v2.services.s3.model.InvalidRequestException;
+import com.ibm.cos.v2.services.s3.model.InvalidWriteOffsetException;
+import com.ibm.cos.v2.services.s3.model.ListBucketAnalyticsConfigurationsRequest;
+import com.ibm.cos.v2.services.s3.model.ListBucketAnalyticsConfigurationsResponse;
+import com.ibm.cos.v2.services.s3.model.ListBucketIntelligentTieringConfigurationsRequest;
+import com.ibm.cos.v2.services.s3.model.ListBucketIntelligentTieringConfigurationsResponse;
+import com.ibm.cos.v2.services.s3.model.ListBucketInventoryConfigurationsRequest;
+import com.ibm.cos.v2.services.s3.model.ListBucketInventoryConfigurationsResponse;
+import com.ibm.cos.v2.services.s3.model.ListBucketMetricsConfigurationsRequest;
+import com.ibm.cos.v2.services.s3.model.ListBucketMetricsConfigurationsResponse;
+import com.ibm.cos.v2.services.s3.model.ListBucketsRequest;
+import com.ibm.cos.v2.services.s3.model.ListBucketsResponse;
+import com.ibm.cos.v2.services.s3.model.ListDirectoryBucketsRequest;
+import com.ibm.cos.v2.services.s3.model.ListDirectoryBucketsResponse;
+import com.ibm.cos.v2.services.s3.model.ListMultipartUploadsRequest;
+import com.ibm.cos.v2.services.s3.model.ListMultipartUploadsResponse;
+import com.ibm.cos.v2.services.s3.model.ListObjectVersionsRequest;
+import com.ibm.cos.v2.services.s3.model.ListObjectVersionsResponse;
+import com.ibm.cos.v2.services.s3.model.ListObjectsRequest;
+import com.ibm.cos.v2.services.s3.model.ListObjectsResponse;
+import com.ibm.cos.v2.services.s3.model.ListObjectsV2Request;
+import com.ibm.cos.v2.services.s3.model.ListObjectsV2Response;
+import com.ibm.cos.v2.services.s3.model.ListPartsRequest;
+import com.ibm.cos.v2.services.s3.model.ListPartsResponse;
+import com.ibm.cos.v2.services.s3.model.NoSuchBucketException;
+import com.ibm.cos.v2.services.s3.model.NoSuchKeyException;
+import com.ibm.cos.v2.services.s3.model.NoSuchUploadException;
+import com.ibm.cos.v2.services.s3.model.ObjectAlreadyInActiveTierErrorException;
+import com.ibm.cos.v2.services.s3.model.ObjectNotInActiveTierErrorException;
+import com.ibm.cos.v2.services.s3.model.PutBucketAccelerateConfigurationRequest;
+import com.ibm.cos.v2.services.s3.model.PutBucketAccelerateConfigurationResponse;
+import com.ibm.cos.v2.services.s3.model.PutBucketAclRequest;
+import com.ibm.cos.v2.services.s3.model.PutBucketAclResponse;
+import com.ibm.cos.v2.services.s3.model.PutBucketAnalyticsConfigurationRequest;
+import com.ibm.cos.v2.services.s3.model.PutBucketAnalyticsConfigurationResponse;
+import com.ibm.cos.v2.services.s3.model.PutBucketCorsRequest;
+import com.ibm.cos.v2.services.s3.model.PutBucketCorsResponse;
+import com.ibm.cos.v2.services.s3.model.PutBucketEncryptionRequest;
+import com.ibm.cos.v2.services.s3.model.PutBucketEncryptionResponse;
+import com.ibm.cos.v2.services.s3.model.PutBucketIntelligentTieringConfigurationRequest;
+import com.ibm.cos.v2.services.s3.model.PutBucketIntelligentTieringConfigurationResponse;
+import com.ibm.cos.v2.services.s3.model.PutBucketInventoryConfigurationRequest;
+import com.ibm.cos.v2.services.s3.model.PutBucketInventoryConfigurationResponse;
+import com.ibm.cos.v2.services.s3.model.PutBucketLifecycleConfigurationRequest;
+import com.ibm.cos.v2.services.s3.model.PutBucketLifecycleConfigurationResponse;
+import com.ibm.cos.v2.services.s3.model.PutBucketLoggingRequest;
+import com.ibm.cos.v2.services.s3.model.PutBucketLoggingResponse;
+import com.ibm.cos.v2.services.s3.model.PutBucketMetricsConfigurationRequest;
+import com.ibm.cos.v2.services.s3.model.PutBucketMetricsConfigurationResponse;
+import com.ibm.cos.v2.services.s3.model.PutBucketNotificationConfigurationRequest;
+import com.ibm.cos.v2.services.s3.model.PutBucketNotificationConfigurationResponse;
+import com.ibm.cos.v2.services.s3.model.PutBucketOwnershipControlsRequest;
+import com.ibm.cos.v2.services.s3.model.PutBucketOwnershipControlsResponse;
+import com.ibm.cos.v2.services.s3.model.PutBucketPolicyRequest;
+import com.ibm.cos.v2.services.s3.model.PutBucketPolicyResponse;
+import com.ibm.cos.v2.services.s3.model.PutBucketReplicationRequest;
+import com.ibm.cos.v2.services.s3.model.PutBucketReplicationResponse;
+import com.ibm.cos.v2.services.s3.model.PutBucketRequestPaymentRequest;
+import com.ibm.cos.v2.services.s3.model.PutBucketRequestPaymentResponse;
+import com.ibm.cos.v2.services.s3.model.PutBucketTaggingRequest;
+import com.ibm.cos.v2.services.s3.model.PutBucketTaggingResponse;
+import com.ibm.cos.v2.services.s3.model.PutBucketVersioningRequest;
+import com.ibm.cos.v2.services.s3.model.PutBucketVersioningResponse;
+import com.ibm.cos.v2.services.s3.model.PutBucketWebsiteRequest;
+import com.ibm.cos.v2.services.s3.model.PutBucketWebsiteResponse;
+import com.ibm.cos.v2.services.s3.model.PutObjectAclRequest;
+import com.ibm.cos.v2.services.s3.model.PutObjectAclResponse;
+import com.ibm.cos.v2.services.s3.model.PutObjectLegalHoldRequest;
+import com.ibm.cos.v2.services.s3.model.PutObjectLegalHoldResponse;
+import com.ibm.cos.v2.services.s3.model.PutObjectLockConfigurationRequest;
+import com.ibm.cos.v2.services.s3.model.PutObjectLockConfigurationResponse;
+import com.ibm.cos.v2.services.s3.model.PutObjectRequest;
+import com.ibm.cos.v2.services.s3.model.PutObjectResponse;
+import com.ibm.cos.v2.services.s3.model.PutObjectRetentionRequest;
+import com.ibm.cos.v2.services.s3.model.PutObjectRetentionResponse;
+import com.ibm.cos.v2.services.s3.model.PutObjectTaggingRequest;
+import com.ibm.cos.v2.services.s3.model.PutObjectTaggingResponse;
+import com.ibm.cos.v2.services.s3.model.PutPublicAccessBlockRequest;
+import com.ibm.cos.v2.services.s3.model.PutPublicAccessBlockResponse;
+import com.ibm.cos.v2.services.s3.model.RestoreObjectRequest;
+import com.ibm.cos.v2.services.s3.model.RestoreObjectResponse;
+import com.ibm.cos.v2.services.s3.model.S3Exception;
+import com.ibm.cos.v2.services.s3.model.TooManyPartsException;
+import com.ibm.cos.v2.services.s3.model.UploadPartCopyRequest;
+import com.ibm.cos.v2.services.s3.model.UploadPartCopyResponse;
+import com.ibm.cos.v2.services.s3.model.UploadPartRequest;
+import com.ibm.cos.v2.services.s3.model.UploadPartResponse;
+import com.ibm.cos.v2.services.s3.model.WriteGetObjectResponseRequest;
+import com.ibm.cos.v2.services.s3.model.WriteGetObjectResponseResponse;
+import com.ibm.cos.v2.services.s3.transform.AbortMultipartUploadRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.CompleteMultipartUploadRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.CopyObjectRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.CreateBucketMetadataTableConfigurationRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.CreateBucketRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.CreateMultipartUploadRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.CreateSessionRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.DeleteBucketAnalyticsConfigurationRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.DeleteBucketCorsRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.DeleteBucketEncryptionRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.DeleteBucketIntelligentTieringConfigurationRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.DeleteBucketInventoryConfigurationRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.DeleteBucketLifecycleRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.DeleteBucketMetadataTableConfigurationRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.DeleteBucketMetricsConfigurationRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.DeleteBucketOwnershipControlsRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.DeleteBucketPolicyRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.DeleteBucketReplicationRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.DeleteBucketRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.DeleteBucketTaggingRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.DeleteBucketWebsiteRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.DeleteObjectRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.DeleteObjectTaggingRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.DeleteObjectsRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.DeletePublicAccessBlockRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.GetBucketAccelerateConfigurationRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.GetBucketAclRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.GetBucketAnalyticsConfigurationRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.GetBucketCorsRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.GetBucketEncryptionRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.GetBucketIntelligentTieringConfigurationRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.GetBucketInventoryConfigurationRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.GetBucketLifecycleConfigurationRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.GetBucketLocationRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.GetBucketLoggingRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.GetBucketMetadataTableConfigurationRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.GetBucketMetricsConfigurationRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.GetBucketNotificationConfigurationRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.GetBucketOwnershipControlsRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.GetBucketPolicyRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.GetBucketPolicyStatusRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.GetBucketReplicationRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.GetBucketRequestPaymentRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.GetBucketTaggingRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.GetBucketVersioningRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.GetBucketWebsiteRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.GetObjectAclRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.GetObjectAttributesRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.GetObjectLegalHoldRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.GetObjectLockConfigurationRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.GetObjectRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.GetObjectRetentionRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.GetObjectTaggingRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.GetObjectTorrentRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.GetPublicAccessBlockRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.HeadBucketRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.HeadObjectRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.ListBucketAnalyticsConfigurationsRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.ListBucketIntelligentTieringConfigurationsRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.ListBucketInventoryConfigurationsRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.ListBucketMetricsConfigurationsRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.ListBucketsRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.ListDirectoryBucketsRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.ListMultipartUploadsRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.ListObjectVersionsRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.ListObjectsRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.ListObjectsV2RequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.ListPartsRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.PutBucketAccelerateConfigurationRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.PutBucketAclRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.PutBucketAnalyticsConfigurationRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.PutBucketCorsRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.PutBucketEncryptionRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.PutBucketIntelligentTieringConfigurationRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.PutBucketInventoryConfigurationRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.PutBucketLifecycleConfigurationRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.PutBucketLoggingRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.PutBucketMetricsConfigurationRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.PutBucketNotificationConfigurationRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.PutBucketOwnershipControlsRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.PutBucketPolicyRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.PutBucketReplicationRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.PutBucketRequestPaymentRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.PutBucketTaggingRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.PutBucketVersioningRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.PutBucketWebsiteRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.PutObjectAclRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.PutObjectLegalHoldRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.PutObjectLockConfigurationRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.PutObjectRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.PutObjectRetentionRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.PutObjectTaggingRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.PutPublicAccessBlockRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.RestoreObjectRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.UploadPartCopyRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.UploadPartRequestMarshaller;
+import com.ibm.cos.v2.services.s3.transform.WriteGetObjectResponseRequestMarshaller;
+import com.ibm.cos.v2.services.s3.waiters.S3Waiter;
+import com.ibm.cos.v2.utils.AttributeMap;
+import com.ibm.cos.v2.utils.HostnameValidator;
+import com.ibm.cos.v2.utils.Logger;
+import com.ibm.cos.v2.utils.Validate;
+
+/**
+ * Internal implementation of {@link S3Client}.
+ *
+ * @see S3Client#builder()
+ */
+@Generated("com.ibm.cos.v2:codegen")
+@SdkInternalApi
+final class DefaultS3Client implements S3Client {
+    private static final Logger log = Logger.loggerFor(DefaultS3Client.class);
+
+    private static final AwsProtocolMetadata protocolMetadata = AwsProtocolMetadata.builder()
+            .serviceProtocol(AwsServiceProtocol.REST_XML).build();
+
+    private final SyncClientHandler clientHandler;
+
+    private final AwsS3ProtocolFactory protocolFactory;
+
+    private final SdkClientConfiguration clientConfiguration;
+
+    protected DefaultS3Client(SdkClientConfiguration clientConfiguration) {
+        this.clientHandler = new AwsSyncClientHandler(clientConfiguration);
+        this.clientConfiguration = clientConfiguration.toBuilder().option(SdkClientOption.SDK_CLIENT, this).build();
+        this.protocolFactory = init();
+    }
+
+    /**
+     * <p>
+     * This operation aborts a multipart upload. After a multipart upload is aborted, no additional parts can be
+     * uploaded using that upload ID. The storage consumed by any previously uploaded parts will be freed. However, if
+     * any part uploads are currently in progress, those part uploads might or might not succeed. As a result, it might
+     * be necessary to abort a given multipart upload multiple times in order to completely free all storage consumed by
+     * all parts.
+     * </p>
+     * <p>
+     * To verify that all parts have been removed and prevent getting charged for the part storage, you should call the
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListParts.html">ListParts</a> API operation and
+     * ensure that the parts list is empty.
+     * </p>
+     * <note>
+     * <ul>
+     * <li>
+     * <p>
+     * <b>Directory buckets</b> - If multipart uploads in a directory bucket are in progress, you can't delete the
+     * bucket until all the in-progress multipart uploads are aborted or completed. To delete these in-progress
+     * multipart uploads, use the <code>ListMultipartUploads</code> operation to list the in-progress multipart uploads
+     * in the bucket and use the <code>AbortMultipartUpload</code> operation to abort all the in-progress multipart
+     * uploads.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <b>Directory buckets</b> - For directory buckets, you must make requests for this API operation to the Zonal
+     * endpoint. These endpoints support virtual-hosted-style requests in the format
+     * <code>https://<i>amzn-s3-demo-bucket</i>.s3express-<i>zone-id</i>.<i>region-code</i>.amazonaws.com/<i>key-name</i> </code>
+     * . Path-style requests are not supported. For more information about endpoints in Availability Zones, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/endpoint-directory-buckets-AZ.html">Regional and
+     * Zonal endpoints for directory buckets in Availability Zones</a> in the <i>Amazon S3 User Guide</i>. For more
+     * information about endpoints in Local Zones, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-lzs-for-directory-buckets.html">Concepts for
+     * directory buckets in Local Zones</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * </li>
+     * </ul>
+     * </note>
+     * <dl>
+     * <dt>Permissions</dt>
+     * <dd>
+     * <ul>
+     * <li>
+     * <p>
+     * <b>General purpose bucket permissions</b> - For information about permissions required to use the multipart
+     * upload, see <a href="https://docs.aws.amazon.com/AmazonS3/latest/dev/mpuAndPermissions.html">Multipart Upload and
+     * Permissions</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <b>Directory bucket permissions</b> - To grant access to this API operation on a directory bucket, we recommend
+     * that you use the <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_CreateSession.html">
+     * <code>CreateSession</code> </a> API operation for session-based authorization. Specifically, you grant the
+     * <code>s3express:CreateSession</code> permission to the directory bucket in a bucket policy or an IAM
+     * identity-based policy. Then, you make the <code>CreateSession</code> API call on the bucket to obtain a session
+     * token. With the session token in your request header, you can make API requests to this operation. After the
+     * session token expires, you make another <code>CreateSession</code> API call to generate a new session token for
+     * use. Amazon Web Services CLI or SDKs create session and refresh the session token automatically to avoid service
+     * interruptions when a session expires. For more information about authorization, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_CreateSession.html"> <code>CreateSession</code> </a>.
+     * </p>
+     * </li>
+     * </ul>
+     * </dd>
+     * <dt>HTTP Host header syntax</dt>
+     * <dd>
+     * <p>
+     * <b>Directory buckets </b> - The HTTP Host header syntax is
+     * <code> <i>Bucket-name</i>.s3express-<i>zone-id</i>.<i>region-code</i>.amazonaws.com</code>.
+     * </p>
+     * </dd>
+     * </dl>
+     * <p>
+     * The following operations are related to <code>AbortMultipartUpload</code>:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_CreateMultipartUpload.html">CreateMultipartUpload</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_UploadPart.html">UploadPart</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_CompleteMultipartUpload.html">CompleteMultipartUpload
+     * </a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListParts.html">ListParts</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListMultipartUploads.html">ListMultipartUploads</a>
+     * </p>
+     * </li>
+     * </ul>
+     *
+     * @param abortMultipartUploadRequest
+     * @return Result of the AbortMultipartUpload operation returned by the service.
+     * @throws NoSuchUploadException
+     *         The specified multipart upload does not exist.
+     * @throws SdkException
+     *         Base class for all exceptions that can be thrown by the SDK (both service and client). Can be used for
+     *         catch all scenarios.
+     * @throws SdkClientException
+     *         If any client side error occurs such as an IO related failure, failure to get credentials, etc.
+     * @throws S3Exception
+     *         Base class for all service exceptions. Unknown exceptions will be thrown as an instance of this type.
+     * @sample S3Client.AbortMultipartUpload
+     */
+    @Override
+    public AbortMultipartUploadResponse abortMultipartUpload(AbortMultipartUploadRequest abortMultipartUploadRequest)
+            throws NoSuchUploadException, AwsServiceException, SdkClientException, S3Exception {
+
+        HttpResponseHandler<Response<AbortMultipartUploadResponse>> responseHandler = protocolFactory
+                .createCombinedResponseHandler(AbortMultipartUploadResponse::builder,
+                        new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(abortMultipartUploadRequest,
+                this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration, abortMultipartUploadRequest
+                .overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+                .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "AbortMultipartUpload");
+
+            return clientHandler.execute(new ClientExecutionParams<AbortMultipartUploadRequest, AbortMultipartUploadResponse>()
+                    .withOperationName("AbortMultipartUpload").withProtocolMetadata(protocolMetadata)
+                    .withCombinedResponseHandler(responseHandler).withMetricCollector(apiCallMetricCollector)
+                    .withRequestConfiguration(clientConfiguration).withInput(abortMultipartUploadRequest)
+                    .withMarshaller(new AbortMultipartUploadRequestMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    /**
+     * <p>
+     * Completes a multipart upload by assembling previously uploaded parts.
+     * </p>
+     * <p>
+     * You first initiate the multipart upload and then upload all parts using the <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_UploadPart.html">UploadPart</a> operation or the <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_UploadPartCopy.html">UploadPartCopy</a> operation.
+     * After successfully uploading all relevant parts of an upload, you call this <code>CompleteMultipartUpload</code>
+     * operation to complete the upload. Upon receiving this request, Amazon S3 concatenates all the parts in ascending
+     * order by part number to create a new object. In the CompleteMultipartUpload request, you must provide the parts
+     * list and ensure that the parts list is complete. The CompleteMultipartUpload API operation concatenates the parts
+     * that you provide in the list. For each part in the list, you must provide the <code>PartNumber</code> value and
+     * the <code>ETag</code> value that are returned after that part was uploaded.
+     * </p>
+     * <p>
+     * The processing of a CompleteMultipartUpload request could take several minutes to finalize. After Amazon S3
+     * begins processing the request, it sends an HTTP response header that specifies a <code>200 OK</code> response.
+     * While processing is in progress, Amazon S3 periodically sends white space characters to keep the connection from
+     * timing out. A request could fail after the initial <code>200 OK</code> response has been sent. This means that a
+     * <code>200 OK</code> response can contain either a success or an error. The error response might be embedded in
+     * the <code>200 OK</code> response. If you call this API operation directly, make sure to design your application
+     * to parse the contents of the response and handle it appropriately. If you use Amazon Web Services SDKs, SDKs
+     * handle this condition. The SDKs detect the embedded error and apply error handling per your configuration
+     * settings (including automatically retrying the request as appropriate). If the condition persists, the SDKs throw
+     * an exception (or, for the SDKs that don't use exceptions, they return an error).
+     * </p>
+     * <p>
+     * Note that if <code>CompleteMultipartUpload</code> fails, applications should be prepared to retry any failed
+     * requests (including 500 error responses). For more information, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/dev/ErrorBestPractices.html">Amazon S3 Error Best
+     * Practices</a>.
+     * </p>
+     * <important>
+     * <p>
+     * You can't use <code>Content-Type: application/x-www-form-urlencoded</code> for the CompleteMultipartUpload
+     * requests. Also, if you don't provide a <code>Content-Type</code> header, <code>CompleteMultipartUpload</code> can
+     * still return a <code>200 OK</code> response.
+     * </p>
+     * </important>
+     * <p>
+     * For more information about multipart uploads, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/dev/uploadobjusingmpu.html">Uploading Objects Using Multipart
+     * Upload</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * <note>
+     * <p>
+     * <b>Directory buckets</b> - For directory buckets, you must make requests for this API operation to the Zonal
+     * endpoint. These endpoints support virtual-hosted-style requests in the format
+     * <code>https://<i>amzn-s3-demo-bucket</i>.s3express-<i>zone-id</i>.<i>region-code</i>.amazonaws.com/<i>key-name</i> </code>
+     * . Path-style requests are not supported. For more information about endpoints in Availability Zones, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/endpoint-directory-buckets-AZ.html">Regional and
+     * Zonal endpoints for directory buckets in Availability Zones</a> in the <i>Amazon S3 User Guide</i>. For more
+     * information about endpoints in Local Zones, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-lzs-for-directory-buckets.html">Concepts for
+     * directory buckets in Local Zones</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * </note>
+     * <dl>
+     * <dt>Permissions</dt>
+     * <dd>
+     * <ul>
+     * <li>
+     * <p>
+     * <b>General purpose bucket permissions</b> - For information about permissions required to use the multipart
+     * upload API, see <a href="https://docs.aws.amazon.com/AmazonS3/latest/dev/mpuAndPermissions.html">Multipart Upload
+     * and Permissions</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * <p>
+     * If you provide an <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_Checksum.html">additional checksum
+     * value</a> in your <code>MultipartUpload</code> requests and the object is encrypted with Key Management Service,
+     * you must have permission to use the <code>kms:Decrypt</code> action for the <code>CompleteMultipartUpload</code>
+     * request to succeed.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <b>Directory bucket permissions</b> - To grant access to this API operation on a directory bucket, we recommend
+     * that you use the <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_CreateSession.html">
+     * <code>CreateSession</code> </a> API operation for session-based authorization. Specifically, you grant the
+     * <code>s3express:CreateSession</code> permission to the directory bucket in a bucket policy or an IAM
+     * identity-based policy. Then, you make the <code>CreateSession</code> API call on the bucket to obtain a session
+     * token. With the session token in your request header, you can make API requests to this operation. After the
+     * session token expires, you make another <code>CreateSession</code> API call to generate a new session token for
+     * use. Amazon Web Services CLI or SDKs create session and refresh the session token automatically to avoid service
+     * interruptions when a session expires. For more information about authorization, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_CreateSession.html"> <code>CreateSession</code> </a>.
+     * </p>
+     * <p>
+     * If the object is encrypted with SSE-KMS, you must also have the <code>kms:GenerateDataKey</code> and
+     * <code>kms:Decrypt</code> permissions in IAM identity-based policies and KMS key policies for the KMS key.
+     * </p>
+     * </li>
+     * </ul>
+     * </dd>
+     * <dt>Special errors</dt>
+     * <dd>
+     * <ul>
+     * <li>
+     * <p>
+     * Error Code: <code>EntityTooSmall</code>
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * Description: Your proposed upload is smaller than the minimum allowed object size. Each part must be at least 5
+     * MB in size, except the last part.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * HTTP Status Code: 400 Bad Request
+     * </p>
+     * </li>
+     * </ul>
+     * </li>
+     * <li>
+     * <p>
+     * Error Code: <code>InvalidPart</code>
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * Description: One or more of the specified parts could not be found. The part might not have been uploaded, or the
+     * specified ETag might not have matched the uploaded part's ETag.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * HTTP Status Code: 400 Bad Request
+     * </p>
+     * </li>
+     * </ul>
+     * </li>
+     * <li>
+     * <p>
+     * Error Code: <code>InvalidPartOrder</code>
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * Description: The list of parts was not in ascending order. The parts list must be specified in order by part
+     * number.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * HTTP Status Code: 400 Bad Request
+     * </p>
+     * </li>
+     * </ul>
+     * </li>
+     * <li>
+     * <p>
+     * Error Code: <code>NoSuchUpload</code>
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * Description: The specified multipart upload does not exist. The upload ID might be invalid, or the multipart
+     * upload might have been aborted or completed.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * HTTP Status Code: 404 Not Found
+     * </p>
+     * </li>
+     * </ul>
+     * </li>
+     * </ul>
+     * </dd>
+     * <dt>HTTP Host header syntax</dt>
+     * <dd>
+     * <p>
+     * <b>Directory buckets </b> - The HTTP Host header syntax is
+     * <code> <i>Bucket-name</i>.s3express-<i>zone-id</i>.<i>region-code</i>.amazonaws.com</code>.
+     * </p>
+     * </dd>
+     * </dl>
+     * <p>
+     * The following operations are related to <code>CompleteMultipartUpload</code>:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_CreateMultipartUpload.html">CreateMultipartUpload</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_UploadPart.html">UploadPart</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_AbortMultipartUpload.html">AbortMultipartUpload</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListParts.html">ListParts</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListMultipartUploads.html">ListMultipartUploads</a>
+     * </p>
+     * </li>
+     * </ul>
+     *
+     * @param completeMultipartUploadRequest
+     * @return Result of the CompleteMultipartUpload operation returned by the service.
+     * @throws SdkException
+     *         Base class for all exceptions that can be thrown by the SDK (both service and client). Can be used for
+     *         catch all scenarios.
+     * @throws SdkClientException
+     *         If any client side error occurs such as an IO related failure, failure to get credentials, etc.
+     * @throws S3Exception
+     *         Base class for all service exceptions. Unknown exceptions will be thrown as an instance of this type.
+     * @sample S3Client.CompleteMultipartUpload
+     */
+    @Override
+    public CompleteMultipartUploadResponse completeMultipartUpload(CompleteMultipartUploadRequest completeMultipartUploadRequest)
+            throws AwsServiceException, SdkClientException, S3Exception {
+
+        HttpResponseHandler<Response<CompleteMultipartUploadResponse>> responseHandler = protocolFactory
+                .createCombinedResponseHandler(CompleteMultipartUploadResponse::builder,
+                        new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(completeMultipartUploadRequest,
+                this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration, completeMultipartUploadRequest
+                .overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+                .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "CompleteMultipartUpload");
+
+            return clientHandler
+                    .execute(new ClientExecutionParams<CompleteMultipartUploadRequest, CompleteMultipartUploadResponse>()
+                            .withOperationName("CompleteMultipartUpload").withProtocolMetadata(protocolMetadata)
+                            .withCombinedResponseHandler(responseHandler).withMetricCollector(apiCallMetricCollector)
+                            .withRequestConfiguration(clientConfiguration).withInput(completeMultipartUploadRequest)
+                            .withMarshaller(new CompleteMultipartUploadRequestMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    /**
+     * <p>
+     * Creates a copy of an object that is already stored in Amazon S3.
+     * </p>
+     * <note>
+     * <p>
+     * You can store individual objects of up to 5 TB in Amazon S3. You create a copy of your object up to 5 GB in size
+     * in a single atomic action using this API. However, to copy an object greater than 5 GB, you must use the
+     * multipart upload Upload Part - Copy (UploadPartCopy) API. For more information, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/dev/CopyingObjctsUsingRESTMPUapi.html">Copy Object Using the
+     * REST Multipart Upload API</a>.
+     * </p>
+     * </note>
+     * <p>
+     * You can copy individual objects between general purpose buckets, between directory buckets, and between general
+     * purpose buckets and directory buckets.
+     * </p>
+     * <note>
+     * <ul>
+     * <li>
+     * <p>
+     * Amazon S3 supports copy operations using Multi-Region Access Points only as a destination when using the
+     * Multi-Region Access Point ARN.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <b>Directory buckets </b> - For directory buckets, you must make requests for this API operation to the Zonal
+     * endpoint. These endpoints support virtual-hosted-style requests in the format
+     * <code>https://<i>amzn-s3-demo-bucket</i>.s3express-<i>zone-id</i>.<i>region-code</i>.amazonaws.com/<i>key-name</i> </code>
+     * . Path-style requests are not supported. For more information about endpoints in Availability Zones, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/endpoint-directory-buckets-AZ.html">Regional and
+     * Zonal endpoints for directory buckets in Availability Zones</a> in the <i>Amazon S3 User Guide</i>. For more
+     * information about endpoints in Local Zones, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-lzs-for-directory-buckets.html">Concepts for
+     * directory buckets in Local Zones</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * VPC endpoints don't support cross-Region requests (including copies). If you're using VPC endpoints, your source
+     * and destination buckets should be in the same Amazon Web Services Region as your VPC endpoint.
+     * </p>
+     * </li>
+     * </ul>
+     * </note>
+     * <p>
+     * Both the Region that you want to copy the object from and the Region that you want to copy the object to must be
+     * enabled for your account. For more information about how to enable a Region for your account, see <a href=
+     * "https://docs.aws.amazon.com/accounts/latest/reference/manage-acct-regions.html#manage-acct-regions-enable-standalone"
+     * >Enable or disable a Region for standalone accounts</a> in the <i>Amazon Web Services Account Management
+     * Guide</i>.
+     * </p>
+     * <important>
+     * <p>
+     * Amazon S3 transfer acceleration does not support cross-Region copies. If you request a cross-Region copy using a
+     * transfer acceleration endpoint, you get a <code>400 Bad Request</code> error. For more information, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/dev/transfer-acceleration.html">Transfer Acceleration</a>.
+     * </p>
+     * </important>
+     * <dl>
+     * <dt>Authentication and authorization</dt>
+     * <dd>
+     * <p>
+     * All <code>CopyObject</code> requests must be authenticated and signed by using IAM credentials (access key ID and
+     * secret access key for the IAM identities). All headers with the <code>x-amz-</code> prefix, including
+     * <code>x-amz-copy-source</code>, must be signed. For more information, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/dev/RESTAuthentication.html">REST Authentication</a>.
+     * </p>
+     * <p>
+     * <b>Directory buckets</b> - You must use the IAM credentials to authenticate and authorize your access to the
+     * <code>CopyObject</code> API operation, instead of using the temporary security credentials through the
+     * <code>CreateSession</code> API operation.
+     * </p>
+     * <p>
+     * Amazon Web Services CLI or SDKs handles authentication and authorization on your behalf.
+     * </p>
+     * </dd>
+     * <dt>Permissions</dt>
+     * <dd>
+     * <p>
+     * You must have <i>read</i> access to the source object and <i>write</i> access to the destination bucket.
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <b>General purpose bucket permissions</b> - You must have permissions in an IAM policy based on the source and
+     * destination bucket types in a <code>CopyObject</code> operation.
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * If the source object is in a general purpose bucket, you must have <b> <code>s3:GetObject</code> </b> permission
+     * to read the source object that is being copied.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * If the destination bucket is a general purpose bucket, you must have <b> <code>s3:PutObject</code> </b>
+     * permission to write the object copy to the destination bucket.
+     * </p>
+     * </li>
+     * </ul>
+     * </li>
+     * <li>
+     * <p>
+     * <b>Directory bucket permissions</b> - You must have permissions in a bucket policy or an IAM identity-based
+     * policy based on the source and destination bucket types in a <code>CopyObject</code> operation.
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * If the source object that you want to copy is in a directory bucket, you must have the <b>
+     * <code>s3express:CreateSession</code> </b> permission in the <code>Action</code> element of a policy to read the
+     * object. By default, the session is in the <code>ReadWrite</code> mode. If you want to restrict the access, you
+     * can explicitly set the <code>s3express:SessionMode</code> condition key to <code>ReadOnly</code> on the copy
+     * source bucket.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * If the copy destination is a directory bucket, you must have the <b> <code>s3express:CreateSession</code> </b>
+     * permission in the <code>Action</code> element of a policy to write the object to the destination. The
+     * <code>s3express:SessionMode</code> condition key can't be set to <code>ReadOnly</code> on the copy destination
+     * bucket.
+     * </p>
+     * </li>
+     * </ul>
+     * <p>
+     * If the object is encrypted with SSE-KMS, you must also have the <code>kms:GenerateDataKey</code> and
+     * <code>kms:Decrypt</code> permissions in IAM identity-based policies and KMS key policies for the KMS key.
+     * </p>
+     * <p>
+     * For example policies, see <a href=
+     * "https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-express-security-iam-example-bucket-policies.html"
+     * >Example bucket policies for S3 Express One Zone</a> and <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-express-security-iam-identity-policies.html"
+     * >Amazon Web Services Identity and Access Management (IAM) identity-based policies for S3 Express One Zone</a> in
+     * the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * </li>
+     * </ul>
+     * </dd>
+     * <dt>Response and special errors</dt>
+     * <dd>
+     * <p>
+     * When the request is an HTTP 1.1 request, the response is chunk encoded. When the request is not an HTTP 1.1
+     * request, the response would not contain the <code>Content-Length</code>. You always need to read the entire
+     * response body to check if the copy succeeds.
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * If the copy is successful, you receive a response with information about the copied object.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * A copy request might return an error when Amazon S3 receives the copy request or while Amazon S3 is copying the
+     * files. A <code>200 OK</code> response can contain either a success or an error.
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * If the error occurs before the copy action starts, you receive a standard Amazon S3 error.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * If the error occurs during the copy operation, the error response is embedded in the <code>200 OK</code>
+     * response. For example, in a cross-region copy, you may encounter throttling and receive a <code>200 OK</code>
+     * response. For more information, see <a
+     * href="https://repost.aws/knowledge-center/s3-resolve-200-internalerror">Resolve the Error 200 response when
+     * copying objects to Amazon S3</a>. The <code>200 OK</code> status code means the copy was accepted, but it doesn't
+     * mean the copy is complete. Another example is when you disconnect from Amazon S3 before the copy is complete,
+     * Amazon S3 might cancel the copy and you may receive a <code>200 OK</code> response. You must stay connected to
+     * Amazon S3 until the entire response is successfully received and processed.
+     * </p>
+     * <p>
+     * If you call this API operation directly, make sure to design your application to parse the content of the
+     * response and handle it appropriately. If you use Amazon Web Services SDKs, SDKs handle this condition. The SDKs
+     * detect the embedded error and apply error handling per your configuration settings (including automatically
+     * retrying the request as appropriate). If the condition persists, the SDKs throw an exception (or, for the SDKs
+     * that don't use exceptions, they return an error).
+     * </p>
+     * </li>
+     * </ul>
+     * </li>
+     * </ul>
+     * </dd>
+     * <dt>Charge</dt>
+     * <dd>
+     * <p>
+     * The copy request charge is based on the storage class and Region that you specify for the destination object. The
+     * request can also result in a data retrieval charge for the source if the source storage class bills for data
+     * retrieval. If the copy source is in a different region, the data transfer is billed to the copy source account.
+     * For pricing information, see <a href="http://aws.amazon.com/s3/pricing/">Amazon S3 pricing</a>.
+     * </p>
+     * </dd>
+     * <dt>HTTP Host header syntax</dt>
+     * <dd>
+     * <ul>
+     * <li>
+     * <p>
+     * <b>Directory buckets </b> - The HTTP Host header syntax is
+     * <code> <i>Bucket-name</i>.s3express-<i>zone-id</i>.<i>region-code</i>.amazonaws.com</code>.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <b>Amazon S3 on Outposts</b> - When you use this action with S3 on Outposts through the REST API, you must direct
+     * requests to the S3 on Outposts hostname. The S3 on Outposts hostname takes the form
+     * <code> <i>AccessPointName</i>-<i>AccountId</i>.<i>outpostID</i>.s3-outposts.<i>Region</i>.amazonaws.com</code>.
+     * The hostname isn't required when you use the Amazon Web Services CLI or SDKs.
+     * </p>
+     * </li>
+     * </ul>
+     * </dd>
+     * </dl>
+     * <p>
+     * The following operations are related to <code>CopyObject</code>:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutObject.html">PutObject</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetObject.html">GetObject</a>
+     * </p>
+     * </li>
+     * </ul>
+     *
+     * @param copyObjectRequest
+     * @return Result of the CopyObject operation returned by the service.
+     * @throws ObjectNotInActiveTierErrorException
+     *         The source object of the COPY action is not in the active tier and is only stored in Amazon S3 Glacier.
+     * @throws SdkException
+     *         Base class for all exceptions that can be thrown by the SDK (both service and client). Can be used for
+     *         catch all scenarios.
+     * @throws SdkClientException
+     *         If any client side error occurs such as an IO related failure, failure to get credentials, etc.
+     * @throws S3Exception
+     *         Base class for all service exceptions. Unknown exceptions will be thrown as an instance of this type.
+     * @sample S3Client.CopyObject
+     */
+    @Override
+    public CopyObjectResponse copyObject(CopyObjectRequest copyObjectRequest) throws ObjectNotInActiveTierErrorException,
+            AwsServiceException, SdkClientException, S3Exception {
+        copyObjectRequest = CustomRequestTransformerUtils.modifyCopyObjectRequest(copyObjectRequest);
+
+        HttpResponseHandler<Response<CopyObjectResponse>> responseHandler = protocolFactory.createCombinedResponseHandler(
+                CopyObjectResponse::builder, new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(copyObjectRequest, this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration, copyObjectRequest
+                .overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+                .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "CopyObject");
+
+            return clientHandler.execute(new ClientExecutionParams<CopyObjectRequest, CopyObjectResponse>()
+                    .withOperationName("CopyObject").withProtocolMetadata(protocolMetadata)
+                    .withCombinedResponseHandler(responseHandler).withMetricCollector(apiCallMetricCollector)
+                    .withRequestConfiguration(clientConfiguration).withInput(copyObjectRequest)
+                    .withMarshaller(new CopyObjectRequestMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    /**
+     * <note>
+     * <p>
+     * This action creates an Amazon S3 bucket. To create an Amazon S3 on Outposts bucket, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_control_CreateBucket.html"> <code>CreateBucket</code>
+     * </a>.
+     * </p>
+     * </note>
+     * <p>
+     * Creates a new S3 bucket. To create a bucket, you must set up Amazon S3 and have a valid Amazon Web Services
+     * Access Key ID to authenticate requests. Anonymous requests are never allowed to create buckets. By creating the
+     * bucket, you become the bucket owner.
+     * </p>
+     * <p>
+     * There are two types of buckets: general purpose buckets and directory buckets. For more information about these
+     * bucket types, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/creating-buckets-s3.html">Creating, configuring, and
+     * working with Amazon S3 buckets</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * <note>
+     * <ul>
+     * <li>
+     * <p>
+     * <b>General purpose buckets</b> - If you send your <code>CreateBucket</code> request to the
+     * <code>s3.amazonaws.com</code> global endpoint, the request goes to the <code>us-east-1</code> Region. So the
+     * signature calculations in Signature Version 4 must use <code>us-east-1</code> as the Region, even if the location
+     * constraint in the request specifies another Region where the bucket is to be created. If you create a bucket in a
+     * Region other than US East (N. Virginia), your application must be able to handle 307 redirect. For more
+     * information, see <a href="https://docs.aws.amazon.com/AmazonS3/latest/dev/VirtualHosting.html">Virtual hosting of
+     * buckets</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <b>Directory buckets </b> - For directory buckets, you must make requests for this API operation to the Regional
+     * endpoint. These endpoints support path-style requests in the format
+     * <code>https://s3express-control.<i>region-code</i>.amazonaws.com/<i>bucket-name</i> </code>. Virtual-hosted-style
+     * requests aren't supported. For more information about endpoints in Availability Zones, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/endpoint-directory-buckets-AZ.html">Regional and
+     * Zonal endpoints for directory buckets in Availability Zones</a> in the <i>Amazon S3 User Guide</i>. For more
+     * information about endpoints in Local Zones, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-lzs-for-directory-buckets.html">Concepts for
+     * directory buckets in Local Zones</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * </li>
+     * </ul>
+     * </note>
+     * <dl>
+     * <dt>Permissions</dt>
+     * <dd>
+     * <ul>
+     * <li>
+     * <p>
+     * <b>General purpose bucket permissions</b> - In addition to the <code>s3:CreateBucket</code> permission, the
+     * following permissions are required in a policy when your <code>CreateBucket</code> request includes specific
+     * headers:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <b>Access control lists (ACLs)</b> - In your <code>CreateBucket</code> request, if you specify an access control
+     * list (ACL) and set it to <code>public-read</code>, <code>public-read-write</code>,
+     * <code>authenticated-read</code>, or if you explicitly specify any other custom ACLs, both
+     * <code>s3:CreateBucket</code> and <code>s3:PutBucketAcl</code> permissions are required. In your
+     * <code>CreateBucket</code> request, if you set the ACL to <code>private</code>, or if you don't specify any ACLs,
+     * only the <code>s3:CreateBucket</code> permission is required.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <b>Object Lock</b> - In your <code>CreateBucket</code> request, if you set
+     * <code>x-amz-bucket-object-lock-enabled</code> to true, the <code>s3:PutBucketObjectLockConfiguration</code> and
+     * <code>s3:PutBucketVersioning</code> permissions are required.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <b>S3 Object Ownership</b> - If your <code>CreateBucket</code> request includes the
+     * <code>x-amz-object-ownership</code> header, then the <code>s3:PutBucketOwnershipControls</code> permission is
+     * required.
+     * </p>
+     * <important>
+     * <p>
+     * To set an ACL on a bucket as part of a <code>CreateBucket</code> request, you must explicitly set S3 Object
+     * Ownership for the bucket to a different value than the default, <code>BucketOwnerEnforced</code>. Additionally,
+     * if your desired bucket ACL grants public access, you must first create the bucket (without the bucket ACL) and
+     * then explicitly disable Block Public Access on the bucket before using <code>PutBucketAcl</code> to set the ACL.
+     * If you try to create a bucket with a public ACL, the request will fail.
+     * </p>
+     * <p>
+     * For the majority of modern use cases in S3, we recommend that you keep all Block Public Access settings enabled
+     * and keep ACLs disabled. If you would like to share data with users outside of your account, you can use bucket
+     * policies as needed. For more information, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/about-object-ownership.html">Controlling ownership of
+     * objects and disabling ACLs for your bucket </a> and <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/access-control-block-public-access.html">Blocking
+     * public access to your Amazon S3 storage </a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * </important></li>
+     * <li>
+     * <p>
+     * <b>S3 Block Public Access</b> - If your specific use case requires granting public access to your S3 resources,
+     * you can disable Block Public Access. Specifically, you can create a new bucket with Block Public Access enabled,
+     * then separately call the <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeletePublicAccessBlock.html">
+     * <code>DeletePublicAccessBlock</code> </a> API. To use this operation, you must have the
+     * <code>s3:PutBucketPublicAccessBlock</code> permission. For more information about S3 Block Public Access, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/access-control-block-public-access.html">Blocking
+     * public access to your Amazon S3 storage </a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * </li>
+     * </ul>
+     * </li>
+     * <li>
+     * <p>
+     * <b>Directory bucket permissions</b> - You must have the <code>s3express:CreateBucket</code> permission in an IAM
+     * identity-based policy instead of a bucket policy. Cross-account access to this API operation isn't supported.
+     * This operation can only be performed by the Amazon Web Services account that owns the resource. For more
+     * information about directory bucket policies and permissions, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-express-security-iam.html">Amazon Web Services
+     * Identity and Access Management (IAM) for S3 Express One Zone</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * <important>
+     * <p>
+     * The permissions for ACLs, Object Lock, S3 Object Ownership, and S3 Block Public Access are not supported for
+     * directory buckets. For directory buckets, all Block Public Access settings are enabled at the bucket level and S3
+     * Object Ownership is set to Bucket owner enforced (ACLs disabled). These settings can't be modified.
+     * </p>
+     * <p>
+     * For more information about permissions for creating and working with directory buckets, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/directory-buckets-overview.html">Directory
+     * buckets</a> in the <i>Amazon S3 User Guide</i>. For more information about supported S3 features for directory
+     * buckets, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-express-one-zone.html#s3-express-features"
+     * >Features of S3 Express One Zone</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * </important></li>
+     * </ul>
+     * </dd>
+     * <dt>HTTP Host header syntax</dt>
+     * <dd>
+     * <p>
+     * <b>Directory buckets </b> - The HTTP Host header syntax is
+     * <code>s3express-control.<i>region-code</i>.amazonaws.com</code>.
+     * </p>
+     * </dd>
+     * </dl>
+     * <p>
+     * The following operations are related to <code>CreateBucket</code>:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutObject.html">PutObject</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteBucket.html">DeleteBucket</a>
+     * </p>
+     * </li>
+     * </ul>
+     *
+     * @param createBucketRequest
+     * @return Result of the CreateBucket operation returned by the service.
+     * @throws BucketAlreadyExistsException
+     *         The requested bucket name is not available. The bucket namespace is shared by all users of the system.
+     *         Select a different name and try again.
+     * @throws BucketAlreadyOwnedByYouException
+     *         The bucket you tried to create already exists, and you own it. Amazon S3 returns this error in all Amazon
+     *         Web Services Regions except in the North Virginia Region. For legacy compatibility, if you re-create an
+     *         existing bucket that you already own in the North Virginia Region, Amazon S3 returns 200 OK and resets
+     *         the bucket access control lists (ACLs).
+     * @throws SdkException
+     *         Base class for all exceptions that can be thrown by the SDK (both service and client). Can be used for
+     *         catch all scenarios.
+     * @throws SdkClientException
+     *         If any client side error occurs such as an IO related failure, failure to get credentials, etc.
+     * @throws S3Exception
+     *         Base class for all service exceptions. Unknown exceptions will be thrown as an instance of this type.
+     * @sample S3Client.CreateBucket
+     */
+    @Override
+    public CreateBucketResponse createBucket(CreateBucketRequest createBucketRequest) throws BucketAlreadyExistsException,
+            BucketAlreadyOwnedByYouException, AwsServiceException, SdkClientException, S3Exception {
+
+        HttpResponseHandler<Response<CreateBucketResponse>> responseHandler = protocolFactory.createCombinedResponseHandler(
+                CreateBucketResponse::builder, new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(createBucketRequest, this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration, createBucketRequest
+                .overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+                .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "CreateBucket");
+
+            return clientHandler.execute(new ClientExecutionParams<CreateBucketRequest, CreateBucketResponse>()
+                    .withOperationName("CreateBucket").withProtocolMetadata(protocolMetadata)
+                    .withCombinedResponseHandler(responseHandler).withMetricCollector(apiCallMetricCollector)
+                    .withRequestConfiguration(clientConfiguration).withInput(createBucketRequest)
+                    .withMarshaller(new CreateBucketRequestMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+
+
+    /**
+     * <p>
+     * Creates a metadata table configuration for a general purpose bucket. For more information, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/metadata-tables-overview.html">Accelerating data
+     * discovery with S3 Metadata</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * <dl>
+     * <dt>Permissions</dt>
+     * <dd>
+     * <p>
+     * To use this operation, you must have the following permissions. For more information, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/metadata-tables-permissions.html">Setting up
+     * permissions for configuring metadata tables</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * <p>
+     * If you also want to integrate your table bucket with Amazon Web Services analytics services so that you can query
+     * your metadata table, you need additional permissions. For more information, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-tables-integrating-aws.html"> Integrating Amazon
+     * S3 Tables with Amazon Web Services analytics services</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <code>s3:CreateBucketMetadataTableConfiguration</code>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <code>s3tables:CreateNamespace</code>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <code>s3tables:GetTable</code>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <code>s3tables:CreateTable</code>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <code>s3tables:PutTablePolicy</code>
+     * </p>
+     * </li>
+     * </ul>
+     * </dd>
+     * </dl>
+     * <p>
+     * The following operations are related to <code>CreateBucketMetadataTableConfiguration</code>:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteBucketMetadataTableConfiguration.html">
+     * DeleteBucketMetadataTableConfiguration</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketMetadataTableConfiguration.html">
+     * GetBucketMetadataTableConfiguration</a>
+     * </p>
+     * </li>
+     * </ul>
+     *
+     * @param createBucketMetadataTableConfigurationRequest
+     * @return Result of the CreateBucketMetadataTableConfiguration operation returned by the service.
+     * @throws SdkException
+     *         Base class for all exceptions that can be thrown by the SDK (both service and client). Can be used for
+     *         catch all scenarios.
+     * @throws SdkClientException
+     *         If any client side error occurs such as an IO related failure, failure to get credentials, etc.
+     * @throws S3Exception
+     *         Base class for all service exceptions. Unknown exceptions will be thrown as an instance of this type.
+     * @sample S3Client.CreateBucketMetadataTableConfiguration
+     */
+    @Override
+    public CreateBucketMetadataTableConfigurationResponse createBucketMetadataTableConfiguration(
+            CreateBucketMetadataTableConfigurationRequest createBucketMetadataTableConfigurationRequest)
+            throws AwsServiceException, SdkClientException, S3Exception {
+
+        HttpResponseHandler<Response<CreateBucketMetadataTableConfigurationResponse>> responseHandler = protocolFactory
+                .createCombinedResponseHandler(CreateBucketMetadataTableConfigurationResponse::builder,
+                        new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(createBucketMetadataTableConfigurationRequest,
+                this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration,
+                createBucketMetadataTableConfigurationRequest.overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+                .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "CreateBucketMetadataTableConfiguration");
+
+            return clientHandler
+                    .execute(new ClientExecutionParams<CreateBucketMetadataTableConfigurationRequest, CreateBucketMetadataTableConfigurationResponse>()
+                            .withOperationName("CreateBucketMetadataTableConfiguration")
+                            .withProtocolMetadata(protocolMetadata)
+                            .withCombinedResponseHandler(responseHandler)
+                            .withMetricCollector(apiCallMetricCollector)
+                            .withRequestConfiguration(clientConfiguration)
+                            .withInput(createBucketMetadataTableConfigurationRequest)
+                            .putExecutionAttribute(
+                                    SdkInternalExecutionAttribute.HTTP_CHECKSUM,
+                                    HttpChecksum
+                                            .builder()
+                                            .requestChecksumRequired(true)
+                                            .isRequestStreaming(false)
+                                            .requestAlgorithm(
+                                                    createBucketMetadataTableConfigurationRequest.checksumAlgorithmAsString())
+                                            .requestAlgorithmHeader("x-amz-sdk-checksum-algorithm").build())
+                            .withMarshaller(new CreateBucketMetadataTableConfigurationRequestMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    /**
+     * <p>
+     * This action initiates a multipart upload and returns an upload ID. This upload ID is used to associate all of the
+     * parts in the specific multipart upload. You specify this upload ID in each of your subsequent upload part
+     * requests (see <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_UploadPart.html">UploadPart</a>). You
+     * also include this upload ID in the final request to either complete or abort the multipart upload request. For
+     * more information about multipart uploads, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/dev/mpuoverview.html">Multipart Upload Overview</a> in the
+     * <i>Amazon S3 User Guide</i>.
+     * </p>
+     * <note>
+     * <p>
+     * After you initiate a multipart upload and upload one or more parts, to stop being charged for storing the
+     * uploaded parts, you must either complete or abort the multipart upload. Amazon S3 frees up the space used to
+     * store the parts and stops charging you for storing them only after you either complete or abort a multipart
+     * upload.
+     * </p>
+     * </note>
+     * <p>
+     * If you have configured a lifecycle rule to abort incomplete multipart uploads, the created multipart upload must
+     * be completed within the number of days specified in the bucket lifecycle configuration. Otherwise, the incomplete
+     * multipart upload becomes eligible for an abort action and Amazon S3 aborts the multipart upload. For more
+     * information, see <a href=
+     * "https://docs.aws.amazon.com/AmazonS3/latest/dev/mpuoverview.html#mpu-abort-incomplete-mpu-lifecycle-config"
+     * >Aborting Incomplete Multipart Uploads Using a Bucket Lifecycle Configuration</a>.
+     * </p>
+     * <note>
+     * <ul>
+     * <li>
+     * <p>
+     * <b>Directory buckets </b> - S3 Lifecycle is not supported by directory buckets.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <b>Directory buckets </b> - For directory buckets, you must make requests for this API operation to the Zonal
+     * endpoint. These endpoints support virtual-hosted-style requests in the format
+     * <code>https://<i>amzn-s3-demo-bucket</i>.s3express-<i>zone-id</i>.<i>region-code</i>.amazonaws.com/<i>key-name</i> </code>
+     * . Path-style requests are not supported. For more information about endpoints in Availability Zones, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/endpoint-directory-buckets-AZ.html">Regional and
+     * Zonal endpoints for directory buckets in Availability Zones</a> in the <i>Amazon S3 User Guide</i>. For more
+     * information about endpoints in Local Zones, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-lzs-for-directory-buckets.html">Concepts for
+     * directory buckets in Local Zones</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * </li>
+     * </ul>
+     * </note>
+     * <dl>
+     * <dt>Request signing</dt>
+     * <dd>
+     * <p>
+     * For request signing, multipart upload is just a series of regular requests. You initiate a multipart upload, send
+     * one or more requests to upload parts, and then complete the multipart upload process. You sign each request
+     * individually. There is nothing special about signing multipart upload requests. For more information about
+     * signing, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/API/sig-v4-authenticating-requests.html">Authenticating
+     * Requests (Amazon Web Services Signature Version 4)</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * </dd>
+     * <dt>Permissions</dt>
+     * <dd>
+     * <ul>
+     * <li>
+     * <p>
+     * <b>General purpose bucket permissions</b> - To perform a multipart upload with encryption using an Key Management
+     * Service (KMS) KMS key, the requester must have permission to the <code>kms:Decrypt</code> and
+     * <code>kms:GenerateDataKey</code> actions on the key. The requester must also have permissions for the
+     * <code>kms:GenerateDataKey</code> action for the <code>CreateMultipartUpload</code> API. Then, the requester needs
+     * permissions for the <code>kms:Decrypt</code> action on the <code>UploadPart</code> and
+     * <code>UploadPartCopy</code> APIs. These permissions are required because Amazon S3 must decrypt and read data
+     * from the encrypted file parts before it completes the multipart upload. For more information, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/mpuoverview.html#mpuAndPermissions">Multipart upload
+     * API and permissions</a> and <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingKMSEncryption.html">Protecting data using
+     * server-side encryption with Amazon Web Services KMS</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <b>Directory bucket permissions</b> - To grant access to this API operation on a directory bucket, we recommend
+     * that you use the <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_CreateSession.html">
+     * <code>CreateSession</code> </a> API operation for session-based authorization. Specifically, you grant the
+     * <code>s3express:CreateSession</code> permission to the directory bucket in a bucket policy or an IAM
+     * identity-based policy. Then, you make the <code>CreateSession</code> API call on the bucket to obtain a session
+     * token. With the session token in your request header, you can make API requests to this operation. After the
+     * session token expires, you make another <code>CreateSession</code> API call to generate a new session token for
+     * use. Amazon Web Services CLI or SDKs create session and refresh the session token automatically to avoid service
+     * interruptions when a session expires. For more information about authorization, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_CreateSession.html"> <code>CreateSession</code> </a>.
+     * </p>
+     * </li>
+     * </ul>
+     * </dd>
+     * <dt>Encryption</dt>
+     * <dd>
+     * <ul>
+     * <li>
+     * <p>
+     * <b>General purpose buckets</b> - Server-side encryption is for data encryption at rest. Amazon S3 encrypts your
+     * data as it writes it to disks in its data centers and decrypts it when you access it. Amazon S3 automatically
+     * encrypts all new objects that are uploaded to an S3 bucket. When doing a multipart upload, if you don't specify
+     * encryption information in your request, the encryption setting of the uploaded parts is set to the default
+     * encryption configuration of the destination bucket. By default, all buckets have a base level of encryption
+     * configuration that uses server-side encryption with Amazon S3 managed keys (SSE-S3). If the destination bucket
+     * has a default encryption configuration that uses server-side encryption with an Key Management Service (KMS) key
+     * (SSE-KMS), or a customer-provided encryption key (SSE-C), Amazon S3 uses the corresponding KMS key, or a
+     * customer-provided key to encrypt the uploaded parts. When you perform a CreateMultipartUpload operation, if you
+     * want to use a different type of encryption setting for the uploaded parts, you can request that Amazon S3
+     * encrypts the object with a different encryption key (such as an Amazon S3 managed key, a KMS key, or a
+     * customer-provided key). When the encryption setting in your request is different from the default encryption
+     * configuration of the destination bucket, the encryption setting in your request takes precedence. If you choose
+     * to provide your own encryption key, the request headers you provide in <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_UploadPart.html">UploadPart</a> and <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_UploadPartCopy.html">UploadPartCopy</a> requests must
+     * match the headers you used in the <code>CreateMultipartUpload</code> request.
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * Use KMS keys (SSE-KMS) that include the Amazon Web Services managed key (<code>aws/s3</code>) and KMS customer
+     * managed keys stored in Key Management Service (KMS) – If you want Amazon Web Services to manage the keys used to
+     * encrypt data, specify the following headers in the request.
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <code>x-amz-server-side-encryption</code>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <code>x-amz-server-side-encryption-aws-kms-key-id</code>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <code>x-amz-server-side-encryption-context</code>
+     * </p>
+     * </li>
+     * </ul>
+     * <note>
+     * <ul>
+     * <li>
+     * <p>
+     * If you specify <code>x-amz-server-side-encryption:aws:kms</code>, but don't provide
+     * <code>x-amz-server-side-encryption-aws-kms-key-id</code>, Amazon S3 uses the Amazon Web Services managed key (
+     * <code>aws/s3</code> key) in KMS to protect the data.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * To perform a multipart upload with encryption by using an Amazon Web Services KMS key, the requester must have
+     * permission to the <code>kms:Decrypt</code> and <code>kms:GenerateDataKey*</code> actions on the key. These
+     * permissions are required because Amazon S3 must decrypt and read data from the encrypted file parts before it
+     * completes the multipart upload. For more information, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/mpuoverview.html#mpuAndPermissions">Multipart upload
+     * API and permissions</a> and <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingKMSEncryption.html">Protecting data using
+     * server-side encryption with Amazon Web Services KMS</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * If your Identity and Access Management (IAM) user or role is in the same Amazon Web Services account as the KMS
+     * key, then you must have these permissions on the key policy. If your IAM user or role is in a different account
+     * from the key, then you must have the permissions on both the key policy and your IAM user or role.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * All <code>GET</code> and <code>PUT</code> requests for an object protected by KMS fail if you don't make them by
+     * using Secure Sockets Layer (SSL), Transport Layer Security (TLS), or Signature Version 4. For information about
+     * configuring any of the officially supported Amazon Web Services SDKs and Amazon Web Services CLI, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingAWSSDK.html#specify-signature-version">Specifying the
+     * Signature Version in Request Authentication</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * </li>
+     * </ul>
+     * </note>
+     * <p>
+     * For more information about server-side encryption with KMS keys (SSE-KMS), see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingKMSEncryption.html">Protecting Data Using
+     * Server-Side Encryption with KMS keys</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * Use customer-provided encryption keys (SSE-C) – If you want to manage your own encryption keys, provide all the
+     * following headers in the request.
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <code>x-amz-server-side-encryption-customer-algorithm</code>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <code>x-amz-server-side-encryption-customer-key</code>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <code>x-amz-server-side-encryption-customer-key-MD5</code>
+     * </p>
+     * </li>
+     * </ul>
+     * <p>
+     * For more information about server-side encryption with customer-provided encryption keys (SSE-C), see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/ServerSideEncryptionCustomerKeys.html"> Protecting
+     * data using server-side encryption with customer-provided encryption keys (SSE-C)</a> in the <i>Amazon S3 User
+     * Guide</i>.
+     * </p>
+     * </li>
+     * </ul>
+     * </li>
+     * <li>
+     * <p>
+     * <b>Directory buckets</b> - For directory buckets, there are only two supported options for server-side
+     * encryption: server-side encryption with Amazon S3 managed keys (SSE-S3) (<code>AES256</code>) and server-side
+     * encryption with KMS keys (SSE-KMS) (<code>aws:kms</code>). We recommend that the bucket's default encryption uses
+     * the desired encryption configuration and you don't override the bucket default encryption in your
+     * <code>CreateSession</code> requests or <code>PUT</code> object requests. Then, new objects are automatically
+     * encrypted with the desired encryption settings. For more information, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-express-serv-side-encryption.html">Protecting data
+     * with server-side encryption</a> in the <i>Amazon S3 User Guide</i>. For more information about the encryption
+     * overriding behaviors in directory buckets, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-express-specifying-kms-encryption.html">Specifying
+     * server-side encryption with KMS for new object uploads</a>.
+     * </p>
+     * <p>
+     * In the Zonal endpoint API calls (except <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_CopyObject.html">CopyObject</a> and <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_UploadPartCopy.html">UploadPartCopy</a>) using the REST
+     * API, the encryption request headers must match the encryption settings that are specified in the
+     * <code>CreateSession</code> request. You can't override the values of the encryption settings (
+     * <code>x-amz-server-side-encryption</code>, <code>x-amz-server-side-encryption-aws-kms-key-id</code>,
+     * <code>x-amz-server-side-encryption-context</code>, and
+     * <code>x-amz-server-side-encryption-bucket-key-enabled</code>) that are specified in the
+     * <code>CreateSession</code> request. You don't need to explicitly specify these encryption settings values in
+     * Zonal endpoint API calls, and Amazon S3 will use the encryption settings values from the
+     * <code>CreateSession</code> request to protect new objects in the directory bucket.
+     * </p>
+     * <note>
+     * <p>
+     * When you use the CLI or the Amazon Web Services SDKs, for <code>CreateSession</code>, the session token refreshes
+     * automatically to avoid service interruptions when a session expires. The CLI or the Amazon Web Services SDKs use
+     * the bucket's default encryption configuration for the <code>CreateSession</code> request. It's not supported to
+     * override the encryption settings values in the <code>CreateSession</code> request. So in the Zonal endpoint API
+     * calls (except <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_CopyObject.html">CopyObject</a> and <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_UploadPartCopy.html">UploadPartCopy</a>), the
+     * encryption request headers must match the default encryption configuration of the directory bucket.
+     * </p>
+     * </note> <note>
+     * <p>
+     * For directory buckets, when you perform a <code>CreateMultipartUpload</code> operation and an
+     * <code>UploadPartCopy</code> operation, the request headers you provide in the <code>CreateMultipartUpload</code>
+     * request must match the default encryption configuration of the destination bucket.
+     * </p>
+     * </note></li>
+     * </ul>
+     * </dd>
+     * <dt>HTTP Host header syntax</dt>
+     * <dd>
+     * <p>
+     * <b>Directory buckets </b> - The HTTP Host header syntax is
+     * <code> <i>Bucket-name</i>.s3express-<i>zone-id</i>.<i>region-code</i>.amazonaws.com</code>.
+     * </p>
+     * </dd>
+     * </dl>
+     * <p>
+     * The following operations are related to <code>CreateMultipartUpload</code>:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_UploadPart.html">UploadPart</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_CompleteMultipartUpload.html">CompleteMultipartUpload
+     * </a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_AbortMultipartUpload.html">AbortMultipartUpload</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListParts.html">ListParts</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListMultipartUploads.html">ListMultipartUploads</a>
+     * </p>
+     * </li>
+     * </ul>
+     *
+     * @param createMultipartUploadRequest
+     * @return Result of the CreateMultipartUpload operation returned by the service.
+     * @throws SdkException
+     *         Base class for all exceptions that can be thrown by the SDK (both service and client). Can be used for
+     *         catch all scenarios.
+     * @throws SdkClientException
+     *         If any client side error occurs such as an IO related failure, failure to get credentials, etc.
+     * @throws S3Exception
+     *         Base class for all service exceptions. Unknown exceptions will be thrown as an instance of this type.
+     * @sample S3Client.CreateMultipartUpload
+     */
+    @Override
+    public CreateMultipartUploadResponse createMultipartUpload(CreateMultipartUploadRequest createMultipartUploadRequest)
+            throws AwsServiceException, SdkClientException, S3Exception {
+
+        HttpResponseHandler<Response<CreateMultipartUploadResponse>> responseHandler = protocolFactory
+                .createCombinedResponseHandler(CreateMultipartUploadResponse::builder,
+                        new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(createMultipartUploadRequest,
+                this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration, createMultipartUploadRequest
+                .overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+                .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "CreateMultipartUpload");
+
+            return clientHandler.execute(new ClientExecutionParams<CreateMultipartUploadRequest, CreateMultipartUploadResponse>()
+                    .withOperationName("CreateMultipartUpload").withProtocolMetadata(protocolMetadata)
+                    .withCombinedResponseHandler(responseHandler).withMetricCollector(apiCallMetricCollector)
+                    .withRequestConfiguration(clientConfiguration).withInput(createMultipartUploadRequest)
+                    .withMarshaller(new CreateMultipartUploadRequestMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    /**
+     * <p>
+     * Creates a session that establishes temporary security credentials to support fast authentication and
+     * authorization for the Zonal endpoint API operations on directory buckets. For more information about Zonal
+     * endpoint API operations that include the Availability Zone in the request endpoint, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-express-APIs.html">S3 Express One Zone APIs</a> in
+     * the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * <p>
+     * To make Zonal endpoint API requests on a directory bucket, use the <code>CreateSession</code> API operation.
+     * Specifically, you grant <code>s3express:CreateSession</code> permission to a bucket in a bucket policy or an IAM
+     * identity-based policy. Then, you use IAM credentials to make the <code>CreateSession</code> API request on the
+     * bucket, which returns temporary security credentials that include the access key ID, secret access key, session
+     * token, and expiration. These credentials have associated permissions to access the Zonal endpoint API operations.
+     * After the session is created, you don’t need to use other policies to grant permissions to each Zonal endpoint
+     * API individually. Instead, in your Zonal endpoint API requests, you sign your requests by applying the temporary
+     * security credentials of the session to the request headers and following the SigV4 protocol for authentication.
+     * You also apply the session token to the <code>x-amz-s3session-token</code> request header for authorization.
+     * Temporary security credentials are scoped to the bucket and expire after 5 minutes. After the expiration time,
+     * any calls that you make with those credentials will fail. You must use IAM credentials again to make a
+     * <code>CreateSession</code> API request that generates a new set of temporary credentials for use. Temporary
+     * credentials cannot be extended or refreshed beyond the original specified interval.
+     * </p>
+     * <p>
+     * If you use Amazon Web Services SDKs, SDKs handle the session token refreshes automatically to avoid service
+     * interruptions when a session expires. We recommend that you use the Amazon Web Services SDKs to initiate and
+     * manage requests to the CreateSession API. For more information, see <a href=
+     * "https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-express-optimizing-performance-guidelines-design-patterns.html#s3-express-optimizing-performance-session-authentication"
+     * >Performance guidelines and design patterns</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * <note>
+     * <ul>
+     * <li>
+     * <p>
+     * You must make requests for this API operation to the Zonal endpoint. These endpoints support virtual-hosted-style
+     * requests in the format
+     * <code>https://<i>bucket-name</i>.s3express-<i>zone-id</i>.<i>region-code</i>.amazonaws.com</code>. Path-style
+     * requests are not supported. For more information about endpoints in Availability Zones, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/endpoint-directory-buckets-AZ.html">Regional and
+     * Zonal endpoints for directory buckets in Availability Zones</a> in the <i>Amazon S3 User Guide</i>. For more
+     * information about endpoints in Local Zones, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-lzs-for-directory-buckets.html">Concepts for
+     * directory buckets in Local Zones</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <b> <code>CopyObject</code> API operation</b> - Unlike other Zonal endpoint API operations, the
+     * <code>CopyObject</code> API operation doesn't use the temporary security credentials returned from the
+     * <code>CreateSession</code> API operation for authentication and authorization. For information about
+     * authentication and authorization of the <code>CopyObject</code> API operation on directory buckets, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_CopyObject.html">CopyObject</a>.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <b> <code>HeadBucket</code> API operation</b> - Unlike other Zonal endpoint API operations, the
+     * <code>HeadBucket</code> API operation doesn't use the temporary security credentials returned from the
+     * <code>CreateSession</code> API operation for authentication and authorization. For information about
+     * authentication and authorization of the <code>HeadBucket</code> API operation on directory buckets, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_HeadBucket.html">HeadBucket</a>.
+     * </p>
+     * </li>
+     * </ul>
+     * </note>
+     * <dl>
+     * <dt>Permissions</dt>
+     * <dd>
+     * <p>
+     * To obtain temporary security credentials, you must create a bucket policy or an IAM identity-based policy that
+     * grants <code>s3express:CreateSession</code> permission to the bucket. In a policy, you can have the
+     * <code>s3express:SessionMode</code> condition key to control who can create a <code>ReadWrite</code> or
+     * <code>ReadOnly</code> session. For more information about <code>ReadWrite</code> or <code>ReadOnly</code>
+     * sessions, see <a href=
+     * "https://docs.aws.amazon.com/AmazonS3/latest/API/API_CreateSession.html#API_CreateSession_RequestParameters">
+     * <code>x-amz-create-session-mode</code> </a>. For example policies, see <a href=
+     * "https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-express-security-iam-example-bucket-policies.html"
+     * >Example bucket policies for S3 Express One Zone</a> and <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-express-security-iam-identity-policies.html"
+     * >Amazon Web Services Identity and Access Management (IAM) identity-based policies for S3 Express One Zone</a> in
+     * the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * <p>
+     * To grant cross-account access to Zonal endpoint API operations, the bucket policy should also grant both accounts
+     * the <code>s3express:CreateSession</code> permission.
+     * </p>
+     * <p>
+     * If you want to encrypt objects with SSE-KMS, you must also have the <code>kms:GenerateDataKey</code> and the
+     * <code>kms:Decrypt</code> permissions in IAM identity-based policies and KMS key policies for the target KMS key.
+     * </p>
+     * </dd>
+     * <dt>Encryption</dt>
+     * <dd>
+     * <p>
+     * For directory buckets, there are only two supported options for server-side encryption: server-side encryption
+     * with Amazon S3 managed keys (SSE-S3) (<code>AES256</code>) and server-side encryption with KMS keys (SSE-KMS) (
+     * <code>aws:kms</code>). We recommend that the bucket's default encryption uses the desired encryption
+     * configuration and you don't override the bucket default encryption in your <code>CreateSession</code> requests or
+     * <code>PUT</code> object requests. Then, new objects are automatically encrypted with the desired encryption
+     * settings. For more information, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-express-serv-side-encryption.html">Protecting data
+     * with server-side encryption</a> in the <i>Amazon S3 User Guide</i>. For more information about the encryption
+     * overriding behaviors in directory buckets, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-express-specifying-kms-encryption.html">Specifying
+     * server-side encryption with KMS for new object uploads</a>.
+     * </p>
+     * <p>
+     * For <a href=
+     * "https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-express-differences.html#s3-express-differences-api-operations"
+     * >Zonal endpoint (object-level) API operations</a> except <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_CopyObject.html">CopyObject</a> and <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_UploadPartCopy.html">UploadPartCopy</a>, you
+     * authenticate and authorize requests through <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_CreateSession.html">CreateSession</a> for low latency.
+     * To encrypt new objects in a directory bucket with SSE-KMS, you must specify SSE-KMS as the directory bucket's
+     * default encryption configuration with a KMS key (specifically, a <a
+     * href="https://docs.aws.amazon.com/kms/latest/developerguide/concepts.html#customer-cmk">customer managed
+     * key</a>). Then, when a session is created for Zonal endpoint API operations, new objects are automatically
+     * encrypted and decrypted with SSE-KMS and S3 Bucket Keys during the session.
+     * </p>
+     * <note>
+     * <p>
+     * Only 1 <a href="https://docs.aws.amazon.com/kms/latest/developerguide/concepts.html#customer-cmk">customer
+     * managed key</a> is supported per directory bucket for the lifetime of the bucket. The <a
+     * href="https://docs.aws.amazon.com/kms/latest/developerguide/concepts.html#aws-managed-cmk">Amazon Web Services
+     * managed key</a> (<code>aws/s3</code>) isn't supported. After you specify SSE-KMS as your bucket's default
+     * encryption configuration with a customer managed key, you can't change the customer managed key for the bucket's
+     * SSE-KMS configuration.
+     * </p>
+     * </note>
+     * <p>
+     * In the Zonal endpoint API calls (except <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_CopyObject.html">CopyObject</a> and <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_UploadPartCopy.html">UploadPartCopy</a>) using the REST
+     * API, you can't override the values of the encryption settings (<code>x-amz-server-side-encryption</code>,
+     * <code>x-amz-server-side-encryption-aws-kms-key-id</code>, <code>x-amz-server-side-encryption-context</code>, and
+     * <code>x-amz-server-side-encryption-bucket-key-enabled</code>) from the <code>CreateSession</code> request. You
+     * don't need to explicitly specify these encryption settings values in Zonal endpoint API calls, and Amazon S3 will
+     * use the encryption settings values from the <code>CreateSession</code> request to protect new objects in the
+     * directory bucket.
+     * </p>
+     * <note>
+     * <p>
+     * When you use the CLI or the Amazon Web Services SDKs, for <code>CreateSession</code>, the session token refreshes
+     * automatically to avoid service interruptions when a session expires. The CLI or the Amazon Web Services SDKs use
+     * the bucket's default encryption configuration for the <code>CreateSession</code> request. It's not supported to
+     * override the encryption settings values in the <code>CreateSession</code> request. Also, in the Zonal endpoint
+     * API calls (except <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_CopyObject.html">CopyObject</a>
+     * and <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_UploadPartCopy.html">UploadPartCopy</a>), it's
+     * not supported to override the values of the encryption settings from the <code>CreateSession</code> request.
+     * </p>
+     * </note></dd>
+     * <dt>HTTP Host header syntax</dt>
+     * <dd>
+     * <p>
+     * <b>Directory buckets </b> - The HTTP Host header syntax is
+     * <code> <i>Bucket-name</i>.s3express-<i>zone-id</i>.<i>region-code</i>.amazonaws.com</code>.
+     * </p>
+     * </dd>
+     * </dl>
+     *
+     * @param createSessionRequest
+     * @return Result of the CreateSession operation returned by the service.
+     * @throws NoSuchBucketException
+     *         The specified bucket does not exist.
+     * @throws SdkException
+     *         Base class for all exceptions that can be thrown by the SDK (both service and client). Can be used for
+     *         catch all scenarios.
+     * @throws SdkClientException
+     *         If any client side error occurs such as an IO related failure, failure to get credentials, etc.
+     * @throws S3Exception
+     *         Base class for all service exceptions. Unknown exceptions will be thrown as an instance of this type.
+     * @sample S3Client.CreateSession
+     */
+    @Override
+    public CreateSessionResponse createSession(CreateSessionRequest createSessionRequest) throws NoSuchBucketException,
+            AwsServiceException, SdkClientException, S3Exception {
+
+        HttpResponseHandler<Response<CreateSessionResponse>> responseHandler = protocolFactory.createCombinedResponseHandler(
+                CreateSessionResponse::builder, new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(createSessionRequest, this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration, createSessionRequest
+                .overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+                .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "CreateSession");
+
+            return clientHandler.execute(new ClientExecutionParams<CreateSessionRequest, CreateSessionResponse>()
+                    .withOperationName("CreateSession").withProtocolMetadata(protocolMetadata)
+                    .withCombinedResponseHandler(responseHandler).withMetricCollector(apiCallMetricCollector)
+                    .withRequestConfiguration(clientConfiguration).withInput(createSessionRequest)
+                    .withMarshaller(new CreateSessionRequestMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    /**
+     * <p>
+     * Deletes the S3 bucket. All objects (including all object versions and delete markers) in the bucket must be
+     * deleted before the bucket itself can be deleted.
+     * </p>
+     * <note>
+     * <ul>
+     * <li>
+     * <p>
+     * <b>Directory buckets</b> - If multipart uploads in a directory bucket are in progress, you can't delete the
+     * bucket until all the in-progress multipart uploads are aborted or completed.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <b>Directory buckets </b> - For directory buckets, you must make requests for this API operation to the Regional
+     * endpoint. These endpoints support path-style requests in the format
+     * <code>https://s3express-control.<i>region-code</i>.amazonaws.com/<i>bucket-name</i> </code>. Virtual-hosted-style
+     * requests aren't supported. For more information about endpoints in Availability Zones, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/endpoint-directory-buckets-AZ.html">Regional and
+     * Zonal endpoints for directory buckets in Availability Zones</a> in the <i>Amazon S3 User Guide</i>. For more
+     * information about endpoints in Local Zones, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-lzs-for-directory-buckets.html">Concepts for
+     * directory buckets in Local Zones</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * </li>
+     * </ul>
+     * </note>
+     * <dl>
+     * <dt>Permissions</dt>
+     * <dd>
+     * <ul>
+     * <li>
+     * <p>
+     * <b>General purpose bucket permissions</b> - You must have the <code>s3:DeleteBucket</code> permission on the
+     * specified bucket in a policy.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <b>Directory bucket permissions</b> - You must have the <code>s3express:DeleteBucket</code> permission in an IAM
+     * identity-based policy instead of a bucket policy. Cross-account access to this API operation isn't supported.
+     * This operation can only be performed by the Amazon Web Services account that owns the resource. For more
+     * information about directory bucket policies and permissions, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-express-security-iam.html">Amazon Web Services
+     * Identity and Access Management (IAM) for S3 Express One Zone</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * </li>
+     * </ul>
+     * </dd>
+     * <dt>HTTP Host header syntax</dt>
+     * <dd>
+     * <p>
+     * <b>Directory buckets </b> - The HTTP Host header syntax is
+     * <code>s3express-control.<i>region-code</i>.amazonaws.com</code>.
+     * </p>
+     * </dd>
+     * </dl>
+     * <p>
+     * The following operations are related to <code>DeleteBucket</code>:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_CreateBucket.html">CreateBucket</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteObject.html">DeleteObject</a>
+     * </p>
+     * </li>
+     * </ul>
+     *
+     * @param deleteBucketRequest
+     * @return Result of the DeleteBucket operation returned by the service.
+     * @throws SdkException
+     *         Base class for all exceptions that can be thrown by the SDK (both service and client). Can be used for
+     *         catch all scenarios.
+     * @throws SdkClientException
+     *         If any client side error occurs such as an IO related failure, failure to get credentials, etc.
+     * @throws S3Exception
+     *         Base class for all service exceptions. Unknown exceptions will be thrown as an instance of this type.
+     * @sample S3Client.DeleteBucket
+     */
+    @Override
+    public DeleteBucketResponse deleteBucket(DeleteBucketRequest deleteBucketRequest) throws AwsServiceException,
+            SdkClientException, S3Exception {
+
+        HttpResponseHandler<Response<DeleteBucketResponse>> responseHandler = protocolFactory.createCombinedResponseHandler(
+                DeleteBucketResponse::builder, new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(deleteBucketRequest, this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration, deleteBucketRequest
+                .overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+                .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "DeleteBucket");
+
+            return clientHandler.execute(new ClientExecutionParams<DeleteBucketRequest, DeleteBucketResponse>()
+                    .withOperationName("DeleteBucket").withProtocolMetadata(protocolMetadata)
+                    .withCombinedResponseHandler(responseHandler).withMetricCollector(apiCallMetricCollector)
+                    .withRequestConfiguration(clientConfiguration).withInput(deleteBucketRequest)
+                    .withMarshaller(new DeleteBucketRequestMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    /**
+     * <note>
+     * <p>
+     * This operation is not supported for directory buckets.
+     * </p>
+     * </note>
+     * <p>
+     * Deletes an analytics configuration for the bucket (specified by the analytics configuration ID).
+     * </p>
+     * <p>
+     * To use this operation, you must have permissions to perform the <code>s3:PutAnalyticsConfiguration</code> action.
+     * The bucket owner has this permission by default. The bucket owner can grant this permission to others. For more
+     * information about permissions, see <a href=
+     * "https://docs.aws.amazon.com/AmazonS3/latest/userguide/using-with-s3-actions.html#using-with-s3-actions-related-to-bucket-subresources"
+     * >Permissions Related to Bucket Subresource Operations</a> and <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-access-control.html">Managing Access Permissions
+     * to Your Amazon S3 Resources</a>.
+     * </p>
+     * <p>
+     * For information about the Amazon S3 analytics feature, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/dev/analytics-storage-class.html">Amazon S3 Analytics – Storage
+     * Class Analysis</a>.
+     * </p>
+     * <p>
+     * The following operations are related to <code>DeleteBucketAnalyticsConfiguration</code>:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketAnalyticsConfiguration.html">
+     * GetBucketAnalyticsConfiguration</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListBucketAnalyticsConfigurations.html">
+     * ListBucketAnalyticsConfigurations</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketAnalyticsConfiguration.html">
+     * PutBucketAnalyticsConfiguration</a>
+     * </p>
+     * </li>
+     * </ul>
+     *
+     * @param deleteBucketAnalyticsConfigurationRequest
+     * @return Result of the DeleteBucketAnalyticsConfiguration operation returned by the service.
+     * @throws SdkException
+     *         Base class for all exceptions that can be thrown by the SDK (both service and client). Can be used for
+     *         catch all scenarios.
+     * @throws SdkClientException
+     *         If any client side error occurs such as an IO related failure, failure to get credentials, etc.
+     * @throws S3Exception
+     *         Base class for all service exceptions. Unknown exceptions will be thrown as an instance of this type.
+     * @sample S3Client.DeleteBucketAnalyticsConfiguration
+     */
+    @Override
+    public DeleteBucketAnalyticsConfigurationResponse deleteBucketAnalyticsConfiguration(
+            DeleteBucketAnalyticsConfigurationRequest deleteBucketAnalyticsConfigurationRequest) throws AwsServiceException,
+            SdkClientException, S3Exception {
+
+        HttpResponseHandler<Response<DeleteBucketAnalyticsConfigurationResponse>> responseHandler = protocolFactory
+                .createCombinedResponseHandler(DeleteBucketAnalyticsConfigurationResponse::builder,
+                        new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(deleteBucketAnalyticsConfigurationRequest,
+                this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration,
+                deleteBucketAnalyticsConfigurationRequest.overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+                .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "DeleteBucketAnalyticsConfiguration");
+
+            return clientHandler
+                    .execute(new ClientExecutionParams<DeleteBucketAnalyticsConfigurationRequest, DeleteBucketAnalyticsConfigurationResponse>()
+                            .withOperationName("DeleteBucketAnalyticsConfiguration").withProtocolMetadata(protocolMetadata)
+                            .withCombinedResponseHandler(responseHandler).withMetricCollector(apiCallMetricCollector)
+                            .withRequestConfiguration(clientConfiguration).withInput(deleteBucketAnalyticsConfigurationRequest)
+                            .withMarshaller(new DeleteBucketAnalyticsConfigurationRequestMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    /// <note>
+    ///
+    /// This operation is not supported for directory buckets.
+    ///
+    /// </note>
+    ///
+    /// Deletes the <code>cors</code> configuration information set for the bucket.
+    ///
+    ///
+    /// To use this operation, you must have permission to perform the <code>s3:PutBucketCORS</code> action. The bucket
+    /// owner has this permission by default and can grant this permission to others.
+    ///
+    ///
+    /// For information about <code>cors</code>, see <a
+    /// href="https://docs.aws.amazon.com/AmazonS3/latest/dev/cors.html">Enabling Cross-Origin Resource Sharing</a> in
+    /// the _Amazon S3 User Guide_.
+    ///
+    /// <p class="title">
+    /// **Related Resources**
+    ///
+    ///
+    ///   -
+    ///
+    ///     <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketCors.html">PutBucketCors</a>
+    ///
+    ///
+    ///   -
+    ///
+    ///     <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/RESTOPTIONSobject.html">RESTOPTIONSobject</a>
+    ///
+    ///
+    ///
+    ///
+    /// @param deleteBucketCorsRequest
+    /// @return Result of the DeleteBucketCors operation returned by the service.
+    /// @throws SdkException
+    ///         Base class for all exceptions that can be thrown by the SDK (both service and client). Can be used for
+    ///         catch all scenarios.
+    /// @throws SdkClientException
+    ///         If any client side error occurs such as an IO related failure, failure to get credentials, etc.
+    /// @throws S3Exception
+    ///         Base class for all service exceptions. Unknown exceptions will be thrown as an instance of this type.
+    /// @sample S3Client.DeleteBucketCors
+    @Override
+    public DeleteBucketCorsResponse deleteBucketCors(DeleteBucketCorsRequest deleteBucketCorsRequest) throws AwsServiceException,
+            SdkClientException, S3Exception {
+
+        HttpResponseHandler<Response<DeleteBucketCorsResponse>> responseHandler = protocolFactory.createCombinedResponseHandler(
+                DeleteBucketCorsResponse::builder, new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(deleteBucketCorsRequest,
+                this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration, deleteBucketCorsRequest
+                .overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+                .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "DeleteBucketCors");
+
+            return clientHandler.execute(new ClientExecutionParams<DeleteBucketCorsRequest, DeleteBucketCorsResponse>()
+                    .withOperationName("DeleteBucketCors").withProtocolMetadata(protocolMetadata)
+                    .withCombinedResponseHandler(responseHandler).withMetricCollector(apiCallMetricCollector)
+                    .withRequestConfiguration(clientConfiguration).withInput(deleteBucketCorsRequest)
+                    .withMarshaller(new DeleteBucketCorsRequestMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    /**
+     * <p>
+     * This implementation of the DELETE action resets the default encryption for the bucket as server-side encryption
+     * with Amazon S3 managed keys (SSE-S3).
+     * </p>
+     * <note>
+     * <ul>
+     * <li>
+     * <p>
+     * <b>General purpose buckets</b> - For information about the bucket default encryption feature, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/dev/bucket-encryption.html">Amazon S3 Bucket Default
+     * Encryption</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <b>Directory buckets</b> - For directory buckets, there are only two supported options for server-side
+     * encryption: SSE-S3 and SSE-KMS. For information about the default encryption configuration in directory buckets,
+     * see <a href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-express-bucket-encryption.html">Setting
+     * default server-side encryption behavior for directory buckets</a>.
+     * </p>
+     * </li>
+     * </ul>
+     * </note>
+     * <dl>
+     * <dt>Permissions</dt>
+     * <dd>
+     * <ul>
+     * <li>
+     * <p>
+     * <b>General purpose bucket permissions</b> - The <code>s3:PutEncryptionConfiguration</code> permission is required
+     * in a policy. The bucket owner has this permission by default. The bucket owner can grant this permission to
+     * others. For more information about permissions, see <a href=
+     * "https://docs.aws.amazon.com/AmazonS3/latest/userguide/using-with-s3-actions.html#using-with-s3-actions-related-to-bucket-subresources"
+     * >Permissions Related to Bucket Operations</a> and <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-access-control.html">Managing Access Permissions
+     * to Your Amazon S3 Resources</a>.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <b>Directory bucket permissions</b> - To grant access to this API operation, you must have the
+     * <code>s3express:PutEncryptionConfiguration</code> permission in an IAM identity-based policy instead of a bucket
+     * policy. Cross-account access to this API operation isn't supported. This operation can only be performed by the
+     * Amazon Web Services account that owns the resource. For more information about directory bucket policies and
+     * permissions, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-express-security-iam.html">Amazon Web Services
+     * Identity and Access Management (IAM) for S3 Express One Zone</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * </li>
+     * </ul>
+     * </dd>
+     * <dt>HTTP Host header syntax</dt>
+     * <dd>
+     * <p>
+     * <b>Directory buckets </b> - The HTTP Host header syntax is
+     * <code>s3express-control.<i>region-code</i>.amazonaws.com</code>.
+     * </p>
+     * </dd>
+     * </dl>
+     * <p>
+     * The following operations are related to <code>DeleteBucketEncryption</code>:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketEncryption.html">PutBucketEncryption</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketEncryption.html">GetBucketEncryption</a>
+     * </p>
+     * </li>
+     * </ul>
+     *
+     * @param deleteBucketEncryptionRequest
+     * @return Result of the DeleteBucketEncryption operation returned by the service.
+     * @throws SdkException
+     *         Base class for all exceptions that can be thrown by the SDK (both service and client). Can be used for
+     *         catch all scenarios.
+     * @throws SdkClientException
+     *         If any client side error occurs such as an IO related failure, failure to get credentials, etc.
+     * @throws S3Exception
+     *         Base class for all service exceptions. Unknown exceptions will be thrown as an instance of this type.
+     * @sample S3Client.DeleteBucketEncryption
+     */
+    @Override
+    public DeleteBucketEncryptionResponse deleteBucketEncryption(DeleteBucketEncryptionRequest deleteBucketEncryptionRequest)
+            throws AwsServiceException, SdkClientException, S3Exception {
+
+        HttpResponseHandler<Response<DeleteBucketEncryptionResponse>> responseHandler = protocolFactory
+                .createCombinedResponseHandler(DeleteBucketEncryptionResponse::builder,
+                        new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(deleteBucketEncryptionRequest,
+                this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration, deleteBucketEncryptionRequest
+                .overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+                .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "DeleteBucketEncryption");
+
+            return clientHandler
+                    .execute(new ClientExecutionParams<DeleteBucketEncryptionRequest, DeleteBucketEncryptionResponse>()
+                            .withOperationName("DeleteBucketEncryption").withProtocolMetadata(protocolMetadata)
+                            .withCombinedResponseHandler(responseHandler).withMetricCollector(apiCallMetricCollector)
+                            .withRequestConfiguration(clientConfiguration).withInput(deleteBucketEncryptionRequest)
+                            .withMarshaller(new DeleteBucketEncryptionRequestMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    /**
+     * <note>
+     * <p>
+     * This operation is not supported for directory buckets.
+     * </p>
+     * </note>
+     * <p>
+     * Deletes the S3 Intelligent-Tiering configuration from the specified bucket.
+     * </p>
+     * <p>
+     * The S3 Intelligent-Tiering storage class is designed to optimize storage costs by automatically moving data to
+     * the most cost-effective storage access tier, without performance impact or operational overhead. S3
+     * Intelligent-Tiering delivers automatic cost savings in three low latency and high throughput access tiers. To get
+     * the lowest storage cost on data that can be accessed in minutes to hours, you can choose to activate additional
+     * archiving capabilities.
+     * </p>
+     * <p>
+     * The S3 Intelligent-Tiering storage class is the ideal storage class for data with unknown, changing, or
+     * unpredictable access patterns, independent of object size or retention period. If the size of an object is less
+     * than 128 KB, it is not monitored and not eligible for auto-tiering. Smaller objects can be stored, but they are
+     * always charged at the Frequent Access tier rates in the S3 Intelligent-Tiering storage class.
+     * </p>
+     * <p>
+     * For more information, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/dev/storage-class-intro.html#sc-dynamic-data-access">Storage
+     * class for automatically optimizing frequently and infrequently accessed objects</a>.
+     * </p>
+     * <p>
+     * Operations related to <code>DeleteBucketIntelligentTieringConfiguration</code> include:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketIntelligentTieringConfiguration.html">
+     * GetBucketIntelligentTieringConfiguration</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketIntelligentTieringConfiguration.html">
+     * PutBucketIntelligentTieringConfiguration</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListBucketIntelligentTieringConfigurations.html">
+     * ListBucketIntelligentTieringConfigurations</a>
+     * </p>
+     * </li>
+     * </ul>
+     *
+     * @param deleteBucketIntelligentTieringConfigurationRequest
+     * @return Result of the DeleteBucketIntelligentTieringConfiguration operation returned by the service.
+     * @throws SdkException
+     *         Base class for all exceptions that can be thrown by the SDK (both service and client). Can be used for
+     *         catch all scenarios.
+     * @throws SdkClientException
+     *         If any client side error occurs such as an IO related failure, failure to get credentials, etc.
+     * @throws S3Exception
+     *         Base class for all service exceptions. Unknown exceptions will be thrown as an instance of this type.
+     * @sample S3Client.DeleteBucketIntelligentTieringConfiguration
+     */
+    @Override
+    public DeleteBucketIntelligentTieringConfigurationResponse deleteBucketIntelligentTieringConfiguration(
+            DeleteBucketIntelligentTieringConfigurationRequest deleteBucketIntelligentTieringConfigurationRequest)
+            throws AwsServiceException, SdkClientException, S3Exception {
+
+        HttpResponseHandler<Response<DeleteBucketIntelligentTieringConfigurationResponse>> responseHandler = protocolFactory
+                .createCombinedResponseHandler(DeleteBucketIntelligentTieringConfigurationResponse::builder,
+                        new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(
+                deleteBucketIntelligentTieringConfigurationRequest, this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration,
+                deleteBucketIntelligentTieringConfigurationRequest.overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+                .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "DeleteBucketIntelligentTieringConfiguration");
+
+            return clientHandler
+                    .execute(new ClientExecutionParams<DeleteBucketIntelligentTieringConfigurationRequest, DeleteBucketIntelligentTieringConfigurationResponse>()
+                            .withOperationName("DeleteBucketIntelligentTieringConfiguration")
+                            .withProtocolMetadata(protocolMetadata).withCombinedResponseHandler(responseHandler)
+                            .withMetricCollector(apiCallMetricCollector).withRequestConfiguration(clientConfiguration)
+                            .withInput(deleteBucketIntelligentTieringConfigurationRequest)
+                            .withMarshaller(new DeleteBucketIntelligentTieringConfigurationRequestMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    /**
+     * <note>
+     * <p>
+     * This operation is not supported for directory buckets.
+     * </p>
+     * </note>
+     * <p>
+     * Deletes an inventory configuration (identified by the inventory ID) from the bucket.
+     * </p>
+     * <p>
+     * To use this operation, you must have permissions to perform the <code>s3:PutInventoryConfiguration</code> action.
+     * The bucket owner has this permission by default. The bucket owner can grant this permission to others. For more
+     * information about permissions, see <a href=
+     * "https://docs.aws.amazon.com/AmazonS3/latest/userguide/using-with-s3-actions.html#using-with-s3-actions-related-to-bucket-subresources"
+     * >Permissions Related to Bucket Subresource Operations</a> and <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-access-control.html">Managing Access Permissions
+     * to Your Amazon S3 Resources</a>.
+     * </p>
+     * <p>
+     * For information about the Amazon S3 inventory feature, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/dev/storage-inventory.html">Amazon S3 Inventory</a>.
+     * </p>
+     * <p>
+     * Operations related to <code>DeleteBucketInventoryConfiguration</code> include:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketInventoryConfiguration.html">
+     * GetBucketInventoryConfiguration</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketInventoryConfiguration.html">
+     * PutBucketInventoryConfiguration</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListBucketInventoryConfigurations.html">
+     * ListBucketInventoryConfigurations</a>
+     * </p>
+     * </li>
+     * </ul>
+     *
+     * @param deleteBucketInventoryConfigurationRequest
+     * @return Result of the DeleteBucketInventoryConfiguration operation returned by the service.
+     * @throws SdkException
+     *         Base class for all exceptions that can be thrown by the SDK (both service and client). Can be used for
+     *         catch all scenarios.
+     * @throws SdkClientException
+     *         If any client side error occurs such as an IO related failure, failure to get credentials, etc.
+     * @throws S3Exception
+     *         Base class for all service exceptions. Unknown exceptions will be thrown as an instance of this type.
+     * @sample S3Client.DeleteBucketInventoryConfiguration
+     */
+    @Override
+    public DeleteBucketInventoryConfigurationResponse deleteBucketInventoryConfiguration(
+            DeleteBucketInventoryConfigurationRequest deleteBucketInventoryConfigurationRequest) throws AwsServiceException,
+            SdkClientException, S3Exception {
+
+        HttpResponseHandler<Response<DeleteBucketInventoryConfigurationResponse>> responseHandler = protocolFactory
+                .createCombinedResponseHandler(DeleteBucketInventoryConfigurationResponse::builder,
+                        new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(deleteBucketInventoryConfigurationRequest,
+                this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration,
+                deleteBucketInventoryConfigurationRequest.overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+                .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "DeleteBucketInventoryConfiguration");
+
+            return clientHandler
+                    .execute(new ClientExecutionParams<DeleteBucketInventoryConfigurationRequest, DeleteBucketInventoryConfigurationResponse>()
+                            .withOperationName("DeleteBucketInventoryConfiguration").withProtocolMetadata(protocolMetadata)
+                            .withCombinedResponseHandler(responseHandler).withMetricCollector(apiCallMetricCollector)
+                            .withRequestConfiguration(clientConfiguration).withInput(deleteBucketInventoryConfigurationRequest)
+                            .withMarshaller(new DeleteBucketInventoryConfigurationRequestMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    /**
+     * <p>
+     * Deletes the lifecycle configuration from the specified bucket. Amazon S3 removes all the lifecycle configuration
+     * rules in the lifecycle subresource associated with the bucket. Your objects never expire, and Amazon S3 no longer
+     * automatically deletes any objects on the basis of rules contained in the deleted lifecycle configuration.
+     * </p>
+     * <dl>
+     * <dt>Permissions</dt>
+     * <dd>
+     * <ul>
+     * <li>
+     * <p>
+     * <b>General purpose bucket permissions</b> - By default, all Amazon S3 resources are private, including buckets,
+     * objects, and related subresources (for example, lifecycle configuration and website configuration). Only the
+     * resource owner (that is, the Amazon Web Services account that created it) can access the resource. The resource
+     * owner can optionally grant access permissions to others by writing an access policy. For this operation, a user
+     * must have the <code>s3:PutLifecycleConfiguration</code> permission.
+     * </p>
+     * <p>
+     * For more information about permissions, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-access-control.html">Managing Access Permissions
+     * to Your Amazon S3 Resources</a>.
+     * </p>
+     * </li>
+     * </ul>
+     * <ul>
+     * <li>
+     * <p>
+     * <b>Directory bucket permissions</b> - You must have the <code>s3express:PutLifecycleConfiguration</code>
+     * permission in an IAM identity-based policy to use this operation. Cross-account access to this API operation
+     * isn't supported. The resource owner can optionally grant access permissions to others by creating a role or user
+     * for them as long as they are within the same account as the owner and resource.
+     * </p>
+     * <p>
+     * For more information about directory bucket policies and permissions, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-express-security-iam.html">Authorizing Regional
+     * endpoint APIs with IAM</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * <note>
+     * <p>
+     * <b>Directory buckets </b> - For directory buckets, you must make requests for this API operation to the Regional
+     * endpoint. These endpoints support path-style requests in the format
+     * <code>https://s3express-control.<i>region-code</i>.amazonaws.com/<i>bucket-name</i> </code>. Virtual-hosted-style
+     * requests aren't supported. For more information about endpoints in Availability Zones, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/endpoint-directory-buckets-AZ.html">Regional and
+     * Zonal endpoints for directory buckets in Availability Zones</a> in the <i>Amazon S3 User Guide</i>. For more
+     * information about endpoints in Local Zones, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-lzs-for-directory-buckets.html">Concepts for
+     * directory buckets in Local Zones</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * </note></li>
+     * </ul>
+     * </dd>
+     * </dl>
+     * <dl>
+     * <dt>HTTP Host header syntax</dt>
+     * <dd>
+     * <p>
+     * <b>Directory buckets </b> - The HTTP Host header syntax is
+     * <code>s3express-control.<i>region</i>.amazonaws.com</code>.
+     * </p>
+     * </dd>
+     * </dl>
+     * <p>
+     * For more information about the object expiration, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/dev/intro-lifecycle-rules.html#intro-lifecycle-rules-actions"
+     * >Elements to Describe Lifecycle Actions</a>.
+     * </p>
+     * <p>
+     * Related actions include:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketLifecycleConfiguration.html">
+     * PutBucketLifecycleConfiguration</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketLifecycleConfiguration.html">
+     * GetBucketLifecycleConfiguration</a>
+     * </p>
+     * </li>
+     * </ul>
+     *
+     * @param deleteBucketLifecycleRequest
+     * @return Result of the DeleteBucketLifecycle operation returned by the service.
+     * @throws SdkException
+     *         Base class for all exceptions that can be thrown by the SDK (both service and client). Can be used for
+     *         catch all scenarios.
+     * @throws SdkClientException
+     *         If any client side error occurs such as an IO related failure, failure to get credentials, etc.
+     * @throws S3Exception
+     *         Base class for all service exceptions. Unknown exceptions will be thrown as an instance of this type.
+     * @sample S3Client.DeleteBucketLifecycle
+     */
+    @Override
+    public DeleteBucketLifecycleResponse deleteBucketLifecycle(DeleteBucketLifecycleRequest deleteBucketLifecycleRequest)
+            throws AwsServiceException, SdkClientException, S3Exception {
+
+        HttpResponseHandler<Response<DeleteBucketLifecycleResponse>> responseHandler = protocolFactory
+                .createCombinedResponseHandler(DeleteBucketLifecycleResponse::builder,
+                        new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(deleteBucketLifecycleRequest,
+                this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration, deleteBucketLifecycleRequest
+                .overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+                .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "DeleteBucketLifecycle");
+
+            return clientHandler.execute(new ClientExecutionParams<DeleteBucketLifecycleRequest, DeleteBucketLifecycleResponse>()
+                    .withOperationName("DeleteBucketLifecycle").withProtocolMetadata(protocolMetadata)
+                    .withCombinedResponseHandler(responseHandler).withMetricCollector(apiCallMetricCollector)
+                    .withRequestConfiguration(clientConfiguration).withInput(deleteBucketLifecycleRequest)
+                    .withMarshaller(new DeleteBucketLifecycleRequestMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    /**
+     * <p>
+     * Deletes a metadata table configuration from a general purpose bucket. For more information, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/metadata-tables-overview.html">Accelerating data
+     * discovery with S3 Metadata</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * <dl>
+     * <dt>Permissions</dt>
+     * <dd>
+     * <p>
+     * To use this operation, you must have the <code>s3:DeleteBucketMetadataTableConfiguration</code> permission. For
+     * more information, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/metadata-tables-permissions.html">Setting up
+     * permissions for configuring metadata tables</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * </dd>
+     * </dl>
+     * <p>
+     * The following operations are related to <code>DeleteBucketMetadataTableConfiguration</code>:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_CreateBucketMetadataTableConfiguration.html">
+     * CreateBucketMetadataTableConfiguration</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketMetadataTableConfiguration.html">
+     * GetBucketMetadataTableConfiguration</a>
+     * </p>
+     * </li>
+     * </ul>
+     *
+     * @param deleteBucketMetadataTableConfigurationRequest
+     * @return Result of the DeleteBucketMetadataTableConfiguration operation returned by the service.
+     * @throws SdkException
+     *         Base class for all exceptions that can be thrown by the SDK (both service and client). Can be used for
+     *         catch all scenarios.
+     * @throws SdkClientException
+     *         If any client side error occurs such as an IO related failure, failure to get credentials, etc.
+     * @throws S3Exception
+     *         Base class for all service exceptions. Unknown exceptions will be thrown as an instance of this type.
+     * @sample S3Client.DeleteBucketMetadataTableConfiguration
+     */
+    @Override
+    public DeleteBucketMetadataTableConfigurationResponse deleteBucketMetadataTableConfiguration(
+            DeleteBucketMetadataTableConfigurationRequest deleteBucketMetadataTableConfigurationRequest)
+            throws AwsServiceException, SdkClientException, S3Exception {
+
+        HttpResponseHandler<Response<DeleteBucketMetadataTableConfigurationResponse>> responseHandler = protocolFactory
+                .createCombinedResponseHandler(DeleteBucketMetadataTableConfigurationResponse::builder,
+                        new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(deleteBucketMetadataTableConfigurationRequest,
+                this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration,
+                deleteBucketMetadataTableConfigurationRequest.overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+                .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "DeleteBucketMetadataTableConfiguration");
+
+            return clientHandler
+                    .execute(new ClientExecutionParams<DeleteBucketMetadataTableConfigurationRequest, DeleteBucketMetadataTableConfigurationResponse>()
+                            .withOperationName("DeleteBucketMetadataTableConfiguration").withProtocolMetadata(protocolMetadata)
+                            .withCombinedResponseHandler(responseHandler).withMetricCollector(apiCallMetricCollector)
+                            .withRequestConfiguration(clientConfiguration)
+                            .withInput(deleteBucketMetadataTableConfigurationRequest)
+                            .withMarshaller(new DeleteBucketMetadataTableConfigurationRequestMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    /// <note>
+    ///
+    /// This operation is not supported for directory buckets.
+    ///
+    /// </note>
+    ///
+    /// Deletes a metrics configuration for the Amazon CloudWatch request metrics (specified by the metrics configuration
+    /// ID) from the bucket. Note that this doesn't include the daily storage metrics.
+    ///
+    ///
+    /// To use this operation, you must have permissions to perform the <code>s3:PutMetricsConfiguration</code> action.
+    /// The bucket owner has this permission by default. The bucket owner can grant this permission to others. For more
+    /// information about permissions, see <a href=
+    /// "https://docs.aws.amazon.com/AmazonS3/latest/userguide/using-with-s3-actions.html#using-with-s3-actions-related-to-bucket-subresources"
+    /// >Permissions Related to Bucket Subresource Operations</a> and <a
+    /// href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-access-control.html">Managing Access Permissions
+    /// to Your Amazon S3 Resources</a>.
+    ///
+    ///
+    /// For information about CloudWatch request metrics for Amazon S3, see <a
+    /// href="https://docs.aws.amazon.com/AmazonS3/latest/dev/cloudwatch-monitoring.html">Monitoring Metrics with Amazon
+    /// CloudWatch</a>.
+    ///
+    ///
+    /// The following operations are related to <code>DeleteBucketMetricsConfiguration</code>:
+    ///
+    ///
+    ///   -
+    ///
+    ///     <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketMetricsConfiguration.html">
+    ///     GetBucketMetricsConfiguration</a>
+    ///
+    ///
+    ///   -
+    ///
+    ///     <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketMetricsConfiguration.html">
+    ///     PutBucketMetricsConfiguration</a>
+    ///
+    ///
+    ///   -
+    ///
+    ///     <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListBucketMetricsConfigurations.html">
+    ///     ListBucketMetricsConfigurations</a>
+    ///
+    ///
+    ///   -
+    ///
+    ///     <a href="https://docs.aws.amazon.com/AmazonS3/latest/dev/cloudwatch-monitoring.html">Monitoring Metrics with
+    ///     Amazon CloudWatch</a>
+    ///
+    ///
+    ///
+    ///
+    /// @param deleteBucketMetricsConfigurationRequest
+    /// @return Result of the DeleteBucketMetricsConfiguration operation returned by the service.
+    /// @throws SdkException
+    ///         Base class for all exceptions that can be thrown by the SDK (both service and client). Can be used for
+    ///         catch all scenarios.
+    /// @throws SdkClientException
+    ///         If any client side error occurs such as an IO related failure, failure to get credentials, etc.
+    /// @throws S3Exception
+    ///         Base class for all service exceptions. Unknown exceptions will be thrown as an instance of this type.
+    /// @sample S3Client.DeleteBucketMetricsConfiguration
+    @Override
+    public DeleteBucketMetricsConfigurationResponse deleteBucketMetricsConfiguration(
+            DeleteBucketMetricsConfigurationRequest deleteBucketMetricsConfigurationRequest) throws AwsServiceException,
+            SdkClientException, S3Exception {
+
+        HttpResponseHandler<Response<DeleteBucketMetricsConfigurationResponse>> responseHandler = protocolFactory
+                .createCombinedResponseHandler(DeleteBucketMetricsConfigurationResponse::builder,
+                        new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(deleteBucketMetricsConfigurationRequest,
+                this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration,
+                deleteBucketMetricsConfigurationRequest.overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+                .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "DeleteBucketMetricsConfiguration");
+
+            return clientHandler
+                    .execute(new ClientExecutionParams<DeleteBucketMetricsConfigurationRequest, DeleteBucketMetricsConfigurationResponse>()
+                            .withOperationName("DeleteBucketMetricsConfiguration").withProtocolMetadata(protocolMetadata)
+                            .withCombinedResponseHandler(responseHandler).withMetricCollector(apiCallMetricCollector)
+                            .withRequestConfiguration(clientConfiguration).withInput(deleteBucketMetricsConfigurationRequest)
+                            .withMarshaller(new DeleteBucketMetricsConfigurationRequestMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    /**
+     * <note>
+     * <p>
+     * This operation is not supported for directory buckets.
+     * </p>
+     * </note>
+     * <p>
+     * Removes <code>OwnershipControls</code> for an Amazon S3 bucket. To use this operation, you must have the
+     * <code>s3:PutBucketOwnershipControls</code> permission. For more information about Amazon S3 permissions, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/dev/using-with-s3-actions.html">Specifying Permissions in a
+     * Policy</a>.
+     * </p>
+     * <p>
+     * For information about Amazon S3 Object Ownership, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/dev/about-object-ownership.html">Using Object Ownership</a>.
+     * </p>
+     * <p>
+     * The following operations are related to <code>DeleteBucketOwnershipControls</code>:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <a>GetBucketOwnershipControls</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a>PutBucketOwnershipControls</a>
+     * </p>
+     * </li>
+     * </ul>
+     *
+     * @param deleteBucketOwnershipControlsRequest
+     * @return Result of the DeleteBucketOwnershipControls operation returned by the service.
+     * @throws SdkException
+     *         Base class for all exceptions that can be thrown by the SDK (both service and client). Can be used for
+     *         catch all scenarios.
+     * @throws SdkClientException
+     *         If any client side error occurs such as an IO related failure, failure to get credentials, etc.
+     * @throws S3Exception
+     *         Base class for all service exceptions. Unknown exceptions will be thrown as an instance of this type.
+     * @sample S3Client.DeleteBucketOwnershipControls
+     */
+    @Override
+    public DeleteBucketOwnershipControlsResponse deleteBucketOwnershipControls(
+            DeleteBucketOwnershipControlsRequest deleteBucketOwnershipControlsRequest) throws AwsServiceException,
+            SdkClientException, S3Exception {
+
+        HttpResponseHandler<Response<DeleteBucketOwnershipControlsResponse>> responseHandler = protocolFactory
+                .createCombinedResponseHandler(DeleteBucketOwnershipControlsResponse::builder,
+                        new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(deleteBucketOwnershipControlsRequest,
+                this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration,
+                deleteBucketOwnershipControlsRequest.overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+                .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "DeleteBucketOwnershipControls");
+
+            return clientHandler
+                    .execute(new ClientExecutionParams<DeleteBucketOwnershipControlsRequest, DeleteBucketOwnershipControlsResponse>()
+                            .withOperationName("DeleteBucketOwnershipControls").withProtocolMetadata(protocolMetadata)
+                            .withCombinedResponseHandler(responseHandler).withMetricCollector(apiCallMetricCollector)
+                            .withRequestConfiguration(clientConfiguration).withInput(deleteBucketOwnershipControlsRequest)
+                            .withMarshaller(new DeleteBucketOwnershipControlsRequestMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    /**
+     * <p>
+     * Deletes the policy of a specified bucket.
+     * </p>
+     * <note>
+     * <p>
+     * <b>Directory buckets </b> - For directory buckets, you must make requests for this API operation to the Regional
+     * endpoint. These endpoints support path-style requests in the format
+     * <code>https://s3express-control.<i>region-code</i>.amazonaws.com/<i>bucket-name</i> </code>. Virtual-hosted-style
+     * requests aren't supported. For more information about endpoints in Availability Zones, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/endpoint-directory-buckets-AZ.html">Regional and
+     * Zonal endpoints for directory buckets in Availability Zones</a> in the <i>Amazon S3 User Guide</i>. For more
+     * information about endpoints in Local Zones, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-lzs-for-directory-buckets.html">Concepts for
+     * directory buckets in Local Zones</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * </note>
+     * <dl>
+     * <dt>Permissions</dt>
+     * <dd>
+     * <p>
+     * If you are using an identity other than the root user of the Amazon Web Services account that owns the bucket,
+     * the calling identity must both have the <code>DeleteBucketPolicy</code> permissions on the specified bucket and
+     * belong to the bucket owner's account in order to use this operation.
+     * </p>
+     * <p>
+     * If you don't have <code>DeleteBucketPolicy</code> permissions, Amazon S3 returns a <code>403 Access Denied</code>
+     * error. If you have the correct permissions, but you're not using an identity that belongs to the bucket owner's
+     * account, Amazon S3 returns a <code>405 Method Not Allowed</code> error.
+     * </p>
+     * <important>
+     * <p>
+     * To ensure that bucket owners don't inadvertently lock themselves out of their own buckets, the root principal in
+     * a bucket owner's Amazon Web Services account can perform the <code>GetBucketPolicy</code>,
+     * <code>PutBucketPolicy</code>, and <code>DeleteBucketPolicy</code> API actions, even if their bucket policy
+     * explicitly denies the root principal's access. Bucket owner root principals can only be blocked from performing
+     * these API actions by VPC endpoint policies and Amazon Web Services Organizations policies.
+     * </p>
+     * </important>
+     * <ul>
+     * <li>
+     * <p>
+     * <b>General purpose bucket permissions</b> - The <code>s3:DeleteBucketPolicy</code> permission is required in a
+     * policy. For more information about general purpose buckets bucket policies, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/dev/using-iam-policies.html">Using Bucket Policies and User
+     * Policies</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <b>Directory bucket permissions</b> - To grant access to this API operation, you must have the
+     * <code>s3express:DeleteBucketPolicy</code> permission in an IAM identity-based policy instead of a bucket policy.
+     * Cross-account access to this API operation isn't supported. This operation can only be performed by the Amazon
+     * Web Services account that owns the resource. For more information about directory bucket policies and
+     * permissions, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-express-security-iam.html">Amazon Web Services
+     * Identity and Access Management (IAM) for S3 Express One Zone</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * </li>
+     * </ul>
+     * </dd>
+     * <dt>HTTP Host header syntax</dt>
+     * <dd>
+     * <p>
+     * <b>Directory buckets </b> - The HTTP Host header syntax is
+     * <code>s3express-control.<i>region-code</i>.amazonaws.com</code>.
+     * </p>
+     * </dd>
+     * </dl>
+     * <p>
+     * The following operations are related to <code>DeleteBucketPolicy</code>
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_CreateBucket.html">CreateBucket</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteObject.html">DeleteObject</a>
+     * </p>
+     * </li>
+     * </ul>
+     *
+     * @param deleteBucketPolicyRequest
+     * @return Result of the DeleteBucketPolicy operation returned by the service.
+     * @throws SdkException
+     *         Base class for all exceptions that can be thrown by the SDK (both service and client). Can be used for
+     *         catch all scenarios.
+     * @throws SdkClientException
+     *         If any client side error occurs such as an IO related failure, failure to get credentials, etc.
+     * @throws S3Exception
+     *         Base class for all service exceptions. Unknown exceptions will be thrown as an instance of this type.
+     * @sample S3Client.DeleteBucketPolicy
+     */
+    @Override
+    public DeleteBucketPolicyResponse deleteBucketPolicy(DeleteBucketPolicyRequest deleteBucketPolicyRequest)
+            throws AwsServiceException, SdkClientException, S3Exception {
+
+        HttpResponseHandler<Response<DeleteBucketPolicyResponse>> responseHandler = protocolFactory
+                .createCombinedResponseHandler(DeleteBucketPolicyResponse::builder,
+                        new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(deleteBucketPolicyRequest,
+                this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration, deleteBucketPolicyRequest
+                .overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+                .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "DeleteBucketPolicy");
+
+            return clientHandler.execute(new ClientExecutionParams<DeleteBucketPolicyRequest, DeleteBucketPolicyResponse>()
+                    .withOperationName("DeleteBucketPolicy").withProtocolMetadata(protocolMetadata)
+                    .withCombinedResponseHandler(responseHandler).withMetricCollector(apiCallMetricCollector)
+                    .withRequestConfiguration(clientConfiguration).withInput(deleteBucketPolicyRequest)
+                    .withMarshaller(new DeleteBucketPolicyRequestMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    /**
+     * <note>
+     * <p>
+     * This operation is not supported for directory buckets.
+     * </p>
+     * </note>
+     * <p>
+     * Deletes the replication configuration from the bucket.
+     * </p>
+     * <p>
+     * To use this operation, you must have permissions to perform the <code>s3:PutReplicationConfiguration</code>
+     * action. The bucket owner has these permissions by default and can grant it to others. For more information about
+     * permissions, see <a href=
+     * "https://docs.aws.amazon.com/AmazonS3/latest/userguide/using-with-s3-actions.html#using-with-s3-actions-related-to-bucket-subresources"
+     * >Permissions Related to Bucket Subresource Operations</a> and <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-access-control.html">Managing Access Permissions
+     * to Your Amazon S3 Resources</a>.
+     * </p>
+     * <note>
+     * <p>
+     * It can take a while for the deletion of a replication configuration to fully propagate.
+     * </p>
+     * </note>
+     * <p>
+     * For information about replication configuration, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/dev/replication.html">Replication</a> in the <i>Amazon S3 User
+     * Guide</i>.
+     * </p>
+     * <p>
+     * The following operations are related to <code>DeleteBucketReplication</code>:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketReplication.html">PutBucketReplication</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketReplication.html">GetBucketReplication</a>
+     * </p>
+     * </li>
+     * </ul>
+     *
+     * @param deleteBucketReplicationRequest
+     * @return Result of the DeleteBucketReplication operation returned by the service.
+     * @throws SdkException
+     *         Base class for all exceptions that can be thrown by the SDK (both service and client). Can be used for
+     *         catch all scenarios.
+     * @throws SdkClientException
+     *         If any client side error occurs such as an IO related failure, failure to get credentials, etc.
+     * @throws S3Exception
+     *         Base class for all service exceptions. Unknown exceptions will be thrown as an instance of this type.
+     * @sample S3Client.DeleteBucketReplication
+     */
+    @Override
+    public DeleteBucketReplicationResponse deleteBucketReplication(DeleteBucketReplicationRequest deleteBucketReplicationRequest)
+            throws AwsServiceException, SdkClientException, S3Exception {
+
+        HttpResponseHandler<Response<DeleteBucketReplicationResponse>> responseHandler = protocolFactory
+                .createCombinedResponseHandler(DeleteBucketReplicationResponse::builder,
+                        new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(deleteBucketReplicationRequest,
+                this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration, deleteBucketReplicationRequest
+                .overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+                .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "DeleteBucketReplication");
+
+            return clientHandler
+                    .execute(new ClientExecutionParams<DeleteBucketReplicationRequest, DeleteBucketReplicationResponse>()
+                            .withOperationName("DeleteBucketReplication").withProtocolMetadata(protocolMetadata)
+                            .withCombinedResponseHandler(responseHandler).withMetricCollector(apiCallMetricCollector)
+                            .withRequestConfiguration(clientConfiguration).withInput(deleteBucketReplicationRequest)
+                            .withMarshaller(new DeleteBucketReplicationRequestMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    /**
+     * <note>
+     * <p>
+     * This operation is not supported for directory buckets.
+     * </p>
+     * </note>
+     * <p>
+     * Deletes the tags from the bucket.
+     * </p>
+     * <p>
+     * To use this operation, you must have permission to perform the <code>s3:PutBucketTagging</code> action. By
+     * default, the bucket owner has this permission and can grant this permission to others.
+     * </p>
+     * <p>
+     * The following operations are related to <code>DeleteBucketTagging</code>:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketTagging.html">GetBucketTagging</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketTagging.html">PutBucketTagging</a>
+     * </p>
+     * </li>
+     * </ul>
+     *
+     * @param deleteBucketTaggingRequest
+     * @return Result of the DeleteBucketTagging operation returned by the service.
+     * @throws SdkException
+     *         Base class for all exceptions that can be thrown by the SDK (both service and client). Can be used for
+     *         catch all scenarios.
+     * @throws SdkClientException
+     *         If any client side error occurs such as an IO related failure, failure to get credentials, etc.
+     * @throws S3Exception
+     *         Base class for all service exceptions. Unknown exceptions will be thrown as an instance of this type.
+     * @sample S3Client.DeleteBucketTagging
+     */
+    @Override
+    public DeleteBucketTaggingResponse deleteBucketTagging(DeleteBucketTaggingRequest deleteBucketTaggingRequest)
+            throws AwsServiceException, SdkClientException, S3Exception {
+
+        HttpResponseHandler<Response<DeleteBucketTaggingResponse>> responseHandler = protocolFactory
+                .createCombinedResponseHandler(DeleteBucketTaggingResponse::builder,
+                        new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(deleteBucketTaggingRequest,
+                this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration, deleteBucketTaggingRequest
+                .overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+                .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "DeleteBucketTagging");
+
+            return clientHandler.execute(new ClientExecutionParams<DeleteBucketTaggingRequest, DeleteBucketTaggingResponse>()
+                    .withOperationName("DeleteBucketTagging").withProtocolMetadata(protocolMetadata)
+                    .withCombinedResponseHandler(responseHandler).withMetricCollector(apiCallMetricCollector)
+                    .withRequestConfiguration(clientConfiguration).withInput(deleteBucketTaggingRequest)
+                    .withMarshaller(new DeleteBucketTaggingRequestMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    /**
+     * <note>
+     * <p>
+     * This operation is not supported for directory buckets.
+     * </p>
+     * </note>
+     * <p>
+     * This action removes the website configuration for a bucket. Amazon S3 returns a <code>200 OK</code> response upon
+     * successfully deleting a website configuration on the specified bucket. You will get a <code>200 OK</code>
+     * response if the website configuration you are trying to delete does not exist on the bucket. Amazon S3 returns a
+     * <code>404</code> response if the bucket specified in the request does not exist.
+     * </p>
+     * <p>
+     * This DELETE action requires the <code>S3:DeleteBucketWebsite</code> permission. By default, only the bucket owner
+     * can delete the website configuration attached to a bucket. However, bucket owners can grant other users
+     * permission to delete the website configuration by writing a bucket policy granting them the
+     * <code>S3:DeleteBucketWebsite</code> permission.
+     * </p>
+     * <p>
+     * For more information about hosting websites, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/dev/WebsiteHosting.html">Hosting Websites on Amazon S3</a>.
+     * </p>
+     * <p>
+     * The following operations are related to <code>DeleteBucketWebsite</code>:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketWebsite.html">GetBucketWebsite</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketWebsite.html">PutBucketWebsite</a>
+     * </p>
+     * </li>
+     * </ul>
+     *
+     * @param deleteBucketWebsiteRequest
+     * @return Result of the DeleteBucketWebsite operation returned by the service.
+     * @throws SdkException
+     *         Base class for all exceptions that can be thrown by the SDK (both service and client). Can be used for
+     *         catch all scenarios.
+     * @throws SdkClientException
+     *         If any client side error occurs such as an IO related failure, failure to get credentials, etc.
+     * @throws S3Exception
+     *         Base class for all service exceptions. Unknown exceptions will be thrown as an instance of this type.
+     * @sample S3Client.DeleteBucketWebsite
+     */
+    @Override
+    public DeleteBucketWebsiteResponse deleteBucketWebsite(DeleteBucketWebsiteRequest deleteBucketWebsiteRequest)
+            throws AwsServiceException, SdkClientException, S3Exception {
+
+        HttpResponseHandler<Response<DeleteBucketWebsiteResponse>> responseHandler = protocolFactory
+                .createCombinedResponseHandler(DeleteBucketWebsiteResponse::builder,
+                        new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(deleteBucketWebsiteRequest,
+                this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration, deleteBucketWebsiteRequest
+                .overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+                .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "DeleteBucketWebsite");
+
+            return clientHandler.execute(new ClientExecutionParams<DeleteBucketWebsiteRequest, DeleteBucketWebsiteResponse>()
+                    .withOperationName("DeleteBucketWebsite").withProtocolMetadata(protocolMetadata)
+                    .withCombinedResponseHandler(responseHandler).withMetricCollector(apiCallMetricCollector)
+                    .withRequestConfiguration(clientConfiguration).withInput(deleteBucketWebsiteRequest)
+                    .withMarshaller(new DeleteBucketWebsiteRequestMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    /**
+     * <p>
+     * Removes an object from a bucket. The behavior depends on the bucket's versioning state:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * If bucket versioning is not enabled, the operation permanently deletes the object.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * If bucket versioning is enabled, the operation inserts a delete marker, which becomes the current version of the
+     * object. To permanently delete an object in a versioned bucket, you must include the object’s
+     * <code>versionId</code> in the request. For more information about versioning-enabled buckets, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/DeletingObjectVersions.html">Deleting object versions
+     * from a versioning-enabled bucket</a>.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * If bucket versioning is suspended, the operation removes the object that has a null <code>versionId</code>, if
+     * there is one, and inserts a delete marker that becomes the current version of the object. If there isn't an
+     * object with a null <code>versionId</code>, and all versions of the object have a <code>versionId</code>, Amazon
+     * S3 does not remove the object and only inserts a delete marker. To permanently delete an object that has a
+     * <code>versionId</code>, you must include the object’s <code>versionId</code> in the request. For more information
+     * about versioning-suspended buckets, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/DeletingObjectsfromVersioningSuspendedBuckets.html"
+     * >Deleting objects from versioning-suspended buckets</a>.
+     * </p>
+     * </li>
+     * </ul>
+     * <note>
+     * <ul>
+     * <li>
+     * <p>
+     * <b>Directory buckets</b> - S3 Versioning isn't enabled and supported for directory buckets. For this API
+     * operation, only the <code>null</code> value of the version ID is supported by directory buckets. You can only
+     * specify <code>null</code> to the <code>versionId</code> query parameter in the request.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <b>Directory buckets</b> - For directory buckets, you must make requests for this API operation to the Zonal
+     * endpoint. These endpoints support virtual-hosted-style requests in the format
+     * <code>https://<i>amzn-s3-demo-bucket</i>.s3express-<i>zone-id</i>.<i>region-code</i>.amazonaws.com/<i>key-name</i> </code>
+     * . Path-style requests are not supported. For more information about endpoints in Availability Zones, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/endpoint-directory-buckets-AZ.html">Regional and
+     * Zonal endpoints for directory buckets in Availability Zones</a> in the <i>Amazon S3 User Guide</i>. For more
+     * information about endpoints in Local Zones, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-lzs-for-directory-buckets.html">Concepts for
+     * directory buckets in Local Zones</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * </li>
+     * </ul>
+     * </note>
+     * <p>
+     * To remove a specific version, you must use the <code>versionId</code> query parameter. Using this query parameter
+     * permanently deletes the version. If the object deleted is a delete marker, Amazon S3 sets the response header
+     * <code>x-amz-delete-marker</code> to true.
+     * </p>
+     * <p>
+     * If the object you want to delete is in a bucket where the bucket versioning configuration is MFA Delete enabled,
+     * you must include the <code>x-amz-mfa</code> request header in the DELETE <code>versionId</code> request. Requests
+     * that include <code>x-amz-mfa</code> must use HTTPS. For more information about MFA Delete, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMFADelete.html">Using MFA Delete</a> in the <i>Amazon
+     * S3 User Guide</i>. To see sample requests that use versioning, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/API/RESTObjectDELETE.html#ExampleVersionObjectDelete">Sample
+     * Request</a>.
+     * </p>
+     * <note>
+     * <p>
+     * <b>Directory buckets</b> - MFA delete is not supported by directory buckets.
+     * </p>
+     * </note>
+     * <p>
+     * You can delete objects by explicitly calling DELETE Object or calling (<a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketLifecycle.html">PutBucketLifecycle</a>) to
+     * enable Amazon S3 to remove them for you. If you want to block users or accounts from removing or deleting objects
+     * from your bucket, you must deny them the <code>s3:DeleteObject</code>, <code>s3:DeleteObjectVersion</code>, and
+     * <code>s3:PutLifeCycleConfiguration</code> actions.
+     * </p>
+     * <note>
+     * <p>
+     * <b>Directory buckets</b> - S3 Lifecycle is not supported by directory buckets.
+     * </p>
+     * </note>
+     * <dl>
+     * <dt>Permissions</dt>
+     * <dd>
+     * <ul>
+     * <li>
+     * <p>
+     * <b>General purpose bucket permissions</b> - The following permissions are required in your policies when your
+     * <code>DeleteObjects</code> request includes specific headers.
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <b> <code>s3:DeleteObject</code> </b> - To delete an object from a bucket, you must always have the
+     * <code>s3:DeleteObject</code> permission.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <b> <code>s3:DeleteObjectVersion</code> </b> - To delete a specific version of an object from a
+     * versioning-enabled bucket, you must have the <code>s3:DeleteObjectVersion</code> permission.
+     * </p>
+     * </li>
+     * </ul>
+     * </li>
+     * <li>
+     * <p>
+     * <b>Directory bucket permissions</b> - To grant access to this API operation on a directory bucket, we recommend
+     * that you use the <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_CreateSession.html">
+     * <code>CreateSession</code> </a> API operation for session-based authorization. Specifically, you grant the
+     * <code>s3express:CreateSession</code> permission to the directory bucket in a bucket policy or an IAM
+     * identity-based policy. Then, you make the <code>CreateSession</code> API call on the bucket to obtain a session
+     * token. With the session token in your request header, you can make API requests to this operation. After the
+     * session token expires, you make another <code>CreateSession</code> API call to generate a new session token for
+     * use. Amazon Web Services CLI or SDKs create session and refresh the session token automatically to avoid service
+     * interruptions when a session expires. For more information about authorization, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_CreateSession.html"> <code>CreateSession</code> </a>.
+     * </p>
+     * </li>
+     * </ul>
+     * </dd>
+     * <dt>HTTP Host header syntax</dt>
+     * <dd>
+     * <p>
+     * <b>Directory buckets </b> - The HTTP Host header syntax is
+     * <code> <i>Bucket-name</i>.s3express-<i>zone-id</i>.<i>region-code</i>.amazonaws.com</code>.
+     * </p>
+     * </dd>
+     * </dl>
+     * <p>
+     * The following action is related to <code>DeleteObject</code>:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutObject.html">PutObject</a>
+     * </p>
+     * </li>
+     * </ul>
+     *
+     * @param deleteObjectRequest
+     * @return Result of the DeleteObject operation returned by the service.
+     * @throws SdkException
+     *         Base class for all exceptions that can be thrown by the SDK (both service and client). Can be used for
+     *         catch all scenarios.
+     * @throws SdkClientException
+     *         If any client side error occurs such as an IO related failure, failure to get credentials, etc.
+     * @throws S3Exception
+     *         Base class for all service exceptions. Unknown exceptions will be thrown as an instance of this type.
+     * @sample S3Client.DeleteObject
+     */
+    @Override
+    public DeleteObjectResponse deleteObject(DeleteObjectRequest deleteObjectRequest) throws AwsServiceException,
+            SdkClientException, S3Exception {
+
+        HttpResponseHandler<Response<DeleteObjectResponse>> responseHandler = protocolFactory.createCombinedResponseHandler(
+                DeleteObjectResponse::builder, new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(deleteObjectRequest, this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration, deleteObjectRequest
+                .overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+                .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "DeleteObject");
+
+            return clientHandler.execute(new ClientExecutionParams<DeleteObjectRequest, DeleteObjectResponse>()
+                    .withOperationName("DeleteObject").withProtocolMetadata(protocolMetadata)
+                    .withCombinedResponseHandler(responseHandler).withMetricCollector(apiCallMetricCollector)
+                    .withRequestConfiguration(clientConfiguration).withInput(deleteObjectRequest)
+                    .withMarshaller(new DeleteObjectRequestMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    /**
+     * <note>
+     * <p>
+     * This operation is not supported for directory buckets.
+     * </p>
+     * </note>
+     * <p>
+     * Removes the entire tag set from the specified object. For more information about managing object tags, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/dev/object-tagging.html"> Object Tagging</a>.
+     * </p>
+     * <p>
+     * To use this operation, you must have permission to perform the <code>s3:DeleteObjectTagging</code> action.
+     * </p>
+     * <p>
+     * To delete tags of a specific object version, add the <code>versionId</code> query parameter in the request. You
+     * will need permission for the <code>s3:DeleteObjectVersionTagging</code> action.
+     * </p>
+     * <p>
+     * The following operations are related to <code>DeleteObjectTagging</code>:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutObjectTagging.html">PutObjectTagging</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetObjectTagging.html">GetObjectTagging</a>
+     * </p>
+     * </li>
+     * </ul>
+     *
+     * @param deleteObjectTaggingRequest
+     * @return Result of the DeleteObjectTagging operation returned by the service.
+     * @throws SdkException
+     *         Base class for all exceptions that can be thrown by the SDK (both service and client). Can be used for
+     *         catch all scenarios.
+     * @throws SdkClientException
+     *         If any client side error occurs such as an IO related failure, failure to get credentials, etc.
+     * @throws S3Exception
+     *         Base class for all service exceptions. Unknown exceptions will be thrown as an instance of this type.
+     * @sample S3Client.DeleteObjectTagging
+     */
+    @Override
+    public DeleteObjectTaggingResponse deleteObjectTagging(DeleteObjectTaggingRequest deleteObjectTaggingRequest)
+            throws AwsServiceException, SdkClientException, S3Exception {
+
+        HttpResponseHandler<Response<DeleteObjectTaggingResponse>> responseHandler = protocolFactory
+                .createCombinedResponseHandler(DeleteObjectTaggingResponse::builder,
+                        new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(deleteObjectTaggingRequest,
+                this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration, deleteObjectTaggingRequest
+                .overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+                .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "DeleteObjectTagging");
+
+            return clientHandler.execute(new ClientExecutionParams<DeleteObjectTaggingRequest, DeleteObjectTaggingResponse>()
+                    .withOperationName("DeleteObjectTagging").withProtocolMetadata(protocolMetadata)
+                    .withCombinedResponseHandler(responseHandler).withMetricCollector(apiCallMetricCollector)
+                    .withRequestConfiguration(clientConfiguration).withInput(deleteObjectTaggingRequest)
+                    .withMarshaller(new DeleteObjectTaggingRequestMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    /**
+     * <p>
+     * This operation enables you to delete multiple objects from a bucket using a single HTTP request. If you know the
+     * object keys that you want to delete, then this operation provides a suitable alternative to sending individual
+     * delete requests, reducing per-request overhead.
+     * </p>
+     * <p>
+     * The request can contain a list of up to 1,000 keys that you want to delete. In the XML, you provide the object
+     * key names, and optionally, version IDs if you want to delete a specific version of the object from a
+     * versioning-enabled bucket. For each key, Amazon S3 performs a delete operation and returns the result of that
+     * delete, success or failure, in the response. If the object specified in the request isn't found, Amazon S3
+     * confirms the deletion by returning the result as deleted.
+     * </p>
+     * <note>
+     * <ul>
+     * <li>
+     * <p>
+     * <b>Directory buckets</b> - S3 Versioning isn't enabled and supported for directory buckets.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <b>Directory buckets</b> - For directory buckets, you must make requests for this API operation to the Zonal
+     * endpoint. These endpoints support virtual-hosted-style requests in the format
+     * <code>https://<i>amzn-s3-demo-bucket</i>.s3express-<i>zone-id</i>.<i>region-code</i>.amazonaws.com/<i>key-name</i> </code>
+     * . Path-style requests are not supported. For more information about endpoints in Availability Zones, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/endpoint-directory-buckets-AZ.html">Regional and
+     * Zonal endpoints for directory buckets in Availability Zones</a> in the <i>Amazon S3 User Guide</i>. For more
+     * information about endpoints in Local Zones, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-lzs-for-directory-buckets.html">Concepts for
+     * directory buckets in Local Zones</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * </li>
+     * </ul>
+     * </note>
+     * <p>
+     * The operation supports two modes for the response: verbose and quiet. By default, the operation uses verbose mode
+     * in which the response includes the result of deletion of each key in your request. In quiet mode the response
+     * includes only keys where the delete operation encountered an error. For a successful deletion in a quiet mode,
+     * the operation does not return any information about the delete in the response body.
+     * </p>
+     * <p>
+     * When performing this action on an MFA Delete enabled bucket, that attempts to delete any versioned objects, you
+     * must include an MFA token. If you do not provide one, the entire request will fail, even if there are
+     * non-versioned objects you are trying to delete. If you provide an invalid token, whether there are versioned keys
+     * in the request or not, the entire Multi-Object Delete request will fail. For information about MFA Delete, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/dev/Versioning.html#MultiFactorAuthenticationDelete">MFA
+     * Delete</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * <note>
+     * <p>
+     * <b>Directory buckets</b> - MFA delete is not supported by directory buckets.
+     * </p>
+     * </note>
+     * <dl>
+     * <dt>Permissions</dt>
+     * <dd>
+     * <ul>
+     * <li>
+     * <p>
+     * <b>General purpose bucket permissions</b> - The following permissions are required in your policies when your
+     * <code>DeleteObjects</code> request includes specific headers.
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <b> <code>s3:DeleteObject</code> </b> - To delete an object from a bucket, you must always specify the
+     * <code>s3:DeleteObject</code> permission.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <b> <code>s3:DeleteObjectVersion</code> </b> - To delete a specific version of an object from a
+     * versioning-enabled bucket, you must specify the <code>s3:DeleteObjectVersion</code> permission.
+     * </p>
+     * </li>
+     * </ul>
+     * </li>
+     * <li>
+     * <p>
+     * <b>Directory bucket permissions</b> - To grant access to this API operation on a directory bucket, we recommend
+     * that you use the <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_CreateSession.html">
+     * <code>CreateSession</code> </a> API operation for session-based authorization. Specifically, you grant the
+     * <code>s3express:CreateSession</code> permission to the directory bucket in a bucket policy or an IAM
+     * identity-based policy. Then, you make the <code>CreateSession</code> API call on the bucket to obtain a session
+     * token. With the session token in your request header, you can make API requests to this operation. After the
+     * session token expires, you make another <code>CreateSession</code> API call to generate a new session token for
+     * use. Amazon Web Services CLI or SDKs create session and refresh the session token automatically to avoid service
+     * interruptions when a session expires. For more information about authorization, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_CreateSession.html"> <code>CreateSession</code> </a>.
+     * </p>
+     * </li>
+     * </ul>
+     * </dd>
+     * <dt>Content-MD5 request header</dt>
+     * <dd>
+     * <ul>
+     * <li>
+     * <p>
+     * <b>General purpose bucket</b> - The Content-MD5 request header is required for all Multi-Object Delete requests.
+     * Amazon S3 uses the header value to ensure that your request body has not been altered in transit.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <b>Directory bucket</b> - The Content-MD5 request header or a additional checksum request header (including
+     * <code>x-amz-checksum-crc32</code>, <code>x-amz-checksum-crc32c</code>, <code>x-amz-checksum-sha1</code>, or
+     * <code>x-amz-checksum-sha256</code>) is required for all Multi-Object Delete requests.
+     * </p>
+     * </li>
+     * </ul>
+     * </dd>
+     * <dt>HTTP Host header syntax</dt>
+     * <dd>
+     * <p>
+     * <b>Directory buckets </b> - The HTTP Host header syntax is
+     * <code> <i>Bucket-name</i>.s3express-<i>zone-id</i>.<i>region-code</i>.amazonaws.com</code>.
+     * </p>
+     * </dd>
+     * </dl>
+     * <p>
+     * The following operations are related to <code>DeleteObjects</code>:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_CreateMultipartUpload.html">CreateMultipartUpload</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_UploadPart.html">UploadPart</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_CompleteMultipartUpload.html">CompleteMultipartUpload
+     * </a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListParts.html">ListParts</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_AbortMultipartUpload.html">AbortMultipartUpload</a>
+     * </p>
+     * </li>
+     * </ul>
+     *
+     * @param deleteObjectsRequest
+     * @return Result of the DeleteObjects operation returned by the service.
+     * @throws SdkException
+     *         Base class for all exceptions that can be thrown by the SDK (both service and client). Can be used for
+     *         catch all scenarios.
+     * @throws SdkClientException
+     *         If any client side error occurs such as an IO related failure, failure to get credentials, etc.
+     * @throws S3Exception
+     *         Base class for all service exceptions. Unknown exceptions will be thrown as an instance of this type.
+     * @sample S3Client.DeleteObjects
+     */
+    @Override
+    public DeleteObjectsResponse deleteObjects(DeleteObjectsRequest deleteObjectsRequest) throws AwsServiceException,
+            SdkClientException, S3Exception {
+
+        HttpResponseHandler<Response<DeleteObjectsResponse>> responseHandler = protocolFactory.createCombinedResponseHandler(
+                DeleteObjectsResponse::builder, new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(deleteObjectsRequest, this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration, deleteObjectsRequest
+                .overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+                .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "DeleteObjects");
+
+            return clientHandler.execute(new ClientExecutionParams<DeleteObjectsRequest, DeleteObjectsResponse>()
+                    .withOperationName("DeleteObjects")
+                    .withProtocolMetadata(protocolMetadata)
+                    .withCombinedResponseHandler(responseHandler)
+                    .withMetricCollector(apiCallMetricCollector)
+                    .withRequestConfiguration(clientConfiguration)
+                    .withInput(deleteObjectsRequest)
+                    .putExecutionAttribute(
+                            SdkInternalExecutionAttribute.HTTP_CHECKSUM,
+                            HttpChecksum.builder().requestChecksumRequired(true).isRequestStreaming(false)
+                                    .requestAlgorithm(deleteObjectsRequest.checksumAlgorithmAsString())
+                                    .requestAlgorithmHeader("x-amz-sdk-checksum-algorithm").build())
+                    .withMarshaller(new DeleteObjectsRequestMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    /**
+     * <note>
+     * <p>
+     * This operation is not supported for directory buckets.
+     * </p>
+     * </note>
+     * <p>
+     * Removes the <code>PublicAccessBlock</code> configuration for an Amazon S3 bucket. To use this operation, you must
+     * have the <code>s3:PutBucketPublicAccessBlock</code> permission. For more information about permissions, see <a
+     * href=
+     * "https://docs.aws.amazon.com/AmazonS3/latest/userguide/using-with-s3-actions.html#using-with-s3-actions-related-to-bucket-subresources"
+     * >Permissions Related to Bucket Subresource Operations</a> and <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-access-control.html">Managing Access Permissions
+     * to Your Amazon S3 Resources</a>.
+     * </p>
+     * <p>
+     * The following operations are related to <code>DeletePublicAccessBlock</code>:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/dev/access-control-block-public-access.html">Using Amazon S3
+     * Block Public Access</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetPublicAccessBlock.html">GetPublicAccessBlock</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutPublicAccessBlock.html">PutPublicAccessBlock</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketPolicyStatus.html">GetBucketPolicyStatus</a>
+     * </p>
+     * </li>
+     * </ul>
+     *
+     * @param deletePublicAccessBlockRequest
+     * @return Result of the DeletePublicAccessBlock operation returned by the service.
+     * @throws SdkException
+     *         Base class for all exceptions that can be thrown by the SDK (both service and client). Can be used for
+     *         catch all scenarios.
+     * @throws SdkClientException
+     *         If any client side error occurs such as an IO related failure, failure to get credentials, etc.
+     * @throws S3Exception
+     *         Base class for all service exceptions. Unknown exceptions will be thrown as an instance of this type.
+     * @sample S3Client.DeletePublicAccessBlock
+     */
+    @Override
+    public DeletePublicAccessBlockResponse deletePublicAccessBlock(DeletePublicAccessBlockRequest deletePublicAccessBlockRequest)
+            throws AwsServiceException, SdkClientException, S3Exception {
+
+        HttpResponseHandler<Response<DeletePublicAccessBlockResponse>> responseHandler = protocolFactory
+                .createCombinedResponseHandler(DeletePublicAccessBlockResponse::builder,
+                        new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(deletePublicAccessBlockRequest,
+                this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration, deletePublicAccessBlockRequest
+                .overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+                .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "DeletePublicAccessBlock");
+
+            return clientHandler
+                    .execute(new ClientExecutionParams<DeletePublicAccessBlockRequest, DeletePublicAccessBlockResponse>()
+                            .withOperationName("DeletePublicAccessBlock").withProtocolMetadata(protocolMetadata)
+                            .withCombinedResponseHandler(responseHandler).withMetricCollector(apiCallMetricCollector)
+                            .withRequestConfiguration(clientConfiguration).withInput(deletePublicAccessBlockRequest)
+                            .withMarshaller(new DeletePublicAccessBlockRequestMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    /**
+     * <note>
+     * <p>
+     * This operation is not supported for directory buckets.
+     * </p>
+     * </note>
+     * <p>
+     * This implementation of the GET action uses the <code>accelerate</code> subresource to return the Transfer
+     * Acceleration state of a bucket, which is either <code>Enabled</code> or <code>Suspended</code>. Amazon S3
+     * Transfer Acceleration is a bucket-level feature that enables you to perform faster data transfers to and from
+     * Amazon S3.
+     * </p>
+     * <p>
+     * To use this operation, you must have permission to perform the <code>s3:GetAccelerateConfiguration</code> action.
+     * The bucket owner has this permission by default. The bucket owner can grant this permission to others. For more
+     * information about permissions, see <a href=
+     * "https://docs.aws.amazon.com/AmazonS3/latest/userguide/using-with-s3-actions.html#using-with-s3-actions-related-to-bucket-subresources"
+     * >Permissions Related to Bucket Subresource Operations</a> and <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-access-control.html">Managing Access Permissions
+     * to your Amazon S3 Resources</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * <p>
+     * You set the Transfer Acceleration state of an existing bucket to <code>Enabled</code> or <code>Suspended</code>
+     * by using the <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketAccelerateConfiguration.html">
+     * PutBucketAccelerateConfiguration</a> operation.
+     * </p>
+     * <p>
+     * A GET <code>accelerate</code> request does not return a state value for a bucket that has no transfer
+     * acceleration state. A bucket has no Transfer Acceleration state if a state has never been set on the bucket.
+     * </p>
+     * <p>
+     * For more information about transfer acceleration, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/dev/transfer-acceleration.html">Transfer Acceleration</a> in
+     * the Amazon S3 User Guide.
+     * </p>
+     * <p>
+     * The following operations are related to <code>GetBucketAccelerateConfiguration</code>:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketAccelerateConfiguration.html">
+     * PutBucketAccelerateConfiguration</a>
+     * </p>
+     * </li>
+     * </ul>
+     *
+     * @param getBucketAccelerateConfigurationRequest
+     * @return Result of the GetBucketAccelerateConfiguration operation returned by the service.
+     * @throws SdkException
+     *         Base class for all exceptions that can be thrown by the SDK (both service and client). Can be used for
+     *         catch all scenarios.
+     * @throws SdkClientException
+     *         If any client side error occurs such as an IO related failure, failure to get credentials, etc.
+     * @throws S3Exception
+     *         Base class for all service exceptions. Unknown exceptions will be thrown as an instance of this type.
+     * @sample S3Client.GetBucketAccelerateConfiguration
+     */
+    @Override
+    public GetBucketAccelerateConfigurationResponse getBucketAccelerateConfiguration(
+            GetBucketAccelerateConfigurationRequest getBucketAccelerateConfigurationRequest) throws AwsServiceException,
+            SdkClientException, S3Exception {
+
+        HttpResponseHandler<Response<GetBucketAccelerateConfigurationResponse>> responseHandler = protocolFactory
+                .createCombinedResponseHandler(GetBucketAccelerateConfigurationResponse::builder,
+                        new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(getBucketAccelerateConfigurationRequest,
+                this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration,
+                getBucketAccelerateConfigurationRequest.overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+                .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "GetBucketAccelerateConfiguration");
+
+            return clientHandler
+                    .execute(new ClientExecutionParams<GetBucketAccelerateConfigurationRequest, GetBucketAccelerateConfigurationResponse>()
+                            .withOperationName("GetBucketAccelerateConfiguration").withProtocolMetadata(protocolMetadata)
+                            .withCombinedResponseHandler(responseHandler).withMetricCollector(apiCallMetricCollector)
+                            .withRequestConfiguration(clientConfiguration).withInput(getBucketAccelerateConfigurationRequest)
+                            .withMarshaller(new GetBucketAccelerateConfigurationRequestMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    /**
+     * <note>
+     * <p>
+     * This operation is not supported for directory buckets.
+     * </p>
+     * </note>
+     * <p>
+     * This implementation of the <code>GET</code> action uses the <code>acl</code> subresource to return the access
+     * control list (ACL) of a bucket. To use <code>GET</code> to return the ACL of the bucket, you must have the
+     * <code>READ_ACP</code> access to the bucket. If <code>READ_ACP</code> permission is granted to the anonymous user,
+     * you can return the ACL of the bucket without using an authorization header.
+     * </p>
+     * <p>
+     * When you use this API operation with an access point, provide the alias of the access point in place of the
+     * bucket name.
+     * </p>
+     * <p>
+     * When you use this API operation with an Object Lambda access point, provide the alias of the Object Lambda access
+     * point in place of the bucket name. If the Object Lambda access point alias in a request is not valid, the error
+     * code <code>InvalidAccessPointAliasError</code> is returned. For more information about
+     * <code>InvalidAccessPointAliasError</code>, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/API/ErrorResponses.html#ErrorCodeList">List of Error Codes</a>.
+     * </p>
+     * <note>
+     * <p>
+     * If your bucket uses the bucket owner enforced setting for S3 Object Ownership, requests to read ACLs are still
+     * supported and return the <code>bucket-owner-full-control</code> ACL with the owner being the account that created
+     * the bucket. For more information, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/about-object-ownership.html"> Controlling object
+     * ownership and disabling ACLs</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * </note>
+     * <p>
+     * The following operations are related to <code>GetBucketAcl</code>:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListObjects.html">ListObjects</a>
+     * </p>
+     * </li>
+     * </ul>
+     *
+     * @param getBucketAclRequest
+     * @return Result of the GetBucketAcl operation returned by the service.
+     * @throws SdkException
+     *         Base class for all exceptions that can be thrown by the SDK (both service and client). Can be used for
+     *         catch all scenarios.
+     * @throws SdkClientException
+     *         If any client side error occurs such as an IO related failure, failure to get credentials, etc.
+     * @throws S3Exception
+     *         Base class for all service exceptions. Unknown exceptions will be thrown as an instance of this type.
+     * @sample S3Client.GetBucketAcl
+     */
+    @Override
+    public GetBucketAclResponse getBucketAcl(GetBucketAclRequest getBucketAclRequest) throws AwsServiceException,
+            SdkClientException, S3Exception {
+
+        HttpResponseHandler<Response<GetBucketAclResponse>> responseHandler = protocolFactory.createCombinedResponseHandler(
+                GetBucketAclResponse::builder, new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(getBucketAclRequest, this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration, getBucketAclRequest
+                .overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+                .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "GetBucketAcl");
+
+            return clientHandler.execute(new ClientExecutionParams<GetBucketAclRequest, GetBucketAclResponse>()
+                    .withOperationName("GetBucketAcl").withProtocolMetadata(protocolMetadata)
+                    .withCombinedResponseHandler(responseHandler).withMetricCollector(apiCallMetricCollector)
+                    .withRequestConfiguration(clientConfiguration).withInput(getBucketAclRequest)
+                    .withMarshaller(new GetBucketAclRequestMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    /**
+     * <note>
+     * <p>
+     * This operation is not supported for directory buckets.
+     * </p>
+     * </note>
+     * <p>
+     * This implementation of the GET action returns an analytics configuration (identified by the analytics
+     * configuration ID) from the bucket.
+     * </p>
+     * <p>
+     * To use this operation, you must have permissions to perform the <code>s3:GetAnalyticsConfiguration</code> action.
+     * The bucket owner has this permission by default. The bucket owner can grant this permission to others. For more
+     * information about permissions, see <a href=
+     * "https://docs.aws.amazon.com/AmazonS3/latest/userguide/using-with-s3-actions.html#using-with-s3-actions-related-to-bucket-subresources"
+     * > Permissions Related to Bucket Subresource Operations</a> and <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-access-control.html">Managing Access Permissions
+     * to Your Amazon S3 Resources</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * <p>
+     * For information about Amazon S3 analytics feature, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/dev/analytics-storage-class.html">Amazon S3 Analytics – Storage
+     * Class Analysis</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * <p>
+     * The following operations are related to <code>GetBucketAnalyticsConfiguration</code>:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteBucketAnalyticsConfiguration.html">
+     * DeleteBucketAnalyticsConfiguration</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListBucketAnalyticsConfigurations.html">
+     * ListBucketAnalyticsConfigurations</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketAnalyticsConfiguration.html">
+     * PutBucketAnalyticsConfiguration</a>
+     * </p>
+     * </li>
+     * </ul>
+     *
+     * @param getBucketAnalyticsConfigurationRequest
+     * @return Result of the GetBucketAnalyticsConfiguration operation returned by the service.
+     * @throws SdkException
+     *         Base class for all exceptions that can be thrown by the SDK (both service and client). Can be used for
+     *         catch all scenarios.
+     * @throws SdkClientException
+     *         If any client side error occurs such as an IO related failure, failure to get credentials, etc.
+     * @throws S3Exception
+     *         Base class for all service exceptions. Unknown exceptions will be thrown as an instance of this type.
+     * @sample S3Client.GetBucketAnalyticsConfiguration
+     */
+    @Override
+    public GetBucketAnalyticsConfigurationResponse getBucketAnalyticsConfiguration(
+            GetBucketAnalyticsConfigurationRequest getBucketAnalyticsConfigurationRequest) throws AwsServiceException,
+            SdkClientException, S3Exception {
+
+        HttpResponseHandler<Response<GetBucketAnalyticsConfigurationResponse>> responseHandler = protocolFactory
+                .createCombinedResponseHandler(GetBucketAnalyticsConfigurationResponse::builder,
+                        new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(getBucketAnalyticsConfigurationRequest,
+                this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration,
+                getBucketAnalyticsConfigurationRequest.overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+                .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "GetBucketAnalyticsConfiguration");
+
+            return clientHandler
+                    .execute(new ClientExecutionParams<GetBucketAnalyticsConfigurationRequest, GetBucketAnalyticsConfigurationResponse>()
+                            .withOperationName("GetBucketAnalyticsConfiguration").withProtocolMetadata(protocolMetadata)
+                            .withCombinedResponseHandler(responseHandler).withMetricCollector(apiCallMetricCollector)
+                            .withRequestConfiguration(clientConfiguration).withInput(getBucketAnalyticsConfigurationRequest)
+                            .withMarshaller(new GetBucketAnalyticsConfigurationRequestMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    /**
+     * <note>
+     * <p>
+     * This operation is not supported for directory buckets.
+     * </p>
+     * </note>
+     * <p>
+     * Returns the Cross-Origin Resource Sharing (CORS) configuration information set for the bucket.
+     * </p>
+     * <p>
+     * To use this operation, you must have permission to perform the <code>s3:GetBucketCORS</code> action. By default,
+     * the bucket owner has this permission and can grant it to others.
+     * </p>
+     * <p>
+     * When you use this API operation with an access point, provide the alias of the access point in place of the
+     * bucket name.
+     * </p>
+     * <p>
+     * When you use this API operation with an Object Lambda access point, provide the alias of the Object Lambda access
+     * point in place of the bucket name. If the Object Lambda access point alias in a request is not valid, the error
+     * code <code>InvalidAccessPointAliasError</code> is returned. For more information about
+     * <code>InvalidAccessPointAliasError</code>, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/API/ErrorResponses.html#ErrorCodeList">List of Error Codes</a>.
+     * </p>
+     * <p>
+     * For more information about CORS, see <a href="https://docs.aws.amazon.com/AmazonS3/latest/dev/cors.html">
+     * Enabling Cross-Origin Resource Sharing</a>.
+     * </p>
+     * <p>
+     * The following operations are related to <code>GetBucketCors</code>:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketCors.html">PutBucketCors</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteBucketCors.html">DeleteBucketCors</a>
+     * </p>
+     * </li>
+     * </ul>
+     *
+     * @param getBucketCorsRequest
+     * @return Result of the GetBucketCors operation returned by the service.
+     * @throws SdkException
+     *         Base class for all exceptions that can be thrown by the SDK (both service and client). Can be used for
+     *         catch all scenarios.
+     * @throws SdkClientException
+     *         If any client side error occurs such as an IO related failure, failure to get credentials, etc.
+     * @throws S3Exception
+     *         Base class for all service exceptions. Unknown exceptions will be thrown as an instance of this type.
+     * @sample S3Client.GetBucketCors
+     */
+    @Override
+    public GetBucketCorsResponse getBucketCors(GetBucketCorsRequest getBucketCorsRequest) throws AwsServiceException,
+            SdkClientException, S3Exception {
+
+        HttpResponseHandler<Response<GetBucketCorsResponse>> responseHandler = protocolFactory.createCombinedResponseHandler(
+                GetBucketCorsResponse::builder, new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(getBucketCorsRequest, this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration, getBucketCorsRequest
+                .overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+                .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "GetBucketCors");
+
+            return clientHandler.execute(new ClientExecutionParams<GetBucketCorsRequest, GetBucketCorsResponse>()
+                    .withOperationName("GetBucketCors").withProtocolMetadata(protocolMetadata)
+                    .withCombinedResponseHandler(responseHandler).withMetricCollector(apiCallMetricCollector)
+                    .withRequestConfiguration(clientConfiguration).withInput(getBucketCorsRequest)
+                    .withMarshaller(new GetBucketCorsRequestMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    /**
+     * <p>
+     * Returns the default encryption configuration for an Amazon S3 bucket. By default, all buckets have a default
+     * encryption configuration that uses server-side encryption with Amazon S3 managed keys (SSE-S3).
+     * </p>
+     * <note>
+     * <ul>
+     * <li>
+     * <p>
+     * <b>General purpose buckets</b> - For information about the bucket default encryption feature, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/dev/bucket-encryption.html">Amazon S3 Bucket Default
+     * Encryption</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <b>Directory buckets</b> - For directory buckets, there are only two supported options for server-side
+     * encryption: SSE-S3 and SSE-KMS. For information about the default encryption configuration in directory buckets,
+     * see <a href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-express-bucket-encryption.html">Setting
+     * default server-side encryption behavior for directory buckets</a>.
+     * </p>
+     * </li>
+     * </ul>
+     * </note>
+     * <dl>
+     * <dt>Permissions</dt>
+     * <dd>
+     * <ul>
+     * <li>
+     * <p>
+     * <b>General purpose bucket permissions</b> - The <code>s3:GetEncryptionConfiguration</code> permission is required
+     * in a policy. The bucket owner has this permission by default. The bucket owner can grant this permission to
+     * others. For more information about permissions, see <a href=
+     * "https://docs.aws.amazon.com/AmazonS3/latest/userguide/using-with-s3-actions.html#using-with-s3-actions-related-to-bucket-subresources"
+     * >Permissions Related to Bucket Operations</a> and <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-access-control.html">Managing Access Permissions
+     * to Your Amazon S3 Resources</a>.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <b>Directory bucket permissions</b> - To grant access to this API operation, you must have the
+     * <code>s3express:GetEncryptionConfiguration</code> permission in an IAM identity-based policy instead of a bucket
+     * policy. Cross-account access to this API operation isn't supported. This operation can only be performed by the
+     * Amazon Web Services account that owns the resource. For more information about directory bucket policies and
+     * permissions, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-express-security-iam.html">Amazon Web Services
+     * Identity and Access Management (IAM) for S3 Express One Zone</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * </li>
+     * </ul>
+     * </dd>
+     * <dt>HTTP Host header syntax</dt>
+     * <dd>
+     * <p>
+     * <b>Directory buckets </b> - The HTTP Host header syntax is
+     * <code>s3express-control.<i>region-code</i>.amazonaws.com</code>.
+     * </p>
+     * </dd>
+     * </dl>
+     * <p>
+     * The following operations are related to <code>GetBucketEncryption</code>:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketEncryption.html">PutBucketEncryption</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteBucketEncryption.html">DeleteBucketEncryption</a>
+     * </p>
+     * </li>
+     * </ul>
+     *
+     * @param getBucketEncryptionRequest
+     * @return Result of the GetBucketEncryption operation returned by the service.
+     * @throws SdkException
+     *         Base class for all exceptions that can be thrown by the SDK (both service and client). Can be used for
+     *         catch all scenarios.
+     * @throws SdkClientException
+     *         If any client side error occurs such as an IO related failure, failure to get credentials, etc.
+     * @throws S3Exception
+     *         Base class for all service exceptions. Unknown exceptions will be thrown as an instance of this type.
+     * @sample S3Client.GetBucketEncryption
+     */
+    @Override
+    public GetBucketEncryptionResponse getBucketEncryption(GetBucketEncryptionRequest getBucketEncryptionRequest)
+            throws AwsServiceException, SdkClientException, S3Exception {
+
+        HttpResponseHandler<Response<GetBucketEncryptionResponse>> responseHandler = protocolFactory
+                .createCombinedResponseHandler(GetBucketEncryptionResponse::builder,
+                        new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(getBucketEncryptionRequest,
+                this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration, getBucketEncryptionRequest
+                .overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+                .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "GetBucketEncryption");
+
+            return clientHandler.execute(new ClientExecutionParams<GetBucketEncryptionRequest, GetBucketEncryptionResponse>()
+                    .withOperationName("GetBucketEncryption").withProtocolMetadata(protocolMetadata)
+                    .withCombinedResponseHandler(responseHandler).withMetricCollector(apiCallMetricCollector)
+                    .withRequestConfiguration(clientConfiguration).withInput(getBucketEncryptionRequest)
+                    .withMarshaller(new GetBucketEncryptionRequestMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    /**
+     * <note>
+     * <p>
+     * This operation is not supported for directory buckets.
+     * </p>
+     * </note>
+     * <p>
+     * Gets the S3 Intelligent-Tiering configuration from the specified bucket.
+     * </p>
+     * <p>
+     * The S3 Intelligent-Tiering storage class is designed to optimize storage costs by automatically moving data to
+     * the most cost-effective storage access tier, without performance impact or operational overhead. S3
+     * Intelligent-Tiering delivers automatic cost savings in three low latency and high throughput access tiers. To get
+     * the lowest storage cost on data that can be accessed in minutes to hours, you can choose to activate additional
+     * archiving capabilities.
+     * </p>
+     * <p>
+     * The S3 Intelligent-Tiering storage class is the ideal storage class for data with unknown, changing, or
+     * unpredictable access patterns, independent of object size or retention period. If the size of an object is less
+     * than 128 KB, it is not monitored and not eligible for auto-tiering. Smaller objects can be stored, but they are
+     * always charged at the Frequent Access tier rates in the S3 Intelligent-Tiering storage class.
+     * </p>
+     * <p>
+     * For more information, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/dev/storage-class-intro.html#sc-dynamic-data-access">Storage
+     * class for automatically optimizing frequently and infrequently accessed objects</a>.
+     * </p>
+     * <p>
+     * Operations related to <code>GetBucketIntelligentTieringConfiguration</code> include:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteBucketIntelligentTieringConfiguration.html">
+     * DeleteBucketIntelligentTieringConfiguration</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketIntelligentTieringConfiguration.html">
+     * PutBucketIntelligentTieringConfiguration</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListBucketIntelligentTieringConfigurations.html">
+     * ListBucketIntelligentTieringConfigurations</a>
+     * </p>
+     * </li>
+     * </ul>
+     *
+     * @param getBucketIntelligentTieringConfigurationRequest
+     * @return Result of the GetBucketIntelligentTieringConfiguration operation returned by the service.
+     * @throws SdkException
+     *         Base class for all exceptions that can be thrown by the SDK (both service and client). Can be used for
+     *         catch all scenarios.
+     * @throws SdkClientException
+     *         If any client side error occurs such as an IO related failure, failure to get credentials, etc.
+     * @throws S3Exception
+     *         Base class for all service exceptions. Unknown exceptions will be thrown as an instance of this type.
+     * @sample S3Client.GetBucketIntelligentTieringConfiguration
+     */
+    @Override
+    public GetBucketIntelligentTieringConfigurationResponse getBucketIntelligentTieringConfiguration(
+            GetBucketIntelligentTieringConfigurationRequest getBucketIntelligentTieringConfigurationRequest)
+            throws AwsServiceException, SdkClientException, S3Exception {
+
+        HttpResponseHandler<Response<GetBucketIntelligentTieringConfigurationResponse>> responseHandler = protocolFactory
+                .createCombinedResponseHandler(GetBucketIntelligentTieringConfigurationResponse::builder,
+                        new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(
+                getBucketIntelligentTieringConfigurationRequest, this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration,
+                getBucketIntelligentTieringConfigurationRequest.overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+                .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "GetBucketIntelligentTieringConfiguration");
+
+            return clientHandler
+                    .execute(new ClientExecutionParams<GetBucketIntelligentTieringConfigurationRequest, GetBucketIntelligentTieringConfigurationResponse>()
+                            .withOperationName("GetBucketIntelligentTieringConfiguration").withProtocolMetadata(protocolMetadata)
+                            .withCombinedResponseHandler(responseHandler).withMetricCollector(apiCallMetricCollector)
+                            .withRequestConfiguration(clientConfiguration)
+                            .withInput(getBucketIntelligentTieringConfigurationRequest)
+                            .withMarshaller(new GetBucketIntelligentTieringConfigurationRequestMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    /**
+     * <note>
+     * <p>
+     * This operation is not supported for directory buckets.
+     * </p>
+     * </note>
+     * <p>
+     * Returns an inventory configuration (identified by the inventory configuration ID) from the bucket.
+     * </p>
+     * <p>
+     * To use this operation, you must have permissions to perform the <code>s3:GetInventoryConfiguration</code> action.
+     * The bucket owner has this permission by default and can grant this permission to others. For more information
+     * about permissions, see <a href=
+     * "https://docs.aws.amazon.com/AmazonS3/latest/userguide/using-with-s3-actions.html#using-with-s3-actions-related-to-bucket-subresources"
+     * >Permissions Related to Bucket Subresource Operations</a> and <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-access-control.html">Managing Access Permissions
+     * to Your Amazon S3 Resources</a>.
+     * </p>
+     * <p>
+     * For information about the Amazon S3 inventory feature, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/dev/storage-inventory.html">Amazon S3 Inventory</a>.
+     * </p>
+     * <p>
+     * The following operations are related to <code>GetBucketInventoryConfiguration</code>:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteBucketInventoryConfiguration.html">
+     * DeleteBucketInventoryConfiguration</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListBucketInventoryConfigurations.html">
+     * ListBucketInventoryConfigurations</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketInventoryConfiguration.html">
+     * PutBucketInventoryConfiguration</a>
+     * </p>
+     * </li>
+     * </ul>
+     *
+     * @param getBucketInventoryConfigurationRequest
+     * @return Result of the GetBucketInventoryConfiguration operation returned by the service.
+     * @throws SdkException
+     *         Base class for all exceptions that can be thrown by the SDK (both service and client). Can be used for
+     *         catch all scenarios.
+     * @throws SdkClientException
+     *         If any client side error occurs such as an IO related failure, failure to get credentials, etc.
+     * @throws S3Exception
+     *         Base class for all service exceptions. Unknown exceptions will be thrown as an instance of this type.
+     * @sample S3Client.GetBucketInventoryConfiguration
+     */
+    @Override
+    public GetBucketInventoryConfigurationResponse getBucketInventoryConfiguration(
+            GetBucketInventoryConfigurationRequest getBucketInventoryConfigurationRequest) throws AwsServiceException,
+            SdkClientException, S3Exception {
+
+        HttpResponseHandler<Response<GetBucketInventoryConfigurationResponse>> responseHandler = protocolFactory
+                .createCombinedResponseHandler(GetBucketInventoryConfigurationResponse::builder,
+                        new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(getBucketInventoryConfigurationRequest,
+                this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration,
+                getBucketInventoryConfigurationRequest.overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+                .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "GetBucketInventoryConfiguration");
+
+            return clientHandler
+                    .execute(new ClientExecutionParams<GetBucketInventoryConfigurationRequest, GetBucketInventoryConfigurationResponse>()
+                            .withOperationName("GetBucketInventoryConfiguration").withProtocolMetadata(protocolMetadata)
+                            .withCombinedResponseHandler(responseHandler).withMetricCollector(apiCallMetricCollector)
+                            .withRequestConfiguration(clientConfiguration).withInput(getBucketInventoryConfigurationRequest)
+                            .withMarshaller(new GetBucketInventoryConfigurationRequestMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    /**
+     * <p>
+     * Returns the lifecycle configuration information set on the bucket. For information about lifecycle configuration,
+     * see <a href="https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lifecycle-mgmt.html">Object Lifecycle
+     * Management</a>.
+     * </p>
+     * <p>
+     * Bucket lifecycle configuration now supports specifying a lifecycle rule using an object key name prefix, one or
+     * more object tags, object size, or any combination of these. Accordingly, this section describes the latest API,
+     * which is compatible with the new functionality. The previous version of the API supported filtering based only on
+     * an object key name prefix, which is supported for general purpose buckets for backward compatibility. For the
+     * related API description, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketLifecycle.html">GetBucketLifecycle</a>.
+     * </p>
+     * <note>
+     * <p>
+     * Lifecyle configurations for directory buckets only support expiring objects and cancelling multipart uploads.
+     * Expiring of versioned objects, transitions and tag filters are not supported.
+     * </p>
+     * </note>
+     * <dl>
+     * <dt>Permissions</dt>
+     * <dd>
+     * <ul>
+     * <li>
+     * <p>
+     * <b>General purpose bucket permissions</b> - By default, all Amazon S3 resources are private, including buckets,
+     * objects, and related subresources (for example, lifecycle configuration and website configuration). Only the
+     * resource owner (that is, the Amazon Web Services account that created it) can access the resource. The resource
+     * owner can optionally grant access permissions to others by writing an access policy. For this operation, a user
+     * must have the <code>s3:GetLifecycleConfiguration</code> permission.
+     * </p>
+     * <p>
+     * For more information about permissions, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-access-control.html">Managing Access Permissions
+     * to Your Amazon S3 Resources</a>.
+     * </p>
+     * </li>
+     * </ul>
+     * <ul>
+     * <li>
+     * <p>
+     * <b>Directory bucket permissions</b> - You must have the <code>s3express:GetLifecycleConfiguration</code>
+     * permission in an IAM identity-based policy to use this operation. Cross-account access to this API operation
+     * isn't supported. The resource owner can optionally grant access permissions to others by creating a role or user
+     * for them as long as they are within the same account as the owner and resource.
+     * </p>
+     * <p>
+     * For more information about directory bucket policies and permissions, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-express-security-iam.html">Authorizing Regional
+     * endpoint APIs with IAM</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * <note>
+     * <p>
+     * <b>Directory buckets </b> - For directory buckets, you must make requests for this API operation to the Regional
+     * endpoint. These endpoints support path-style requests in the format
+     * <code>https://s3express-control.<i>region-code</i>.amazonaws.com/<i>bucket-name</i> </code>. Virtual-hosted-style
+     * requests aren't supported. For more information about endpoints in Availability Zones, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/endpoint-directory-buckets-AZ.html">Regional and
+     * Zonal endpoints for directory buckets in Availability Zones</a> in the <i>Amazon S3 User Guide</i>. For more
+     * information about endpoints in Local Zones, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-lzs-for-directory-buckets.html">Concepts for
+     * directory buckets in Local Zones</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * </note></li>
+     * </ul>
+     * </dd>
+     * <dt>HTTP Host header syntax</dt>
+     * <dd>
+     * <p>
+     * <b>Directory buckets </b> - The HTTP Host header syntax is
+     * <code>s3express-control.<i>region</i>.amazonaws.com</code>.
+     * </p>
+     * </dd>
+     * </dl>
+     * <p>
+     * <code>GetBucketLifecycleConfiguration</code> has the following special error:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * Error code: <code>NoSuchLifecycleConfiguration</code>
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * Description: The lifecycle configuration does not exist.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * HTTP Status Code: 404 Not Found
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * SOAP Fault Code Prefix: Client
+     * </p>
+     * </li>
+     * </ul>
+     * </li>
+     * </ul>
+     * <p>
+     * The following operations are related to <code>GetBucketLifecycleConfiguration</code>:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketLifecycle.html">GetBucketLifecycle</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketLifecycle.html">PutBucketLifecycle</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteBucketLifecycle.html">DeleteBucketLifecycle</a>
+     * </p>
+     * </li>
+     * </ul>
+     *
+     * @param getBucketLifecycleConfigurationRequest
+     * @return Result of the GetBucketLifecycleConfiguration operation returned by the service.
+     * @throws SdkException
+     *         Base class for all exceptions that can be thrown by the SDK (both service and client). Can be used for
+     *         catch all scenarios.
+     * @throws SdkClientException
+     *         If any client side error occurs such as an IO related failure, failure to get credentials, etc.
+     * @throws S3Exception
+     *         Base class for all service exceptions. Unknown exceptions will be thrown as an instance of this type.
+     * @sample S3Client.GetBucketLifecycleConfiguration
+     */
+    @Override
+    public GetBucketLifecycleConfigurationResponse getBucketLifecycleConfiguration(
+            GetBucketLifecycleConfigurationRequest getBucketLifecycleConfigurationRequest) throws AwsServiceException,
+            SdkClientException, S3Exception {
+
+        HttpResponseHandler<Response<GetBucketLifecycleConfigurationResponse>> responseHandler = protocolFactory
+                .createCombinedResponseHandler(GetBucketLifecycleConfigurationResponse::builder,
+                        new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(getBucketLifecycleConfigurationRequest,
+                this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration,
+                getBucketLifecycleConfigurationRequest.overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+                .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "GetBucketLifecycleConfiguration");
+
+            return clientHandler
+                    .execute(new ClientExecutionParams<GetBucketLifecycleConfigurationRequest, GetBucketLifecycleConfigurationResponse>()
+                            .withOperationName("GetBucketLifecycleConfiguration").withProtocolMetadata(protocolMetadata)
+                            .withCombinedResponseHandler(responseHandler).withMetricCollector(apiCallMetricCollector)
+                            .withRequestConfiguration(clientConfiguration).withInput(getBucketLifecycleConfigurationRequest)
+                            .withMarshaller(new GetBucketLifecycleConfigurationRequestMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    /**
+     * <note>
+     * <p>
+     * This operation is not supported for directory buckets.
+     * </p>
+     * </note>
+     * <p>
+     * Returns the Region the bucket resides in. You set the bucket's Region using the <code>LocationConstraint</code>
+     * request parameter in a <code>CreateBucket</code> request. For more information, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_CreateBucket.html">CreateBucket</a>.
+     * </p>
+     * <p>
+     * When you use this API operation with an access point, provide the alias of the access point in place of the
+     * bucket name.
+     * </p>
+     * <p>
+     * When you use this API operation with an Object Lambda access point, provide the alias of the Object Lambda access
+     * point in place of the bucket name. If the Object Lambda access point alias in a request is not valid, the error
+     * code <code>InvalidAccessPointAliasError</code> is returned. For more information about
+     * <code>InvalidAccessPointAliasError</code>, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/API/ErrorResponses.html#ErrorCodeList">List of Error Codes</a>.
+     * </p>
+     * <note>
+     * <p>
+     * We recommend that you use <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_HeadBucket.html">HeadBucket</a> to return the Region
+     * that a bucket resides in. For backward compatibility, Amazon S3 continues to support GetBucketLocation.
+     * </p>
+     * </note>
+     * <p>
+     * The following operations are related to <code>GetBucketLocation</code>:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetObject.html">GetObject</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_CreateBucket.html">CreateBucket</a>
+     * </p>
+     * </li>
+     * </ul>
+     *
+     * @param getBucketLocationRequest
+     * @return Result of the GetBucketLocation operation returned by the service.
+     * @throws SdkException
+     *         Base class for all exceptions that can be thrown by the SDK (both service and client). Can be used for
+     *         catch all scenarios.
+     * @throws SdkClientException
+     *         If any client side error occurs such as an IO related failure, failure to get credentials, etc.
+     * @throws S3Exception
+     *         Base class for all service exceptions. Unknown exceptions will be thrown as an instance of this type.
+     * @sample S3Client.GetBucketLocation
+     */
+    @Override
+    public GetBucketLocationResponse getBucketLocation(GetBucketLocationRequest getBucketLocationRequest)
+            throws AwsServiceException, SdkClientException, S3Exception {
+
+        HttpResponseHandler<Response<GetBucketLocationResponse>> responseHandler = protocolFactory.createCombinedResponseHandler(
+                GetBucketLocationResponse::builder, new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(getBucketLocationRequest,
+                this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration, getBucketLocationRequest
+                .overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+                .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "GetBucketLocation");
+
+            return clientHandler.execute(new ClientExecutionParams<GetBucketLocationRequest, GetBucketLocationResponse>()
+                    .withOperationName("GetBucketLocation").withProtocolMetadata(protocolMetadata)
+                    .withCombinedResponseHandler(responseHandler).withMetricCollector(apiCallMetricCollector)
+                    .withRequestConfiguration(clientConfiguration).withInput(getBucketLocationRequest)
+                    .withMarshaller(new GetBucketLocationRequestMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    /**
+     * <note>
+     * <p>
+     * This operation is not supported for directory buckets.
+     * </p>
+     * </note>
+     * <p>
+     * Returns the logging status of a bucket and the permissions users have to view and modify that status.
+     * </p>
+     * <p>
+     * The following operations are related to <code>GetBucketLogging</code>:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_CreateBucket.html">CreateBucket</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketLogging.html">PutBucketLogging</a>
+     * </p>
+     * </li>
+     * </ul>
+     *
+     * @param getBucketLoggingRequest
+     * @return Result of the GetBucketLogging operation returned by the service.
+     * @throws SdkException
+     *         Base class for all exceptions that can be thrown by the SDK (both service and client). Can be used for
+     *         catch all scenarios.
+     * @throws SdkClientException
+     *         If any client side error occurs such as an IO related failure, failure to get credentials, etc.
+     * @throws S3Exception
+     *         Base class for all service exceptions. Unknown exceptions will be thrown as an instance of this type.
+     * @sample S3Client.GetBucketLogging
+     */
+    @Override
+    public GetBucketLoggingResponse getBucketLogging(GetBucketLoggingRequest getBucketLoggingRequest) throws AwsServiceException,
+            SdkClientException, S3Exception {
+
+        HttpResponseHandler<Response<GetBucketLoggingResponse>> responseHandler = protocolFactory.createCombinedResponseHandler(
+                GetBucketLoggingResponse::builder, new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(getBucketLoggingRequest,
+                this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration, getBucketLoggingRequest
+                .overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+                .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "GetBucketLogging");
+
+            return clientHandler.execute(new ClientExecutionParams<GetBucketLoggingRequest, GetBucketLoggingResponse>()
+                    .withOperationName("GetBucketLogging").withProtocolMetadata(protocolMetadata)
+                    .withCombinedResponseHandler(responseHandler).withMetricCollector(apiCallMetricCollector)
+                    .withRequestConfiguration(clientConfiguration).withInput(getBucketLoggingRequest)
+                    .withMarshaller(new GetBucketLoggingRequestMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    /**
+     * <p>
+     * Retrieves the metadata table configuration for a general purpose bucket. For more information, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/metadata-tables-overview.html">Accelerating data
+     * discovery with S3 Metadata</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * <dl>
+     * <dt>Permissions</dt>
+     * <dd>
+     * <p>
+     * To use this operation, you must have the <code>s3:GetBucketMetadataTableConfiguration</code> permission. For more
+     * information, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/metadata-tables-permissions.html">Setting up
+     * permissions for configuring metadata tables</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * </dd>
+     * </dl>
+     * <p>
+     * The following operations are related to <code>GetBucketMetadataTableConfiguration</code>:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_CreateBucketMetadataTableConfiguration.html">
+     * CreateBucketMetadataTableConfiguration</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteBucketMetadataTableConfiguration.html">
+     * DeleteBucketMetadataTableConfiguration</a>
+     * </p>
+     * </li>
+     * </ul>
+     *
+     * @param getBucketMetadataTableConfigurationRequest
+     * @return Result of the GetBucketMetadataTableConfiguration operation returned by the service.
+     * @throws SdkException
+     *         Base class for all exceptions that can be thrown by the SDK (both service and client). Can be used for
+     *         catch all scenarios.
+     * @throws SdkClientException
+     *         If any client side error occurs such as an IO related failure, failure to get credentials, etc.
+     * @throws S3Exception
+     *         Base class for all service exceptions. Unknown exceptions will be thrown as an instance of this type.
+     * @sample S3Client.GetBucketMetadataTableConfiguration
+     */
+    @Override
+    public GetBucketMetadataTableConfigurationResponse getBucketMetadataTableConfiguration(
+            GetBucketMetadataTableConfigurationRequest getBucketMetadataTableConfigurationRequest) throws AwsServiceException,
+            SdkClientException, S3Exception {
+
+        HttpResponseHandler<Response<GetBucketMetadataTableConfigurationResponse>> responseHandler = protocolFactory
+                .createCombinedResponseHandler(GetBucketMetadataTableConfigurationResponse::builder,
+                        new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(getBucketMetadataTableConfigurationRequest,
+                this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration,
+                getBucketMetadataTableConfigurationRequest.overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+                .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "GetBucketMetadataTableConfiguration");
+
+            return clientHandler
+                    .execute(new ClientExecutionParams<GetBucketMetadataTableConfigurationRequest, GetBucketMetadataTableConfigurationResponse>()
+                            .withOperationName("GetBucketMetadataTableConfiguration").withProtocolMetadata(protocolMetadata)
+                            .withCombinedResponseHandler(responseHandler).withMetricCollector(apiCallMetricCollector)
+                            .withRequestConfiguration(clientConfiguration).withInput(getBucketMetadataTableConfigurationRequest)
+                            .withMarshaller(new GetBucketMetadataTableConfigurationRequestMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    /**
+     * <note>
+     * <p>
+     * This operation is not supported for directory buckets.
+     * </p>
+     * </note>
+     * <p>
+     * Gets a metrics configuration (specified by the metrics configuration ID) from the bucket. Note that this doesn't
+     * include the daily storage metrics.
+     * </p>
+     * <p>
+     * To use this operation, you must have permissions to perform the <code>s3:GetMetricsConfiguration</code> action.
+     * The bucket owner has this permission by default. The bucket owner can grant this permission to others. For more
+     * information about permissions, see <a href=
+     * "https://docs.aws.amazon.com/AmazonS3/latest/userguide/using-with-s3-actions.html#using-with-s3-actions-related-to-bucket-subresources"
+     * >Permissions Related to Bucket Subresource Operations</a> and <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-access-control.html">Managing Access Permissions
+     * to Your Amazon S3 Resources</a>.
+     * </p>
+     * <p>
+     * For information about CloudWatch request metrics for Amazon S3, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/dev/cloudwatch-monitoring.html">Monitoring Metrics with Amazon
+     * CloudWatch</a>.
+     * </p>
+     * <p>
+     * The following operations are related to <code>GetBucketMetricsConfiguration</code>:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketMetricsConfiguration.html">
+     * PutBucketMetricsConfiguration</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteBucketMetricsConfiguration.html">
+     * DeleteBucketMetricsConfiguration</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListBucketMetricsConfigurations.html">
+     * ListBucketMetricsConfigurations</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/dev/cloudwatch-monitoring.html">Monitoring Metrics with
+     * Amazon CloudWatch</a>
+     * </p>
+     * </li>
+     * </ul>
+     *
+     * @param getBucketMetricsConfigurationRequest
+     * @return Result of the GetBucketMetricsConfiguration operation returned by the service.
+     * @throws SdkException
+     *         Base class for all exceptions that can be thrown by the SDK (both service and client). Can be used for
+     *         catch all scenarios.
+     * @throws SdkClientException
+     *         If any client side error occurs such as an IO related failure, failure to get credentials, etc.
+     * @throws S3Exception
+     *         Base class for all service exceptions. Unknown exceptions will be thrown as an instance of this type.
+     * @sample S3Client.GetBucketMetricsConfiguration
+     */
+    @Override
+    public GetBucketMetricsConfigurationResponse getBucketMetricsConfiguration(
+            GetBucketMetricsConfigurationRequest getBucketMetricsConfigurationRequest) throws AwsServiceException,
+            SdkClientException, S3Exception {
+
+        HttpResponseHandler<Response<GetBucketMetricsConfigurationResponse>> responseHandler = protocolFactory
+                .createCombinedResponseHandler(GetBucketMetricsConfigurationResponse::builder,
+                        new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(getBucketMetricsConfigurationRequest,
+                this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration,
+                getBucketMetricsConfigurationRequest.overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+                .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "GetBucketMetricsConfiguration");
+
+            return clientHandler
+                    .execute(new ClientExecutionParams<GetBucketMetricsConfigurationRequest, GetBucketMetricsConfigurationResponse>()
+                            .withOperationName("GetBucketMetricsConfiguration").withProtocolMetadata(protocolMetadata)
+                            .withCombinedResponseHandler(responseHandler).withMetricCollector(apiCallMetricCollector)
+                            .withRequestConfiguration(clientConfiguration).withInput(getBucketMetricsConfigurationRequest)
+                            .withMarshaller(new GetBucketMetricsConfigurationRequestMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    /**
+     * <note>
+     * <p>
+     * This operation is not supported for directory buckets.
+     * </p>
+     * </note>
+     * <p>
+     * Returns the notification configuration of a bucket.
+     * </p>
+     * <p>
+     * If notifications are not enabled on the bucket, the action returns an empty
+     * <code>NotificationConfiguration</code> element.
+     * </p>
+     * <p>
+     * By default, you must be the bucket owner to read the notification configuration of a bucket. However, the bucket
+     * owner can use a bucket policy to grant permission to other users to read this configuration with the
+     * <code>s3:GetBucketNotification</code> permission.
+     * </p>
+     * <p>
+     * When you use this API operation with an access point, provide the alias of the access point in place of the
+     * bucket name.
+     * </p>
+     * <p>
+     * When you use this API operation with an Object Lambda access point, provide the alias of the Object Lambda access
+     * point in place of the bucket name. If the Object Lambda access point alias in a request is not valid, the error
+     * code <code>InvalidAccessPointAliasError</code> is returned. For more information about
+     * <code>InvalidAccessPointAliasError</code>, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/API/ErrorResponses.html#ErrorCodeList">List of Error Codes</a>.
+     * </p>
+     * <p>
+     * For more information about setting and reading the notification configuration on a bucket, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/dev/NotificationHowTo.html">Setting Up Notification of Bucket
+     * Events</a>. For more information about bucket policies, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/dev/using-iam-policies.html">Using Bucket Policies</a>.
+     * </p>
+     * <p>
+     * The following action is related to <code>GetBucketNotification</code>:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketNotification.html">PutBucketNotification</a>
+     * </p>
+     * </li>
+     * </ul>
+     *
+     * @param getBucketNotificationConfigurationRequest
+     * @return Result of the GetBucketNotificationConfiguration operation returned by the service.
+     * @throws SdkException
+     *         Base class for all exceptions that can be thrown by the SDK (both service and client). Can be used for
+     *         catch all scenarios.
+     * @throws SdkClientException
+     *         If any client side error occurs such as an IO related failure, failure to get credentials, etc.
+     * @throws S3Exception
+     *         Base class for all service exceptions. Unknown exceptions will be thrown as an instance of this type.
+     * @sample S3Client.GetBucketNotificationConfiguration
+     */
+    @Override
+    public GetBucketNotificationConfigurationResponse getBucketNotificationConfiguration(
+            GetBucketNotificationConfigurationRequest getBucketNotificationConfigurationRequest) throws AwsServiceException,
+            SdkClientException, S3Exception {
+
+        HttpResponseHandler<Response<GetBucketNotificationConfigurationResponse>> responseHandler = protocolFactory
+                .createCombinedResponseHandler(GetBucketNotificationConfigurationResponse::builder,
+                        new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(getBucketNotificationConfigurationRequest,
+                this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration,
+                getBucketNotificationConfigurationRequest.overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+                .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "GetBucketNotificationConfiguration");
+
+            return clientHandler
+                    .execute(new ClientExecutionParams<GetBucketNotificationConfigurationRequest, GetBucketNotificationConfigurationResponse>()
+                            .withOperationName("GetBucketNotificationConfiguration").withProtocolMetadata(protocolMetadata)
+                            .withCombinedResponseHandler(responseHandler).withMetricCollector(apiCallMetricCollector)
+                            .withRequestConfiguration(clientConfiguration).withInput(getBucketNotificationConfigurationRequest)
+                            .withMarshaller(new GetBucketNotificationConfigurationRequestMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    /**
+     * <note>
+     * <p>
+     * This operation is not supported for directory buckets.
+     * </p>
+     * </note>
+     * <p>
+     * Retrieves <code>OwnershipControls</code> for an Amazon S3 bucket. To use this operation, you must have the
+     * <code>s3:GetBucketOwnershipControls</code> permission. For more information about Amazon S3 permissions, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/using-with-s3-actions.html">Specifying permissions in
+     * a policy</a>.
+     * </p>
+     * <p>
+     * For information about Amazon S3 Object Ownership, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/about-object-ownership.html">Using Object
+     * Ownership</a>.
+     * </p>
+     * <p>
+     * The following operations are related to <code>GetBucketOwnershipControls</code>:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <a>PutBucketOwnershipControls</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a>DeleteBucketOwnershipControls</a>
+     * </p>
+     * </li>
+     * </ul>
+     *
+     * @param getBucketOwnershipControlsRequest
+     * @return Result of the GetBucketOwnershipControls operation returned by the service.
+     * @throws SdkException
+     *         Base class for all exceptions that can be thrown by the SDK (both service and client). Can be used for
+     *         catch all scenarios.
+     * @throws SdkClientException
+     *         If any client side error occurs such as an IO related failure, failure to get credentials, etc.
+     * @throws S3Exception
+     *         Base class for all service exceptions. Unknown exceptions will be thrown as an instance of this type.
+     * @sample S3Client.GetBucketOwnershipControls
+     */
+    @Override
+    public GetBucketOwnershipControlsResponse getBucketOwnershipControls(
+            GetBucketOwnershipControlsRequest getBucketOwnershipControlsRequest) throws AwsServiceException, SdkClientException,
+            S3Exception {
+
+        HttpResponseHandler<Response<GetBucketOwnershipControlsResponse>> responseHandler = protocolFactory
+                .createCombinedResponseHandler(GetBucketOwnershipControlsResponse::builder,
+                        new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(getBucketOwnershipControlsRequest,
+                this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration, getBucketOwnershipControlsRequest
+                .overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+                .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "GetBucketOwnershipControls");
+
+            return clientHandler
+                    .execute(new ClientExecutionParams<GetBucketOwnershipControlsRequest, GetBucketOwnershipControlsResponse>()
+                            .withOperationName("GetBucketOwnershipControls").withProtocolMetadata(protocolMetadata)
+                            .withCombinedResponseHandler(responseHandler).withMetricCollector(apiCallMetricCollector)
+                            .withRequestConfiguration(clientConfiguration).withInput(getBucketOwnershipControlsRequest)
+                            .withMarshaller(new GetBucketOwnershipControlsRequestMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    /**
+     * <p>
+     * Returns the policy of a specified bucket.
+     * </p>
+     * <note>
+     * <p>
+     * <b>Directory buckets </b> - For directory buckets, you must make requests for this API operation to the Regional
+     * endpoint. These endpoints support path-style requests in the format
+     * <code>https://s3express-control.<i>region-code</i>.amazonaws.com/<i>bucket-name</i> </code>. Virtual-hosted-style
+     * requests aren't supported. For more information about endpoints in Availability Zones, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/endpoint-directory-buckets-AZ.html">Regional and
+     * Zonal endpoints for directory buckets in Availability Zones</a> in the <i>Amazon S3 User Guide</i>. For more
+     * information about endpoints in Local Zones, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-lzs-for-directory-buckets.html">Concepts for
+     * directory buckets in Local Zones</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * </note>
+     * <dl>
+     * <dt>Permissions</dt>
+     * <dd>
+     * <p>
+     * If you are using an identity other than the root user of the Amazon Web Services account that owns the bucket,
+     * the calling identity must both have the <code>GetBucketPolicy</code> permissions on the specified bucket and
+     * belong to the bucket owner's account in order to use this operation.
+     * </p>
+     * <p>
+     * If you don't have <code>GetBucketPolicy</code> permissions, Amazon S3 returns a <code>403 Access Denied</code>
+     * error. If you have the correct permissions, but you're not using an identity that belongs to the bucket owner's
+     * account, Amazon S3 returns a <code>405 Method Not Allowed</code> error.
+     * </p>
+     * <important>
+     * <p>
+     * To ensure that bucket owners don't inadvertently lock themselves out of their own buckets, the root principal in
+     * a bucket owner's Amazon Web Services account can perform the <code>GetBucketPolicy</code>,
+     * <code>PutBucketPolicy</code>, and <code>DeleteBucketPolicy</code> API actions, even if their bucket policy
+     * explicitly denies the root principal's access. Bucket owner root principals can only be blocked from performing
+     * these API actions by VPC endpoint policies and Amazon Web Services Organizations policies.
+     * </p>
+     * </important>
+     * <ul>
+     * <li>
+     * <p>
+     * <b>General purpose bucket permissions</b> - The <code>s3:GetBucketPolicy</code> permission is required in a
+     * policy. For more information about general purpose buckets bucket policies, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/dev/using-iam-policies.html">Using Bucket Policies and User
+     * Policies</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <b>Directory bucket permissions</b> - To grant access to this API operation, you must have the
+     * <code>s3express:GetBucketPolicy</code> permission in an IAM identity-based policy instead of a bucket policy.
+     * Cross-account access to this API operation isn't supported. This operation can only be performed by the Amazon
+     * Web Services account that owns the resource. For more information about directory bucket policies and
+     * permissions, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-express-security-iam.html">Amazon Web Services
+     * Identity and Access Management (IAM) for S3 Express One Zone</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * </li>
+     * </ul>
+     * </dd>
+     * <dt>Example bucket policies</dt>
+     * <dd>
+     * <p>
+     * <b>General purpose buckets example bucket policies</b> - See <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/example-bucket-policies.html">Bucket policy
+     * examples</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * <p>
+     * <b>Directory bucket example bucket policies</b> - See <a href=
+     * "https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-express-security-iam-example-bucket-policies.html"
+     * >Example bucket policies for S3 Express One Zone</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * </dd>
+     * <dt>HTTP Host header syntax</dt>
+     * <dd>
+     * <p>
+     * <b>Directory buckets </b> - The HTTP Host header syntax is
+     * <code>s3express-control.<i>region-code</i>.amazonaws.com</code>.
+     * </p>
+     * </dd>
+     * </dl>
+     * <p>
+     * The following action is related to <code>GetBucketPolicy</code>:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetObject.html">GetObject</a>
+     * </p>
+     * </li>
+     * </ul>
+     *
+     * @param getBucketPolicyRequest
+     * @return Result of the GetBucketPolicy operation returned by the service.
+     * @throws SdkException
+     *         Base class for all exceptions that can be thrown by the SDK (both service and client). Can be used for
+     *         catch all scenarios.
+     * @throws SdkClientException
+     *         If any client side error occurs such as an IO related failure, failure to get credentials, etc.
+     * @throws S3Exception
+     *         Base class for all service exceptions. Unknown exceptions will be thrown as an instance of this type.
+     * @sample S3Client.GetBucketPolicy
+     */
+    @Override
+    public GetBucketPolicyResponse getBucketPolicy(GetBucketPolicyRequest getBucketPolicyRequest) throws AwsServiceException,
+            SdkClientException, S3Exception {
+
+        HttpResponseHandler<Response<GetBucketPolicyResponse>> responseHandler = protocolFactory.createCombinedResponseHandler(
+                GetBucketPolicyResponse::builder, new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(getBucketPolicyRequest,
+                this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration, getBucketPolicyRequest
+                .overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+                .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "GetBucketPolicy");
+
+            return clientHandler.execute(new ClientExecutionParams<GetBucketPolicyRequest, GetBucketPolicyResponse>()
+                    .withOperationName("GetBucketPolicy").withProtocolMetadata(protocolMetadata)
+                    .withCombinedResponseHandler(responseHandler).withMetricCollector(apiCallMetricCollector)
+                    .withRequestConfiguration(clientConfiguration).withInput(getBucketPolicyRequest)
+                    .withMarshaller(new GetBucketPolicyRequestMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    /**
+     * <note>
+     * <p>
+     * This operation is not supported for directory buckets.
+     * </p>
+     * </note>
+     * <p>
+     * Retrieves the policy status for an Amazon S3 bucket, indicating whether the bucket is public. In order to use
+     * this operation, you must have the <code>s3:GetBucketPolicyStatus</code> permission. For more information about
+     * Amazon S3 permissions, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/dev/using-with-s3-actions.html">Specifying Permissions in a
+     * Policy</a>.
+     * </p>
+     * <p>
+     * For more information about when Amazon S3 considers a bucket public, see <a href=
+     * "https://docs.aws.amazon.com/AmazonS3/latest/dev/access-control-block-public-access.html#access-control-block-public-access-policy-status"
+     * >The Meaning of "Public"</a>.
+     * </p>
+     * <p>
+     * The following operations are related to <code>GetBucketPolicyStatus</code>:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/dev/access-control-block-public-access.html">Using Amazon S3
+     * Block Public Access</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetPublicAccessBlock.html">GetPublicAccessBlock</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutPublicAccessBlock.html">PutPublicAccessBlock</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeletePublicAccessBlock.html">DeletePublicAccessBlock
+     * </a>
+     * </p>
+     * </li>
+     * </ul>
+     *
+     * @param getBucketPolicyStatusRequest
+     * @return Result of the GetBucketPolicyStatus operation returned by the service.
+     * @throws SdkException
+     *         Base class for all exceptions that can be thrown by the SDK (both service and client). Can be used for
+     *         catch all scenarios.
+     * @throws SdkClientException
+     *         If any client side error occurs such as an IO related failure, failure to get credentials, etc.
+     * @throws S3Exception
+     *         Base class for all service exceptions. Unknown exceptions will be thrown as an instance of this type.
+     * @sample S3Client.GetBucketPolicyStatus
+     */
+    @Override
+    public GetBucketPolicyStatusResponse getBucketPolicyStatus(GetBucketPolicyStatusRequest getBucketPolicyStatusRequest)
+            throws AwsServiceException, SdkClientException, S3Exception {
+
+        HttpResponseHandler<Response<GetBucketPolicyStatusResponse>> responseHandler = protocolFactory
+                .createCombinedResponseHandler(GetBucketPolicyStatusResponse::builder,
+                        new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(getBucketPolicyStatusRequest,
+                this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration, getBucketPolicyStatusRequest
+                .overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+                .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "GetBucketPolicyStatus");
+
+            return clientHandler.execute(new ClientExecutionParams<GetBucketPolicyStatusRequest, GetBucketPolicyStatusResponse>()
+                    .withOperationName("GetBucketPolicyStatus").withProtocolMetadata(protocolMetadata)
+                    .withCombinedResponseHandler(responseHandler).withMetricCollector(apiCallMetricCollector)
+                    .withRequestConfiguration(clientConfiguration).withInput(getBucketPolicyStatusRequest)
+                    .withMarshaller(new GetBucketPolicyStatusRequestMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    /**
+     * <note>
+     * <p>
+     * This operation is not supported for directory buckets.
+     * </p>
+     * </note>
+     * <p>
+     * Returns the replication configuration of a bucket.
+     * </p>
+     * <note>
+     * <p>
+     * It can take a while to propagate the put or delete a replication configuration to all Amazon S3 systems.
+     * Therefore, a get request soon after put or delete can return a wrong result.
+     * </p>
+     * </note>
+     * <p>
+     * For information about replication configuration, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/dev/replication.html">Replication</a> in the <i>Amazon S3 User
+     * Guide</i>.
+     * </p>
+     * <p>
+     * This action requires permissions for the <code>s3:GetReplicationConfiguration</code> action. For more information
+     * about permissions, see <a href="https://docs.aws.amazon.com/AmazonS3/latest/dev/using-iam-policies.html">Using
+     * Bucket Policies and User Policies</a>.
+     * </p>
+     * <p>
+     * If you include the <code>Filter</code> element in a replication configuration, you must also include the
+     * <code>DeleteMarkerReplication</code> and <code>Priority</code> elements. The response also returns those
+     * elements.
+     * </p>
+     * <p>
+     * For information about <code>GetBucketReplication</code> errors, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/API/ErrorResponses.html#ReplicationErrorCodeList">List of
+     * replication-related error codes</a>
+     * </p>
+     * <p>
+     * The following operations are related to <code>GetBucketReplication</code>:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketReplication.html">PutBucketReplication</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteBucketReplication.html">DeleteBucketReplication
+     * </a>
+     * </p>
+     * </li>
+     * </ul>
+     *
+     * @param getBucketReplicationRequest
+     * @return Result of the GetBucketReplication operation returned by the service.
+     * @throws SdkException
+     *         Base class for all exceptions that can be thrown by the SDK (both service and client). Can be used for
+     *         catch all scenarios.
+     * @throws SdkClientException
+     *         If any client side error occurs such as an IO related failure, failure to get credentials, etc.
+     * @throws S3Exception
+     *         Base class for all service exceptions. Unknown exceptions will be thrown as an instance of this type.
+     * @sample S3Client.GetBucketReplication
+     */
+    @Override
+    public GetBucketReplicationResponse getBucketReplication(GetBucketReplicationRequest getBucketReplicationRequest)
+            throws AwsServiceException, SdkClientException, S3Exception {
+
+        HttpResponseHandler<Response<GetBucketReplicationResponse>> responseHandler = protocolFactory
+                .createCombinedResponseHandler(GetBucketReplicationResponse::builder,
+                        new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(getBucketReplicationRequest,
+                this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration, getBucketReplicationRequest
+                .overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+                .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "GetBucketReplication");
+
+            return clientHandler.execute(new ClientExecutionParams<GetBucketReplicationRequest, GetBucketReplicationResponse>()
+                    .withOperationName("GetBucketReplication").withProtocolMetadata(protocolMetadata)
+                    .withCombinedResponseHandler(responseHandler).withMetricCollector(apiCallMetricCollector)
+                    .withRequestConfiguration(clientConfiguration).withInput(getBucketReplicationRequest)
+                    .withMarshaller(new GetBucketReplicationRequestMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    /**
+     * <note>
+     * <p>
+     * This operation is not supported for directory buckets.
+     * </p>
+     * </note>
+     * <p>
+     * Returns the request payment configuration of a bucket. To use this version of the operation, you must be the
+     * bucket owner. For more information, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/dev/RequesterPaysBuckets.html">Requester Pays Buckets</a>.
+     * </p>
+     * <p>
+     * The following operations are related to <code>GetBucketRequestPayment</code>:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListObjects.html">ListObjects</a>
+     * </p>
+     * </li>
+     * </ul>
+     *
+     * @param getBucketRequestPaymentRequest
+     * @return Result of the GetBucketRequestPayment operation returned by the service.
+     * @throws SdkException
+     *         Base class for all exceptions that can be thrown by the SDK (both service and client). Can be used for
+     *         catch all scenarios.
+     * @throws SdkClientException
+     *         If any client side error occurs such as an IO related failure, failure to get credentials, etc.
+     * @throws S3Exception
+     *         Base class for all service exceptions. Unknown exceptions will be thrown as an instance of this type.
+     * @sample S3Client.GetBucketRequestPayment
+     */
+    @Override
+    public GetBucketRequestPaymentResponse getBucketRequestPayment(GetBucketRequestPaymentRequest getBucketRequestPaymentRequest)
+            throws AwsServiceException, SdkClientException, S3Exception {
+
+        HttpResponseHandler<Response<GetBucketRequestPaymentResponse>> responseHandler = protocolFactory
+                .createCombinedResponseHandler(GetBucketRequestPaymentResponse::builder,
+                        new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(getBucketRequestPaymentRequest,
+                this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration, getBucketRequestPaymentRequest
+                .overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+                .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "GetBucketRequestPayment");
+
+            return clientHandler
+                    .execute(new ClientExecutionParams<GetBucketRequestPaymentRequest, GetBucketRequestPaymentResponse>()
+                            .withOperationName("GetBucketRequestPayment").withProtocolMetadata(protocolMetadata)
+                            .withCombinedResponseHandler(responseHandler).withMetricCollector(apiCallMetricCollector)
+                            .withRequestConfiguration(clientConfiguration).withInput(getBucketRequestPaymentRequest)
+                            .withMarshaller(new GetBucketRequestPaymentRequestMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    /**
+     * <note>
+     * <p>
+     * This operation is not supported for directory buckets.
+     * </p>
+     * </note>
+     * <p>
+     * Returns the tag set associated with the bucket.
+     * </p>
+     * <p>
+     * To use this operation, you must have permission to perform the <code>s3:GetBucketTagging</code> action. By
+     * default, the bucket owner has this permission and can grant this permission to others.
+     * </p>
+     * <p>
+     * <code>GetBucketTagging</code> has the following special error:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * Error code: <code>NoSuchTagSet</code>
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * Description: There is no tag set associated with the bucket.
+     * </p>
+     * </li>
+     * </ul>
+     * </li>
+     * </ul>
+     * <p>
+     * The following operations are related to <code>GetBucketTagging</code>:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketTagging.html">PutBucketTagging</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteBucketTagging.html">DeleteBucketTagging</a>
+     * </p>
+     * </li>
+     * </ul>
+     *
+     * @param getBucketTaggingRequest
+     * @return Result of the GetBucketTagging operation returned by the service.
+     * @throws SdkException
+     *         Base class for all exceptions that can be thrown by the SDK (both service and client). Can be used for
+     *         catch all scenarios.
+     * @throws SdkClientException
+     *         If any client side error occurs such as an IO related failure, failure to get credentials, etc.
+     * @throws S3Exception
+     *         Base class for all service exceptions. Unknown exceptions will be thrown as an instance of this type.
+     * @sample S3Client.GetBucketTagging
+     */
+    @Override
+    public GetBucketTaggingResponse getBucketTagging(GetBucketTaggingRequest getBucketTaggingRequest) throws AwsServiceException,
+            SdkClientException, S3Exception {
+
+        HttpResponseHandler<Response<GetBucketTaggingResponse>> responseHandler = protocolFactory.createCombinedResponseHandler(
+                GetBucketTaggingResponse::builder, new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(getBucketTaggingRequest,
+                this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration, getBucketTaggingRequest
+                .overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+                .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "GetBucketTagging");
+
+            return clientHandler.execute(new ClientExecutionParams<GetBucketTaggingRequest, GetBucketTaggingResponse>()
+                    .withOperationName("GetBucketTagging").withProtocolMetadata(protocolMetadata)
+                    .withCombinedResponseHandler(responseHandler).withMetricCollector(apiCallMetricCollector)
+                    .withRequestConfiguration(clientConfiguration).withInput(getBucketTaggingRequest)
+                    .withMarshaller(new GetBucketTaggingRequestMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    /**
+     * <note>
+     * <p>
+     * This operation is not supported for directory buckets.
+     * </p>
+     * </note>
+     * <p>
+     * Returns the versioning state of a bucket.
+     * </p>
+     * <p>
+     * To retrieve the versioning state of a bucket, you must be the bucket owner.
+     * </p>
+     * <p>
+     * This implementation also returns the MFA Delete status of the versioning state. If the MFA Delete status is
+     * <code>enabled</code>, the bucket owner must use an authentication device to change the versioning state of the
+     * bucket.
+     * </p>
+     * <p>
+     * The following operations are related to <code>GetBucketVersioning</code>:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetObject.html">GetObject</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutObject.html">PutObject</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteObject.html">DeleteObject</a>
+     * </p>
+     * </li>
+     * </ul>
+     *
+     * @param getBucketVersioningRequest
+     * @return Result of the GetBucketVersioning operation returned by the service.
+     * @throws SdkException
+     *         Base class for all exceptions that can be thrown by the SDK (both service and client). Can be used for
+     *         catch all scenarios.
+     * @throws SdkClientException
+     *         If any client side error occurs such as an IO related failure, failure to get credentials, etc.
+     * @throws S3Exception
+     *         Base class for all service exceptions. Unknown exceptions will be thrown as an instance of this type.
+     * @sample S3Client.GetBucketVersioning
+     */
+    @Override
+    public GetBucketVersioningResponse getBucketVersioning(GetBucketVersioningRequest getBucketVersioningRequest)
+            throws AwsServiceException, SdkClientException, S3Exception {
+
+        HttpResponseHandler<Response<GetBucketVersioningResponse>> responseHandler = protocolFactory
+                .createCombinedResponseHandler(GetBucketVersioningResponse::builder,
+                        new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(getBucketVersioningRequest,
+                this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration, getBucketVersioningRequest
+                .overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+                .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "GetBucketVersioning");
+
+            return clientHandler.execute(new ClientExecutionParams<GetBucketVersioningRequest, GetBucketVersioningResponse>()
+                    .withOperationName("GetBucketVersioning").withProtocolMetadata(protocolMetadata)
+                    .withCombinedResponseHandler(responseHandler).withMetricCollector(apiCallMetricCollector)
+                    .withRequestConfiguration(clientConfiguration).withInput(getBucketVersioningRequest)
+                    .withMarshaller(new GetBucketVersioningRequestMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    /**
+     * <note>
+     * <p>
+     * This operation is not supported for directory buckets.
+     * </p>
+     * </note>
+     * <p>
+     * Returns the website configuration for a bucket. To host website on Amazon S3, you can configure a bucket as
+     * website by adding a website configuration. For more information about hosting websites, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/dev/WebsiteHosting.html">Hosting Websites on Amazon S3</a>.
+     * </p>
+     * <p>
+     * This GET action requires the <code>S3:GetBucketWebsite</code> permission. By default, only the bucket owner can
+     * read the bucket website configuration. However, bucket owners can allow other users to read the website
+     * configuration by writing a bucket policy granting them the <code>S3:GetBucketWebsite</code> permission.
+     * </p>
+     * <p>
+     * The following operations are related to <code>GetBucketWebsite</code>:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteBucketWebsite.html">DeleteBucketWebsite</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketWebsite.html">PutBucketWebsite</a>
+     * </p>
+     * </li>
+     * </ul>
+     *
+     * @param getBucketWebsiteRequest
+     * @return Result of the GetBucketWebsite operation returned by the service.
+     * @throws SdkException
+     *         Base class for all exceptions that can be thrown by the SDK (both service and client). Can be used for
+     *         catch all scenarios.
+     * @throws SdkClientException
+     *         If any client side error occurs such as an IO related failure, failure to get credentials, etc.
+     * @throws S3Exception
+     *         Base class for all service exceptions. Unknown exceptions will be thrown as an instance of this type.
+     * @sample S3Client.GetBucketWebsite
+     */
+    @Override
+    public GetBucketWebsiteResponse getBucketWebsite(GetBucketWebsiteRequest getBucketWebsiteRequest) throws AwsServiceException,
+            SdkClientException, S3Exception {
+
+        HttpResponseHandler<Response<GetBucketWebsiteResponse>> responseHandler = protocolFactory.createCombinedResponseHandler(
+                GetBucketWebsiteResponse::builder, new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(getBucketWebsiteRequest,
+                this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration, getBucketWebsiteRequest
+                .overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+                .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "GetBucketWebsite");
+
+            return clientHandler.execute(new ClientExecutionParams<GetBucketWebsiteRequest, GetBucketWebsiteResponse>()
+                    .withOperationName("GetBucketWebsite").withProtocolMetadata(protocolMetadata)
+                    .withCombinedResponseHandler(responseHandler).withMetricCollector(apiCallMetricCollector)
+                    .withRequestConfiguration(clientConfiguration).withInput(getBucketWebsiteRequest)
+                    .withMarshaller(new GetBucketWebsiteRequestMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    /**
+     * <p>
+     * Retrieves an object from Amazon S3.
+     * </p>
+     * <p>
+     * In the <code>GetObject</code> request, specify the full key name for the object.
+     * </p>
+     * <p>
+     * <b>General purpose buckets</b> - Both the virtual-hosted-style requests and the path-style requests are
+     * supported. For a virtual hosted-style request example, if you have the object
+     * <code>photos/2006/February/sample.jpg</code>, specify the object key name as
+     * <code>/photos/2006/February/sample.jpg</code>. For a path-style request example, if you have the object
+     * <code>photos/2006/February/sample.jpg</code> in the bucket named <code>examplebucket</code>, specify the object
+     * key name as <code>/examplebucket/photos/2006/February/sample.jpg</code>. For more information about request
+     * types, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/dev/VirtualHosting.html#VirtualHostingSpecifyBucket">HTTP Host
+     * Header Bucket Specification</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * <p>
+     * <b>Directory buckets</b> - Only virtual-hosted-style requests are supported. For a virtual hosted-style request
+     * example, if you have the object <code>photos/2006/February/sample.jpg</code> in the bucket named
+     * <code>amzn-s3-demo-bucket--usw2-az1--x-s3</code>, specify the object key name as
+     * <code>/photos/2006/February/sample.jpg</code>. Also, when you make requests to this API operation, your requests
+     * are sent to the Zonal endpoint. These endpoints support virtual-hosted-style requests in the format
+     * <code>https://<i>bucket-name</i>.s3express-<i>zone-id</i>.<i>region-code</i>.amazonaws.com/<i>key-name</i> </code>
+     * . Path-style requests are not supported. For more information about endpoints in Availability Zones, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/endpoint-directory-buckets-AZ.html">Regional and
+     * Zonal endpoints for directory buckets in Availability Zones</a> in the <i>Amazon S3 User Guide</i>. For more
+     * information about endpoints in Local Zones, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-lzs-for-directory-buckets.html">Concepts for
+     * directory buckets in Local Zones</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * <dl>
+     * <dt>Permissions</dt>
+     * <dd>
+     * <ul>
+     * <li>
+     * <p>
+     * <b>General purpose bucket permissions</b> - You must have the required permissions in a policy. To use
+     * <code>GetObject</code>, you must have the <code>READ</code> access to the object (or version). If you grant
+     * <code>READ</code> access to the anonymous user, the <code>GetObject</code> operation returns the object without
+     * using an authorization header. For more information, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/dev/using-with-s3-actions.html">Specifying permissions in a
+     * policy</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * <p>
+     * If you include a <code>versionId</code> in your request header, you must have the
+     * <code>s3:GetObjectVersion</code> permission to access a specific version of an object. The
+     * <code>s3:GetObject</code> permission is not required in this scenario.
+     * </p>
+     * <p>
+     * If you request the current version of an object without a specific <code>versionId</code> in the request header,
+     * only the <code>s3:GetObject</code> permission is required. The <code>s3:GetObjectVersion</code> permission is not
+     * required in this scenario.
+     * </p>
+     * <p>
+     * If the object that you request doesn’t exist, the error that Amazon S3 returns depends on whether you also have
+     * the <code>s3:ListBucket</code> permission.
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * If you have the <code>s3:ListBucket</code> permission on the bucket, Amazon S3 returns an HTTP status code
+     * <code>404 Not Found</code> error.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * If you don’t have the <code>s3:ListBucket</code> permission, Amazon S3 returns an HTTP status code
+     * <code>403 Access Denied</code> error.
+     * </p>
+     * </li>
+     * </ul>
+     * </li>
+     * <li>
+     * <p>
+     * <b>Directory bucket permissions</b> - To grant access to this API operation on a directory bucket, we recommend
+     * that you use the <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_CreateSession.html">
+     * <code>CreateSession</code> </a> API operation for session-based authorization. Specifically, you grant the
+     * <code>s3express:CreateSession</code> permission to the directory bucket in a bucket policy or an IAM
+     * identity-based policy. Then, you make the <code>CreateSession</code> API call on the bucket to obtain a session
+     * token. With the session token in your request header, you can make API requests to this operation. After the
+     * session token expires, you make another <code>CreateSession</code> API call to generate a new session token for
+     * use. Amazon Web Services CLI or SDKs create session and refresh the session token automatically to avoid service
+     * interruptions when a session expires. For more information about authorization, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_CreateSession.html"> <code>CreateSession</code> </a>.
+     * </p>
+     * <p>
+     * If the object is encrypted using SSE-KMS, you must also have the <code>kms:GenerateDataKey</code> and
+     * <code>kms:Decrypt</code> permissions in IAM identity-based policies and KMS key policies for the KMS key.
+     * </p>
+     * </li>
+     * </ul>
+     * </dd>
+     * <dt>Storage classes</dt>
+     * <dd>
+     * <p>
+     * If the object you are retrieving is stored in the S3 Glacier Flexible Retrieval storage class, the S3 Glacier
+     * Deep Archive storage class, the S3 Intelligent-Tiering Archive Access tier, or the S3 Intelligent-Tiering Deep
+     * Archive Access tier, before you can retrieve the object you must first restore a copy using <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_RestoreObject.html">RestoreObject</a>. Otherwise, this
+     * operation returns an <code>InvalidObjectState</code> error. For information about restoring archived objects, see
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/dev/restoring-objects.html">Restoring Archived Objects</a>
+     * in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * <p>
+     * <b>Directory buckets </b> - Directory buckets only support <code>EXPRESS_ONEZONE</code> (the S3 Express One Zone
+     * storage class) in Availability Zones and <code>ONEZONE_IA</code> (the S3 One Zone-Infrequent Access storage
+     * class) in Dedicated Local Zones. Unsupported storage class values won't write a destination object and will
+     * respond with the HTTP status code <code>400 Bad Request</code>.
+     * </p>
+     * </dd>
+     * <dt>Encryption</dt>
+     * <dd>
+     * <p>
+     * Encryption request headers, like <code>x-amz-server-side-encryption</code>, should not be sent for the
+     * <code>GetObject</code> requests, if your object uses server-side encryption with Amazon S3 managed encryption
+     * keys (SSE-S3), server-side encryption with Key Management Service (KMS) keys (SSE-KMS), or dual-layer server-side
+     * encryption with Amazon Web Services KMS keys (DSSE-KMS). If you include the header in your <code>GetObject</code>
+     * requests for the object that uses these types of keys, you’ll get an HTTP <code>400 Bad Request</code> error.
+     * </p>
+     * <p>
+     * <b>Directory buckets</b> - For directory buckets, there are only two supported options for server-side
+     * encryption: SSE-S3 and SSE-KMS. SSE-C isn't supported. For more information, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-express-serv-side-encryption.html">Protecting data
+     * with server-side encryption</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * </dd>
+     * <dt>Overriding response header values through the request</dt>
+     * <dd>
+     * <p>
+     * There are times when you want to override certain response header values of a <code>GetObject</code> response.
+     * For example, you might override the <code>Content-Disposition</code> response header value through your
+     * <code>GetObject</code> request.
+     * </p>
+     * <p>
+     * You can override values for a set of response headers. These modified response header values are included only in
+     * a successful response, that is, when the HTTP status code <code>200 OK</code> is returned. The headers you can
+     * override using the following query parameters in the request are a subset of the headers that Amazon S3 accepts
+     * when you create an object.
+     * </p>
+     * <p>
+     * The response headers that you can override for the <code>GetObject</code> response are <code>Cache-Control</code>, <code>Content-Disposition</code>, <code>Content-Encoding</code>, <code>Content-Language</code>,
+     * <code>Content-Type</code>, and <code>Expires</code>.
+     * </p>
+     * <p>
+     * To override values for a set of response headers in the <code>GetObject</code> response, you can use the
+     * following query parameters in the request.
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <code>response-cache-control</code>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <code>response-content-disposition</code>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <code>response-content-encoding</code>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <code>response-content-language</code>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <code>response-content-type</code>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <code>response-expires</code>
+     * </p>
+     * </li>
+     * </ul>
+     * <note>
+     * <p>
+     * When you use these parameters, you must sign the request by using either an Authorization header or a presigned
+     * URL. These parameters cannot be used with an unsigned (anonymous) request.
+     * </p>
+     * </note></dd>
+     * <dt>HTTP Host header syntax</dt>
+     * <dd>
+     * <p>
+     * <b>Directory buckets </b> - The HTTP Host header syntax is
+     * <code> <i>Bucket-name</i>.s3express-<i>zone-id</i>.<i>region-code</i>.amazonaws.com</code>.
+     * </p>
+     * </dd>
+     * </dl>
+     * <p>
+     * The following operations are related to <code>GetObject</code>:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListBuckets.html">ListBuckets</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetObjectAcl.html">GetObjectAcl</a>
+     * </p>
+     * </li>
+     * </ul>
+     *
+     * @param getObjectRequest
+     * @param responseTransformer
+     *        Functional interface for processing the streamed response content. The unmarshalled GetObjectResponse and
+     *        an InputStream to the response content are provided as parameters to the callback. The callback may return
+     *        a transformed type which will be the return value of this method. See
+     *        {@link com.ibm.cos.v2.core.sync.ResponseTransformer} for details on implementing this interface
+     *        and for links to pre-canned implementations for common scenarios like downloading to a file. The service
+     *        documentation for the response content is as follows '
+     *        <p>
+     *        Object data.
+     *        </p>
+     *        '.
+     * @return The transformed result of the ResponseTransformer.
+     * @throws NoSuchKeyException
+     *         The specified key does not exist.
+     * @throws InvalidObjectStateException
+     *         Object is archived and inaccessible until restored.</p>
+     *         <p>
+     *         If the object you are retrieving is stored in the S3 Glacier Flexible Retrieval storage class, the S3
+     *         Glacier Deep Archive storage class, the S3 Intelligent-Tiering Archive Access tier, or the S3
+     *         Intelligent-Tiering Deep Archive Access tier, before you can retrieve the object you must first restore a
+     *         copy using <a
+     *         href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_RestoreObject.html">RestoreObject</a>.
+     *         Otherwise, this operation returns an <code>InvalidObjectState</code> error. For information about
+     *         restoring archived objects, see <a
+     *         href="https://docs.aws.amazon.com/AmazonS3/latest/dev/restoring-objects.html">Restoring Archived
+     *         Objects</a> in the <i>Amazon S3 User Guide</i>.
+     * @throws SdkException
+     *         Base class for all exceptions that can be thrown by the SDK (both service and client). Can be used for
+     *         catch all scenarios.
+     * @throws SdkClientException
+     *         If any client side error occurs such as an IO related failure, failure to get credentials, etc.
+     * @throws S3Exception
+     *         Base class for all service exceptions. Unknown exceptions will be thrown as an instance of this type.
+     * @sample S3Client.GetObject
+     */
+    @Override
+    public <ReturnT> ReturnT getObject(GetObjectRequest getObjectRequest,
+            ResponseTransformer<GetObjectResponse, ReturnT> responseTransformer) throws NoSuchKeyException,
+            InvalidObjectStateException, AwsServiceException, SdkClientException, S3Exception {
+
+        HttpResponseHandler<GetObjectResponse> responseHandler = protocolFactory.createResponseHandler(
+                GetObjectResponse::builder, new XmlOperationMetadata().withHasStreamingSuccessResponse(true));
+
+        HttpResponseHandler<AwsServiceException> errorResponseHandler = protocolFactory.createErrorResponseHandler();
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(getObjectRequest, this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration, getObjectRequest
+                .overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+                .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "GetObject");
+
+            return clientHandler.execute(
+                    new ClientExecutionParams<GetObjectRequest, GetObjectResponse>()
+                            .withOperationName("GetObject")
+                            .withProtocolMetadata(protocolMetadata)
+                            .withResponseHandler(responseHandler)
+                            .withErrorResponseHandler(errorResponseHandler)
+                            .withRequestConfiguration(clientConfiguration)
+                            .withInput(getObjectRequest)
+                            .withMetricCollector(apiCallMetricCollector)
+                            .putExecutionAttribute(
+                                    SdkInternalExecutionAttribute.HTTP_CHECKSUM,
+                                    HttpChecksum
+                                            .builder()
+                                            .requestChecksumRequired(false)
+                                            .isRequestStreaming(false)
+                                            .requestValidationMode(getObjectRequest.checksumModeAsString())
+                                            .responseAlgorithmsV2(DefaultChecksumAlgorithm.CRC32C,
+                                                    DefaultChecksumAlgorithm.CRC32, DefaultChecksumAlgorithm.CRC64NVME,
+                                                    DefaultChecksumAlgorithm.SHA1, DefaultChecksumAlgorithm.SHA256).build())
+                            .withMarshaller(new GetObjectRequestMarshaller(protocolFactory)), responseTransformer);
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    /**
+     * <note>
+     * <p>
+     * This operation is not supported for directory buckets.
+     * </p>
+     * </note>
+     * <p>
+     * Returns the access control list (ACL) of an object. To use this operation, you must have
+     * <code>s3:GetObjectAcl</code> permissions or <code>READ_ACP</code> access to the object. For more information, see
+     * <a href=
+     * "https://docs.aws.amazon.com/AmazonS3/latest/userguide/acl-overview.html#acl-access-policy-permission-mapping"
+     * >Mapping of ACL permissions and access policy permissions</a> in the <i>Amazon S3 User Guide</i>
+     * </p>
+     * <p>
+     * This functionality is not supported for Amazon S3 on Outposts.
+     * </p>
+     * <p>
+     * By default, GET returns ACL information about the current version of an object. To return ACL information about a
+     * different version, use the versionId subresource.
+     * </p>
+     * <note>
+     * <p>
+     * If your bucket uses the bucket owner enforced setting for S3 Object Ownership, requests to read ACLs are still
+     * supported and return the <code>bucket-owner-full-control</code> ACL with the owner being the account that created
+     * the bucket. For more information, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/about-object-ownership.html"> Controlling object
+     * ownership and disabling ACLs</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * </note>
+     * <p>
+     * The following operations are related to <code>GetObjectAcl</code>:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetObject.html">GetObject</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetObjectAttributes.html">GetObjectAttributes</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteObject.html">DeleteObject</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutObject.html">PutObject</a>
+     * </p>
+     * </li>
+     * </ul>
+     *
+     * @param getObjectAclRequest
+     * @return Result of the GetObjectAcl operation returned by the service.
+     * @throws NoSuchKeyException
+     *         The specified key does not exist.
+     * @throws SdkException
+     *         Base class for all exceptions that can be thrown by the SDK (both service and client). Can be used for
+     *         catch all scenarios.
+     * @throws SdkClientException
+     *         If any client side error occurs such as an IO related failure, failure to get credentials, etc.
+     * @throws S3Exception
+     *         Base class for all service exceptions. Unknown exceptions will be thrown as an instance of this type.
+     * @sample S3Client.GetObjectAcl
+     */
+    @Override
+    public GetObjectAclResponse getObjectAcl(GetObjectAclRequest getObjectAclRequest) throws NoSuchKeyException,
+            AwsServiceException, SdkClientException, S3Exception {
+
+        HttpResponseHandler<Response<GetObjectAclResponse>> responseHandler = protocolFactory.createCombinedResponseHandler(
+                GetObjectAclResponse::builder, new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(getObjectAclRequest, this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration, getObjectAclRequest
+                .overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+                .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "GetObjectAcl");
+
+            return clientHandler.execute(new ClientExecutionParams<GetObjectAclRequest, GetObjectAclResponse>()
+                    .withOperationName("GetObjectAcl").withProtocolMetadata(protocolMetadata)
+                    .withCombinedResponseHandler(responseHandler).withMetricCollector(apiCallMetricCollector)
+                    .withRequestConfiguration(clientConfiguration).withInput(getObjectAclRequest)
+                    .withMarshaller(new GetObjectAclRequestMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    /**
+     * <p>
+     * Retrieves all the metadata from an object without returning the object itself. This operation is useful if you're
+     * interested only in an object's metadata.
+     * </p>
+     * <p>
+     * <code>GetObjectAttributes</code> combines the functionality of <code>HeadObject</code> and <code>ListParts</code>
+     * . All of the data returned with each of those individual calls can be returned with a single call to
+     * <code>GetObjectAttributes</code>.
+     * </p>
+     * <note>
+     * <p>
+     * <b>Directory buckets</b> - For directory buckets, you must make requests for this API operation to the Zonal
+     * endpoint. These endpoints support virtual-hosted-style requests in the format
+     * <code>https://<i>amzn-s3-demo-bucket</i>.s3express-<i>zone-id</i>.<i>region-code</i>.amazonaws.com/<i>key-name</i> </code>
+     * . Path-style requests are not supported. For more information about endpoints in Availability Zones, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/endpoint-directory-buckets-AZ.html">Regional and
+     * Zonal endpoints for directory buckets in Availability Zones</a> in the <i>Amazon S3 User Guide</i>. For more
+     * information about endpoints in Local Zones, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-lzs-for-directory-buckets.html">Concepts for
+     * directory buckets in Local Zones</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * </note>
+     * <dl>
+     * <dt>Permissions</dt>
+     * <dd>
+     * <ul>
+     * <li>
+     * <p>
+     * <b>General purpose bucket permissions</b> - To use <code>GetObjectAttributes</code>, you must have READ access to
+     * the object. The permissions that you need to use this operation depend on whether the bucket is versioned. If the
+     * bucket is versioned, you need both the <code>s3:GetObjectVersion</code> and
+     * <code>s3:GetObjectVersionAttributes</code> permissions for this operation. If the bucket is not versioned, you
+     * need the <code>s3:GetObject</code> and <code>s3:GetObjectAttributes</code> permissions. For more information, see
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/dev/using-with-s3-actions.html">Specifying Permissions in a
+     * Policy</a> in the <i>Amazon S3 User Guide</i>. If the object that you request does not exist, the error Amazon S3
+     * returns depends on whether you also have the <code>s3:ListBucket</code> permission.
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * If you have the <code>s3:ListBucket</code> permission on the bucket, Amazon S3 returns an HTTP status code
+     * <code>404 Not Found</code> ("no such key") error.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * If you don't have the <code>s3:ListBucket</code> permission, Amazon S3 returns an HTTP status code
+     * <code>403 Forbidden</code> ("access denied") error.
+     * </p>
+     * </li>
+     * </ul>
+     * </li>
+     * <li>
+     * <p>
+     * <b>Directory bucket permissions</b> - To grant access to this API operation on a directory bucket, we recommend
+     * that you use the <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_CreateSession.html">
+     * <code>CreateSession</code> </a> API operation for session-based authorization. Specifically, you grant the
+     * <code>s3express:CreateSession</code> permission to the directory bucket in a bucket policy or an IAM
+     * identity-based policy. Then, you make the <code>CreateSession</code> API call on the bucket to obtain a session
+     * token. With the session token in your request header, you can make API requests to this operation. After the
+     * session token expires, you make another <code>CreateSession</code> API call to generate a new session token for
+     * use. Amazon Web Services CLI or SDKs create session and refresh the session token automatically to avoid service
+     * interruptions when a session expires. For more information about authorization, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_CreateSession.html"> <code>CreateSession</code> </a>.
+     * </p>
+     * <p>
+     * If the object is encrypted with SSE-KMS, you must also have the <code>kms:GenerateDataKey</code> and
+     * <code>kms:Decrypt</code> permissions in IAM identity-based policies and KMS key policies for the KMS key.
+     * </p>
+     * </li>
+     * </ul>
+     * </dd>
+     * <dt>Encryption</dt>
+     * <dd><note>
+     * <p>
+     * Encryption request headers, like <code>x-amz-server-side-encryption</code>, should not be sent for
+     * <code>HEAD</code> requests if your object uses server-side encryption with Key Management Service (KMS) keys
+     * (SSE-KMS), dual-layer server-side encryption with Amazon Web Services KMS keys (DSSE-KMS), or server-side
+     * encryption with Amazon S3 managed encryption keys (SSE-S3). The <code>x-amz-server-side-encryption</code> header
+     * is used when you <code>PUT</code> an object to S3 and want to specify the encryption method. If you include this
+     * header in a <code>GET</code> request for an object that uses these types of keys, you’ll get an HTTP
+     * <code>400 Bad Request</code> error. It's because the encryption method can't be changed when you retrieve the
+     * object.
+     * </p>
+     * </note>
+     * <p>
+     * If you encrypt an object by using server-side encryption with customer-provided encryption keys (SSE-C) when you
+     * store the object in Amazon S3, then when you retrieve the metadata from the object, you must use the following
+     * headers to provide the encryption key for the server to be able to retrieve the object's metadata. The headers
+     * are:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <code>x-amz-server-side-encryption-customer-algorithm</code>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <code>x-amz-server-side-encryption-customer-key</code>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <code>x-amz-server-side-encryption-customer-key-MD5</code>
+     * </p>
+     * </li>
+     * </ul>
+     * <p>
+     * For more information about SSE-C, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/dev/ServerSideEncryptionCustomerKeys.html">Server-Side
+     * Encryption (Using Customer-Provided Encryption Keys)</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * <note>
+     * <p>
+     * <b>Directory bucket permissions</b> - For directory buckets, there are only two supported options for server-side
+     * encryption: server-side encryption with Amazon S3 managed keys (SSE-S3) (<code>AES256</code>) and server-side
+     * encryption with KMS keys (SSE-KMS) (<code>aws:kms</code>). We recommend that the bucket's default encryption uses
+     * the desired encryption configuration and you don't override the bucket default encryption in your
+     * <code>CreateSession</code> requests or <code>PUT</code> object requests. Then, new objects are automatically
+     * encrypted with the desired encryption settings. For more information, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-express-serv-side-encryption.html">Protecting data
+     * with server-side encryption</a> in the <i>Amazon S3 User Guide</i>. For more information about the encryption
+     * overriding behaviors in directory buckets, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-express-specifying-kms-encryption.html">Specifying
+     * server-side encryption with KMS for new object uploads</a>.
+     * </p>
+     * </note></dd>
+     * <dt>Versioning</dt>
+     * <dd>
+     * <p>
+     * <b>Directory buckets</b> - S3 Versioning isn't enabled and supported for directory buckets. For this API
+     * operation, only the <code>null</code> value of the version ID is supported by directory buckets. You can only
+     * specify <code>null</code> to the <code>versionId</code> query parameter in the request.
+     * </p>
+     * </dd>
+     * <dt>Conditional request headers</dt>
+     * <dd>
+     * <p>
+     * Consider the following when using request headers:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * If both of the <code>If-Match</code> and <code>If-Unmodified-Since</code> headers are present in the request as
+     * follows, then Amazon S3 returns the HTTP status code <code>200 OK</code> and the data requested:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <code>If-Match</code> condition evaluates to <code>true</code>.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <code>If-Unmodified-Since</code> condition evaluates to <code>false</code>.
+     * </p>
+     * </li>
+     * </ul>
+     * <p>
+     * For more information about conditional requests, see <a href="https://tools.ietf.org/html/rfc7232">RFC 7232</a>.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * If both of the <code>If-None-Match</code> and <code>If-Modified-Since</code> headers are present in the request
+     * as follows, then Amazon S3 returns the HTTP status code <code>304 Not Modified</code>:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <code>If-None-Match</code> condition evaluates to <code>false</code>.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <code>If-Modified-Since</code> condition evaluates to <code>true</code>.
+     * </p>
+     * </li>
+     * </ul>
+     * <p>
+     * For more information about conditional requests, see <a href="https://tools.ietf.org/html/rfc7232">RFC 7232</a>.
+     * </p>
+     * </li>
+     * </ul>
+     * </dd>
+     * <dt>HTTP Host header syntax</dt>
+     * <dd>
+     * <p>
+     * <b>Directory buckets </b> - The HTTP Host header syntax is
+     * <code> <i>Bucket-name</i>.s3express-<i>zone-id</i>.<i>region-code</i>.amazonaws.com</code>.
+     * </p>
+     * </dd>
+     * </dl>
+     * <p>
+     * The following actions are related to <code>GetObjectAttributes</code>:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetObject.html">GetObject</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetObjectAcl.html">GetObjectAcl</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetObjectLegalHold.html">GetObjectLegalHold</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetObjectLockConfiguration.html">
+     * GetObjectLockConfiguration</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetObjectRetention.html">GetObjectRetention</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetObjectTagging.html">GetObjectTagging</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_HeadObject.html">HeadObject</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListParts.html">ListParts</a>
+     * </p>
+     * </li>
+     * </ul>
+     *
+     * @param getObjectAttributesRequest
+     * @return Result of the GetObjectAttributes operation returned by the service.
+     * @throws NoSuchKeyException
+     *         The specified key does not exist.
+     * @throws SdkException
+     *         Base class for all exceptions that can be thrown by the SDK (both service and client). Can be used for
+     *         catch all scenarios.
+     * @throws SdkClientException
+     *         If any client side error occurs such as an IO related failure, failure to get credentials, etc.
+     * @throws S3Exception
+     *         Base class for all service exceptions. Unknown exceptions will be thrown as an instance of this type.
+     * @sample S3Client.GetObjectAttributes
+     */
+    @Override
+    public GetObjectAttributesResponse getObjectAttributes(GetObjectAttributesRequest getObjectAttributesRequest)
+            throws NoSuchKeyException, AwsServiceException, SdkClientException, S3Exception {
+
+        HttpResponseHandler<Response<GetObjectAttributesResponse>> responseHandler = protocolFactory
+                .createCombinedResponseHandler(GetObjectAttributesResponse::builder,
+                        new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(getObjectAttributesRequest,
+                this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration, getObjectAttributesRequest
+                .overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+                .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "GetObjectAttributes");
+
+            return clientHandler.execute(new ClientExecutionParams<GetObjectAttributesRequest, GetObjectAttributesResponse>()
+                    .withOperationName("GetObjectAttributes").withProtocolMetadata(protocolMetadata)
+                    .withCombinedResponseHandler(responseHandler).withMetricCollector(apiCallMetricCollector)
+                    .withRequestConfiguration(clientConfiguration).withInput(getObjectAttributesRequest)
+                    .withMarshaller(new GetObjectAttributesRequestMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    /**
+     * <note>
+     * <p>
+     * This operation is not supported for directory buckets.
+     * </p>
+     * </note>
+     * <p>
+     * Gets an object's current legal hold status. For more information, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lock.html">Locking Objects</a>.
+     * </p>
+     * <p>
+     * This functionality is not supported for Amazon S3 on Outposts.
+     * </p>
+     * <p>
+     * The following action is related to <code>GetObjectLegalHold</code>:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetObjectAttributes.html">GetObjectAttributes</a>
+     * </p>
+     * </li>
+     * </ul>
+     *
+     * @param getObjectLegalHoldRequest
+     * @return Result of the GetObjectLegalHold operation returned by the service.
+     * @throws SdkException
+     *         Base class for all exceptions that can be thrown by the SDK (both service and client). Can be used for
+     *         catch all scenarios.
+     * @throws SdkClientException
+     *         If any client side error occurs such as an IO related failure, failure to get credentials, etc.
+     * @throws S3Exception
+     *         Base class for all service exceptions. Unknown exceptions will be thrown as an instance of this type.
+     * @sample S3Client.GetObjectLegalHold
+     */
+    @Override
+    public GetObjectLegalHoldResponse getObjectLegalHold(GetObjectLegalHoldRequest getObjectLegalHoldRequest)
+            throws AwsServiceException, SdkClientException, S3Exception {
+
+        HttpResponseHandler<Response<GetObjectLegalHoldResponse>> responseHandler = protocolFactory
+                .createCombinedResponseHandler(GetObjectLegalHoldResponse::builder,
+                        new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(getObjectLegalHoldRequest,
+                this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration, getObjectLegalHoldRequest
+                .overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+                .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "GetObjectLegalHold");
+
+            return clientHandler.execute(new ClientExecutionParams<GetObjectLegalHoldRequest, GetObjectLegalHoldResponse>()
+                    .withOperationName("GetObjectLegalHold").withProtocolMetadata(protocolMetadata)
+                    .withCombinedResponseHandler(responseHandler).withMetricCollector(apiCallMetricCollector)
+                    .withRequestConfiguration(clientConfiguration).withInput(getObjectLegalHoldRequest)
+                    .withMarshaller(new GetObjectLegalHoldRequestMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    /**
+     * <note>
+     * <p>
+     * This operation is not supported for directory buckets.
+     * </p>
+     * </note>
+     * <p>
+     * Gets the Object Lock configuration for a bucket. The rule specified in the Object Lock configuration will be
+     * applied by default to every new object placed in the specified bucket. For more information, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lock.html">Locking Objects</a>.
+     * </p>
+     * <p>
+     * The following action is related to <code>GetObjectLockConfiguration</code>:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetObjectAttributes.html">GetObjectAttributes</a>
+     * </p>
+     * </li>
+     * </ul>
+     *
+     * @param getObjectLockConfigurationRequest
+     * @return Result of the GetObjectLockConfiguration operation returned by the service.
+     * @throws SdkException
+     *         Base class for all exceptions that can be thrown by the SDK (both service and client). Can be used for
+     *         catch all scenarios.
+     * @throws SdkClientException
+     *         If any client side error occurs such as an IO related failure, failure to get credentials, etc.
+     * @throws S3Exception
+     *         Base class for all service exceptions. Unknown exceptions will be thrown as an instance of this type.
+     * @sample S3Client.GetObjectLockConfiguration
+     */
+    @Override
+    public GetObjectLockConfigurationResponse getObjectLockConfiguration(
+            GetObjectLockConfigurationRequest getObjectLockConfigurationRequest) throws AwsServiceException, SdkClientException,
+            S3Exception {
+
+        HttpResponseHandler<Response<GetObjectLockConfigurationResponse>> responseHandler = protocolFactory
+                .createCombinedResponseHandler(GetObjectLockConfigurationResponse::builder,
+                        new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(getObjectLockConfigurationRequest,
+                this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration, getObjectLockConfigurationRequest
+                .overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+                .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "GetObjectLockConfiguration");
+
+            return clientHandler
+                    .execute(new ClientExecutionParams<GetObjectLockConfigurationRequest, GetObjectLockConfigurationResponse>()
+                            .withOperationName("GetObjectLockConfiguration").withProtocolMetadata(protocolMetadata)
+                            .withCombinedResponseHandler(responseHandler).withMetricCollector(apiCallMetricCollector)
+                            .withRequestConfiguration(clientConfiguration).withInput(getObjectLockConfigurationRequest)
+                            .withMarshaller(new GetObjectLockConfigurationRequestMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    /**
+     * <note>
+     * <p>
+     * This operation is not supported for directory buckets.
+     * </p>
+     * </note>
+     * <p>
+     * Retrieves an object's retention settings. For more information, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lock.html">Locking Objects</a>.
+     * </p>
+     * <p>
+     * This functionality is not supported for Amazon S3 on Outposts.
+     * </p>
+     * <p>
+     * The following action is related to <code>GetObjectRetention</code>:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetObjectAttributes.html">GetObjectAttributes</a>
+     * </p>
+     * </li>
+     * </ul>
+     *
+     * @param getObjectRetentionRequest
+     * @return Result of the GetObjectRetention operation returned by the service.
+     * @throws SdkException
+     *         Base class for all exceptions that can be thrown by the SDK (both service and client). Can be used for
+     *         catch all scenarios.
+     * @throws SdkClientException
+     *         If any client side error occurs such as an IO related failure, failure to get credentials, etc.
+     * @throws S3Exception
+     *         Base class for all service exceptions. Unknown exceptions will be thrown as an instance of this type.
+     * @sample S3Client.GetObjectRetention
+     */
+    @Override
+    public GetObjectRetentionResponse getObjectRetention(GetObjectRetentionRequest getObjectRetentionRequest)
+            throws AwsServiceException, SdkClientException, S3Exception {
+
+        HttpResponseHandler<Response<GetObjectRetentionResponse>> responseHandler = protocolFactory
+                .createCombinedResponseHandler(GetObjectRetentionResponse::builder,
+                        new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(getObjectRetentionRequest,
+                this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration, getObjectRetentionRequest
+                .overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+                .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "GetObjectRetention");
+
+            return clientHandler.execute(new ClientExecutionParams<GetObjectRetentionRequest, GetObjectRetentionResponse>()
+                    .withOperationName("GetObjectRetention").withProtocolMetadata(protocolMetadata)
+                    .withCombinedResponseHandler(responseHandler).withMetricCollector(apiCallMetricCollector)
+                    .withRequestConfiguration(clientConfiguration).withInput(getObjectRetentionRequest)
+                    .withMarshaller(new GetObjectRetentionRequestMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    /**
+     * <note>
+     * <p>
+     * This operation is not supported for directory buckets.
+     * </p>
+     * </note>
+     * <p>
+     * Returns the tag-set of an object. You send the GET request against the tagging subresource associated with the
+     * object.
+     * </p>
+     * <p>
+     * To use this operation, you must have permission to perform the <code>s3:GetObjectTagging</code> action. By
+     * default, the GET action returns information about current version of an object. For a versioned bucket, you can
+     * have multiple versions of an object in your bucket. To retrieve tags of any other version, use the versionId
+     * query parameter. You also need permission for the <code>s3:GetObjectVersionTagging</code> action.
+     * </p>
+     * <p>
+     * By default, the bucket owner has this permission and can grant this permission to others.
+     * </p>
+     * <p>
+     * For information about the Amazon S3 object tagging feature, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/dev/object-tagging.html">Object Tagging</a>.
+     * </p>
+     * <p>
+     * The following actions are related to <code>GetObjectTagging</code>:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteObjectTagging.html">DeleteObjectTagging</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetObjectAttributes.html">GetObjectAttributes</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutObjectTagging.html">PutObjectTagging</a>
+     * </p>
+     * </li>
+     * </ul>
+     *
+     * @param getObjectTaggingRequest
+     * @return Result of the GetObjectTagging operation returned by the service.
+     * @throws SdkException
+     *         Base class for all exceptions that can be thrown by the SDK (both service and client). Can be used for
+     *         catch all scenarios.
+     * @throws SdkClientException
+     *         If any client side error occurs such as an IO related failure, failure to get credentials, etc.
+     * @throws S3Exception
+     *         Base class for all service exceptions. Unknown exceptions will be thrown as an instance of this type.
+     * @sample S3Client.GetObjectTagging
+     */
+    @Override
+    public GetObjectTaggingResponse getObjectTagging(GetObjectTaggingRequest getObjectTaggingRequest) throws AwsServiceException,
+            SdkClientException, S3Exception {
+
+        HttpResponseHandler<Response<GetObjectTaggingResponse>> responseHandler = protocolFactory.createCombinedResponseHandler(
+                GetObjectTaggingResponse::builder, new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(getObjectTaggingRequest,
+                this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration, getObjectTaggingRequest
+                .overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+                .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "GetObjectTagging");
+
+            return clientHandler.execute(new ClientExecutionParams<GetObjectTaggingRequest, GetObjectTaggingResponse>()
+                    .withOperationName("GetObjectTagging").withProtocolMetadata(protocolMetadata)
+                    .withCombinedResponseHandler(responseHandler).withMetricCollector(apiCallMetricCollector)
+                    .withRequestConfiguration(clientConfiguration).withInput(getObjectTaggingRequest)
+                    .withMarshaller(new GetObjectTaggingRequestMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    /**
+     * <note>
+     * <p>
+     * This operation is not supported for directory buckets.
+     * </p>
+     * </note>
+     * <p>
+     * Returns torrent files from a bucket. BitTorrent can save you bandwidth when you're distributing large files.
+     * </p>
+     * <note>
+     * <p>
+     * You can get torrent only for objects that are less than 5 GB in size, and that are not encrypted using
+     * server-side encryption with a customer-provided encryption key.
+     * </p>
+     * </note>
+     * <p>
+     * To use GET, you must have READ access to the object.
+     * </p>
+     * <p>
+     * This functionality is not supported for Amazon S3 on Outposts.
+     * </p>
+     * <p>
+     * The following action is related to <code>GetObjectTorrent</code>:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetObject.html">GetObject</a>
+     * </p>
+     * </li>
+     * </ul>
+     *
+     * @param getObjectTorrentRequest
+     * @param responseTransformer
+     *        Functional interface for processing the streamed response content. The unmarshalled
+     *        GetObjectTorrentResponse and an InputStream to the response content are provided as parameters to the
+     *        callback. The callback may return a transformed type which will be the return value of this method. See
+     *        {@link com.ibm.cos.v2.core.sync.ResponseTransformer} for details on implementing this interface
+     *        and for links to pre-canned implementations for common scenarios like downloading to a file. The service
+     *        documentation for the response content is as follows '
+     *        <p>
+     *        A Bencoded dictionary as defined by the BitTorrent specification
+     *        </p>
+     *        '.
+     * @return The transformed result of the ResponseTransformer.
+     * @throws SdkException
+     *         Base class for all exceptions that can be thrown by the SDK (both service and client). Can be used for
+     *         catch all scenarios.
+     * @throws SdkClientException
+     *         If any client side error occurs such as an IO related failure, failure to get credentials, etc.
+     * @throws S3Exception
+     *         Base class for all service exceptions. Unknown exceptions will be thrown as an instance of this type.
+     * @sample S3Client.GetObjectTorrent
+     */
+    @Override
+    public <ReturnT> ReturnT getObjectTorrent(GetObjectTorrentRequest getObjectTorrentRequest,
+            ResponseTransformer<GetObjectTorrentResponse, ReturnT> responseTransformer) throws AwsServiceException,
+            SdkClientException, S3Exception {
+
+        HttpResponseHandler<GetObjectTorrentResponse> responseHandler = protocolFactory.createResponseHandler(
+                GetObjectTorrentResponse::builder, new XmlOperationMetadata().withHasStreamingSuccessResponse(true));
+
+        HttpResponseHandler<AwsServiceException> errorResponseHandler = protocolFactory.createErrorResponseHandler();
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(getObjectTorrentRequest,
+                this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration, getObjectTorrentRequest
+                .overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+                .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "GetObjectTorrent");
+
+            return clientHandler.execute(
+                    new ClientExecutionParams<GetObjectTorrentRequest, GetObjectTorrentResponse>()
+                            .withOperationName("GetObjectTorrent").withProtocolMetadata(protocolMetadata)
+                            .withResponseHandler(responseHandler).withErrorResponseHandler(errorResponseHandler)
+                            .withRequestConfiguration(clientConfiguration).withInput(getObjectTorrentRequest)
+                            .withMetricCollector(apiCallMetricCollector)
+                            .withMarshaller(new GetObjectTorrentRequestMarshaller(protocolFactory)), responseTransformer);
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    /**
+     * <note>
+     * <p>
+     * This operation is not supported for directory buckets.
+     * </p>
+     * </note>
+     * <p>
+     * Retrieves the <code>PublicAccessBlock</code> configuration for an Amazon S3 bucket. To use this operation, you
+     * must have the <code>s3:GetBucketPublicAccessBlock</code> permission. For more information about Amazon S3
+     * permissions, see <a href="https://docs.aws.amazon.com/AmazonS3/latest/dev/using-with-s3-actions.html">Specifying
+     * Permissions in a Policy</a>.
+     * </p>
+     * <important>
+     * <p>
+     * When Amazon S3 evaluates the <code>PublicAccessBlock</code> configuration for a bucket or an object, it checks
+     * the <code>PublicAccessBlock</code> configuration for both the bucket (or the bucket that contains the object) and
+     * the bucket owner's account. If the <code>PublicAccessBlock</code> settings are different between the bucket and
+     * the account, Amazon S3 uses the most restrictive combination of the bucket-level and account-level settings.
+     * </p>
+     * </important>
+     * <p>
+     * For more information about when Amazon S3 considers a bucket or an object public, see <a href=
+     * "https://docs.aws.amazon.com/AmazonS3/latest/dev/access-control-block-public-access.html#access-control-block-public-access-policy-status"
+     * >The Meaning of "Public"</a>.
+     * </p>
+     * <p>
+     * The following operations are related to <code>GetPublicAccessBlock</code>:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/dev/access-control-block-public-access.html">Using Amazon S3
+     * Block Public Access</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutPublicAccessBlock.html">PutPublicAccessBlock</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetPublicAccessBlock.html">GetPublicAccessBlock</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeletePublicAccessBlock.html">DeletePublicAccessBlock
+     * </a>
+     * </p>
+     * </li>
+     * </ul>
+     *
+     * @param getPublicAccessBlockRequest
+     * @return Result of the GetPublicAccessBlock operation returned by the service.
+     * @throws SdkException
+     *         Base class for all exceptions that can be thrown by the SDK (both service and client). Can be used for
+     *         catch all scenarios.
+     * @throws SdkClientException
+     *         If any client side error occurs such as an IO related failure, failure to get credentials, etc.
+     * @throws S3Exception
+     *         Base class for all service exceptions. Unknown exceptions will be thrown as an instance of this type.
+     * @sample S3Client.GetPublicAccessBlock
+     */
+    @Override
+    public GetPublicAccessBlockResponse getPublicAccessBlock(GetPublicAccessBlockRequest getPublicAccessBlockRequest)
+            throws AwsServiceException, SdkClientException, S3Exception {
+
+        HttpResponseHandler<Response<GetPublicAccessBlockResponse>> responseHandler = protocolFactory
+                .createCombinedResponseHandler(GetPublicAccessBlockResponse::builder,
+                        new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(getPublicAccessBlockRequest,
+                this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration, getPublicAccessBlockRequest
+                .overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+                .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "GetPublicAccessBlock");
+
+            return clientHandler.execute(new ClientExecutionParams<GetPublicAccessBlockRequest, GetPublicAccessBlockResponse>()
+                    .withOperationName("GetPublicAccessBlock").withProtocolMetadata(protocolMetadata)
+                    .withCombinedResponseHandler(responseHandler).withMetricCollector(apiCallMetricCollector)
+                    .withRequestConfiguration(clientConfiguration).withInput(getPublicAccessBlockRequest)
+                    .withMarshaller(new GetPublicAccessBlockRequestMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    /**
+     * <p>
+     * You can use this operation to determine if a bucket exists and if you have permission to access it. The action
+     * returns a <code>200 OK</code> if the bucket exists and you have permission to access it.
+     * </p>
+     * <note>
+     * <p>
+     * If the bucket does not exist or you do not have permission to access it, the <code>HEAD</code> request returns a
+     * generic <code>400 Bad Request</code>, <code>403 Forbidden</code> or <code>404 Not Found</code> code. A message
+     * body is not included, so you cannot determine the exception beyond these HTTP response codes.
+     * </p>
+     * </note>
+     * <dl>
+     * <dt>Authentication and authorization</dt>
+     * <dd>
+     * <p>
+     * <b>General purpose buckets</b> - Request to public buckets that grant the s3:ListBucket permission publicly do
+     * not need to be signed. All other <code>HeadBucket</code> requests must be authenticated and signed by using IAM
+     * credentials (access key ID and secret access key for the IAM identities). All headers with the
+     * <code>x-amz-</code> prefix, including <code>x-amz-copy-source</code>, must be signed. For more information, see
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/dev/RESTAuthentication.html">REST Authentication</a>.
+     * </p>
+     * <p>
+     * <b>Directory buckets</b> - You must use IAM credentials to authenticate and authorize your access to the
+     * <code>HeadBucket</code> API operation, instead of using the temporary security credentials through the
+     * <code>CreateSession</code> API operation.
+     * </p>
+     * <p>
+     * Amazon Web Services CLI or SDKs handles authentication and authorization on your behalf.
+     * </p>
+     * </dd>
+     * <dt>Permissions</dt>
+     * <dd>
+     * <p/>
+     * <ul>
+     * <li>
+     * <p>
+     * <b>General purpose bucket permissions</b> - To use this operation, you must have permissions to perform the
+     * <code>s3:ListBucket</code> action. The bucket owner has this permission by default and can grant this permission
+     * to others. For more information about permissions, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-access-control.html">Managing access permissions
+     * to your Amazon S3 resources</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <b>Directory bucket permissions</b> - You must have the <b> <code>s3express:CreateSession</code> </b> permission
+     * in the <code>Action</code> element of a policy. By default, the session is in the <code>ReadWrite</code> mode. If
+     * you want to restrict the access, you can explicitly set the <code>s3express:SessionMode</code> condition key to
+     * <code>ReadOnly</code> on the bucket.
+     * </p>
+     * <p>
+     * For more information about example bucket policies, see <a href=
+     * "https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-express-security-iam-example-bucket-policies.html"
+     * >Example bucket policies for S3 Express One Zone</a> and <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-express-security-iam-identity-policies.html"
+     * >Amazon Web Services Identity and Access Management (IAM) identity-based policies for S3 Express One Zone</a> in
+     * the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * </li>
+     * </ul>
+     * </dd>
+     * <dt>HTTP Host header syntax</dt>
+     * <dd>
+     * <p>
+     * <b>Directory buckets </b> - The HTTP Host header syntax is
+     * <code> <i>Bucket-name</i>.s3express-<i>zone-id</i>.<i>region-code</i>.amazonaws.com</code>.
+     * </p>
+     * <note>
+     * <p>
+     * You must make requests for this API operation to the Zonal endpoint. These endpoints support virtual-hosted-style
+     * requests in the format
+     * <code>https://<i>bucket-name</i>.s3express-<i>zone-id</i>.<i>region-code</i>.amazonaws.com</code>. Path-style
+     * requests are not supported. For more information about endpoints in Availability Zones, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/endpoint-directory-buckets-AZ.html">Regional and
+     * Zonal endpoints for directory buckets in Availability Zones</a> in the <i>Amazon S3 User Guide</i>. For more
+     * information about endpoints in Local Zones, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-lzs-for-directory-buckets.html">Concepts for
+     * directory buckets in Local Zones</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * </note></dd>
+     * </dl>
+     *
+     * @param headBucketRequest
+     * @return Result of the HeadBucket operation returned by the service.
+     * @throws NoSuchBucketException
+     *         The specified bucket does not exist.
+     * @throws SdkException
+     *         Base class for all exceptions that can be thrown by the SDK (both service and client). Can be used for
+     *         catch all scenarios.
+     * @throws SdkClientException
+     *         If any client side error occurs such as an IO related failure, failure to get credentials, etc.
+     * @throws S3Exception
+     *         Base class for all service exceptions. Unknown exceptions will be thrown as an instance of this type.
+     * @sample S3Client.HeadBucket
+     */
+    @Override
+    public HeadBucketResponse headBucket(HeadBucketRequest headBucketRequest) throws NoSuchBucketException, AwsServiceException,
+            SdkClientException, S3Exception {
+
+        HttpResponseHandler<Response<HeadBucketResponse>> responseHandler = protocolFactory.createCombinedResponseHandler(
+                HeadBucketResponse::builder, new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(headBucketRequest, this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration, headBucketRequest
+                .overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+                .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "HeadBucket");
+
+            return clientHandler.execute(new ClientExecutionParams<HeadBucketRequest, HeadBucketResponse>()
+                    .withOperationName("HeadBucket").withProtocolMetadata(protocolMetadata)
+                    .withCombinedResponseHandler(responseHandler).withMetricCollector(apiCallMetricCollector)
+                    .withRequestConfiguration(clientConfiguration).withInput(headBucketRequest)
+                    .withMarshaller(new HeadBucketRequestMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    /**
+     * <p>
+     * The <code>HEAD</code> operation retrieves metadata from an object without returning the object itself. This
+     * operation is useful if you're interested only in an object's metadata.
+     * </p>
+     * <note>
+     * <p>
+     * A <code>HEAD</code> request has the same options as a <code>GET</code> operation on an object. The response is
+     * identical to the <code>GET</code> response except that there is no response body. Because of this, if the
+     * <code>HEAD</code> request generates an error, it returns a generic code, such as <code>400 Bad Request</code>,
+     * <code>403 Forbidden</code>, <code>404 Not Found</code>, <code>405 Method Not Allowed</code>,
+     * <code>412 Precondition Failed</code>, or <code>304 Not Modified</code>. It's not possible to retrieve the exact
+     * exception of these error codes.
+     * </p>
+     * </note>
+     * <p>
+     * Request headers are limited to 8 KB in size. For more information, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/API/RESTCommonRequestHeaders.html">Common Request Headers</a>.
+     * </p>
+     * <dl>
+     * <dt>Permissions</dt>
+     * <dd>
+     * <p/>
+     * <ul>
+     * <li>
+     * <p>
+     * <b>General purpose bucket permissions</b> - To use <code>HEAD</code>, you must have the <code>s3:GetObject</code>
+     * permission. You need the relevant read object (or version) permission for this operation. For more information,
+     * see <a href="https://docs.aws.amazon.com/AmazonS3/latest/dev/list_amazons3.html">Actions, resources, and
+     * condition keys for Amazon S3</a> in the <i>Amazon S3 User Guide</i>. For more information about the permissions
+     * to S3 API operations by S3 resource types, see <a
+     * href="/AmazonS3/latest/userguide/using-with-s3-policy-actions.html">Required permissions for Amazon S3 API
+     * operations</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * <p>
+     * If the object you request doesn't exist, the error that Amazon S3 returns depends on whether you also have the
+     * <code>s3:ListBucket</code> permission.
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * If you have the <code>s3:ListBucket</code> permission on the bucket, Amazon S3 returns an HTTP status code
+     * <code>404 Not Found</code> error.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * If you don’t have the <code>s3:ListBucket</code> permission, Amazon S3 returns an HTTP status code
+     * <code>403 Forbidden</code> error.
+     * </p>
+     * </li>
+     * </ul>
+     * </li>
+     * <li>
+     * <p>
+     * <b>Directory bucket permissions</b> - To grant access to this API operation on a directory bucket, we recommend
+     * that you use the <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_CreateSession.html">
+     * <code>CreateSession</code> </a> API operation for session-based authorization. Specifically, you grant the
+     * <code>s3express:CreateSession</code> permission to the directory bucket in a bucket policy or an IAM
+     * identity-based policy. Then, you make the <code>CreateSession</code> API call on the bucket to obtain a session
+     * token. With the session token in your request header, you can make API requests to this operation. After the
+     * session token expires, you make another <code>CreateSession</code> API call to generate a new session token for
+     * use. Amazon Web Services CLI or SDKs create session and refresh the session token automatically to avoid service
+     * interruptions when a session expires. For more information about authorization, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_CreateSession.html"> <code>CreateSession</code> </a>.
+     * </p>
+     * <p>
+     * If you enable <code>x-amz-checksum-mode</code> in the request and the object is encrypted with Amazon Web
+     * Services Key Management Service (Amazon Web Services KMS), you must also have the
+     * <code>kms:GenerateDataKey</code> and <code>kms:Decrypt</code> permissions in IAM identity-based policies and KMS
+     * key policies for the KMS key to retrieve the checksum of the object.
+     * </p>
+     * </li>
+     * </ul>
+     * </dd>
+     * <dt>Encryption</dt>
+     * <dd><note>
+     * <p>
+     * Encryption request headers, like <code>x-amz-server-side-encryption</code>, should not be sent for
+     * <code>HEAD</code> requests if your object uses server-side encryption with Key Management Service (KMS) keys
+     * (SSE-KMS), dual-layer server-side encryption with Amazon Web Services KMS keys (DSSE-KMS), or server-side
+     * encryption with Amazon S3 managed encryption keys (SSE-S3). The <code>x-amz-server-side-encryption</code> header
+     * is used when you <code>PUT</code> an object to S3 and want to specify the encryption method. If you include this
+     * header in a <code>HEAD</code> request for an object that uses these types of keys, you’ll get an HTTP
+     * <code>400 Bad Request</code> error. It's because the encryption method can't be changed when you retrieve the
+     * object.
+     * </p>
+     * </note>
+     * <p>
+     * If you encrypt an object by using server-side encryption with customer-provided encryption keys (SSE-C) when you
+     * store the object in Amazon S3, then when you retrieve the metadata from the object, you must use the following
+     * headers to provide the encryption key for the server to be able to retrieve the object's metadata. The headers
+     * are:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <code>x-amz-server-side-encryption-customer-algorithm</code>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <code>x-amz-server-side-encryption-customer-key</code>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <code>x-amz-server-side-encryption-customer-key-MD5</code>
+     * </p>
+     * </li>
+     * </ul>
+     * <p>
+     * For more information about SSE-C, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/dev/ServerSideEncryptionCustomerKeys.html">Server-Side
+     * Encryption (Using Customer-Provided Encryption Keys)</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * <note>
+     * <p>
+     * <b>Directory bucket </b> - For directory buckets, there are only two supported options for server-side
+     * encryption: SSE-S3 and SSE-KMS. SSE-C isn't supported. For more information, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-express-serv-side-encryption.html">Protecting data
+     * with server-side encryption</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * </note></dd>
+     * <dt>Versioning</dt>
+     * <dd>
+     * <ul>
+     * <li>
+     * <p>
+     * If the current version of the object is a delete marker, Amazon S3 behaves as if the object was deleted and
+     * includes <code>x-amz-delete-marker: true</code> in the response.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * If the specified version is a delete marker, the response returns a <code>405 Method Not Allowed</code> error and
+     * the <code>Last-Modified: timestamp</code> response header.
+     * </p>
+     * </li>
+     * </ul>
+     * <note>
+     * <ul>
+     * <li>
+     * <p>
+     * <b>Directory buckets</b> - Delete marker is not supported for directory buckets.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <b>Directory buckets</b> - S3 Versioning isn't enabled and supported for directory buckets. For this API
+     * operation, only the <code>null</code> value of the version ID is supported by directory buckets. You can only
+     * specify <code>null</code> to the <code>versionId</code> query parameter in the request.
+     * </p>
+     * </li>
+     * </ul>
+     * </note></dd>
+     * <dt>HTTP Host header syntax</dt>
+     * <dd>
+     * <p>
+     * <b>Directory buckets </b> - The HTTP Host header syntax is
+     * <code> <i>Bucket-name</i>.s3express-<i>zone-id</i>.<i>region-code</i>.amazonaws.com</code>.
+     * </p>
+     * <note>
+     * <p>
+     * For directory buckets, you must make requests for this API operation to the Zonal endpoint. These endpoints
+     * support virtual-hosted-style requests in the format
+     * <code>https://<i>amzn-s3-demo-bucket</i>.s3express-<i>zone-id</i>.<i>region-code</i>.amazonaws.com/<i>key-name</i> </code>
+     * . Path-style requests are not supported. For more information about endpoints in Availability Zones, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/endpoint-directory-buckets-AZ.html">Regional and
+     * Zonal endpoints for directory buckets in Availability Zones</a> in the <i>Amazon S3 User Guide</i>. For more
+     * information about endpoints in Local Zones, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-lzs-for-directory-buckets.html">Concepts for
+     * directory buckets in Local Zones</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * </note></dd>
+     * </dl>
+     * <p>
+     * The following actions are related to <code>HeadObject</code>:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetObject.html">GetObject</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetObjectAttributes.html">GetObjectAttributes</a>
+     * </p>
+     * </li>
+     * </ul>
+     *
+     * @param headObjectRequest
+     * @return Result of the HeadObject operation returned by the service.
+     * @throws NoSuchKeyException
+     *         The specified key does not exist.
+     * @throws SdkException
+     *         Base class for all exceptions that can be thrown by the SDK (both service and client). Can be used for
+     *         catch all scenarios.
+     * @throws SdkClientException
+     *         If any client side error occurs such as an IO related failure, failure to get credentials, etc.
+     * @throws S3Exception
+     *         Base class for all service exceptions. Unknown exceptions will be thrown as an instance of this type.
+     * @sample S3Client.HeadObject
+     */
+    @Override
+    public HeadObjectResponse headObject(HeadObjectRequest headObjectRequest) throws NoSuchKeyException, AwsServiceException,
+            SdkClientException, S3Exception {
+
+        HttpResponseHandler<Response<HeadObjectResponse>> responseHandler = protocolFactory.createCombinedResponseHandler(
+                HeadObjectResponse::builder, new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(headObjectRequest, this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration, headObjectRequest
+                .overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+                .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "HeadObject");
+
+            return clientHandler.execute(new ClientExecutionParams<HeadObjectRequest, HeadObjectResponse>()
+                    .withOperationName("HeadObject").withProtocolMetadata(protocolMetadata)
+                    .withCombinedResponseHandler(responseHandler).withMetricCollector(apiCallMetricCollector)
+                    .withRequestConfiguration(clientConfiguration).withInput(headObjectRequest)
+                    .withMarshaller(new HeadObjectRequestMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    /**
+     * <note>
+     * <p>
+     * This operation is not supported for directory buckets.
+     * </p>
+     * </note>
+     * <p>
+     * Lists the analytics configurations for the bucket. You can have up to 1,000 analytics configurations per bucket.
+     * </p>
+     * <p>
+     * This action supports list pagination and does not return more than 100 configurations at a time. You should
+     * always check the <code>IsTruncated</code> element in the response. If there are no more configurations to list,
+     * <code>IsTruncated</code> is set to false. If there are more configurations to list, <code>IsTruncated</code> is
+     * set to true, and there will be a value in <code>NextContinuationToken</code>. You use the
+     * <code>NextContinuationToken</code> value to continue the pagination of the list by passing the value in
+     * continuation-token in the request to <code>GET</code> the next page.
+     * </p>
+     * <p>
+     * To use this operation, you must have permissions to perform the <code>s3:GetAnalyticsConfiguration</code> action.
+     * The bucket owner has this permission by default. The bucket owner can grant this permission to others. For more
+     * information about permissions, see <a href=
+     * "https://docs.aws.amazon.com/AmazonS3/latest/userguide/using-with-s3-actions.html#using-with-s3-actions-related-to-bucket-subresources"
+     * >Permissions Related to Bucket Subresource Operations</a> and <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-access-control.html">Managing Access Permissions
+     * to Your Amazon S3 Resources</a>.
+     * </p>
+     * <p>
+     * For information about Amazon S3 analytics feature, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/dev/analytics-storage-class.html">Amazon S3 Analytics – Storage
+     * Class Analysis</a>.
+     * </p>
+     * <p>
+     * The following operations are related to <code>ListBucketAnalyticsConfigurations</code>:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketAnalyticsConfiguration.html">
+     * GetBucketAnalyticsConfiguration</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteBucketAnalyticsConfiguration.html">
+     * DeleteBucketAnalyticsConfiguration</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketAnalyticsConfiguration.html">
+     * PutBucketAnalyticsConfiguration</a>
+     * </p>
+     * </li>
+     * </ul>
+     *
+     * @param listBucketAnalyticsConfigurationsRequest
+     * @return Result of the ListBucketAnalyticsConfigurations operation returned by the service.
+     * @throws SdkException
+     *         Base class for all exceptions that can be thrown by the SDK (both service and client). Can be used for
+     *         catch all scenarios.
+     * @throws SdkClientException
+     *         If any client side error occurs such as an IO related failure, failure to get credentials, etc.
+     * @throws S3Exception
+     *         Base class for all service exceptions. Unknown exceptions will be thrown as an instance of this type.
+     * @sample S3Client.ListBucketAnalyticsConfigurations
+     */
+    @Override
+    public ListBucketAnalyticsConfigurationsResponse listBucketAnalyticsConfigurations(
+            ListBucketAnalyticsConfigurationsRequest listBucketAnalyticsConfigurationsRequest) throws AwsServiceException,
+            SdkClientException, S3Exception {
+
+        HttpResponseHandler<Response<ListBucketAnalyticsConfigurationsResponse>> responseHandler = protocolFactory
+                .createCombinedResponseHandler(ListBucketAnalyticsConfigurationsResponse::builder,
+                        new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(listBucketAnalyticsConfigurationsRequest,
+                this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration,
+                listBucketAnalyticsConfigurationsRequest.overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+                .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "ListBucketAnalyticsConfigurations");
+
+            return clientHandler
+                    .execute(new ClientExecutionParams<ListBucketAnalyticsConfigurationsRequest, ListBucketAnalyticsConfigurationsResponse>()
+                            .withOperationName("ListBucketAnalyticsConfigurations").withProtocolMetadata(protocolMetadata)
+                            .withCombinedResponseHandler(responseHandler).withMetricCollector(apiCallMetricCollector)
+                            .withRequestConfiguration(clientConfiguration).withInput(listBucketAnalyticsConfigurationsRequest)
+                            .withMarshaller(new ListBucketAnalyticsConfigurationsRequestMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    /**
+     * <note>
+     * <p>
+     * This operation is not supported for directory buckets.
+     * </p>
+     * </note>
+     * <p>
+     * Lists the S3 Intelligent-Tiering configuration from the specified bucket.
+     * </p>
+     * <p>
+     * The S3 Intelligent-Tiering storage class is designed to optimize storage costs by automatically moving data to
+     * the most cost-effective storage access tier, without performance impact or operational overhead. S3
+     * Intelligent-Tiering delivers automatic cost savings in three low latency and high throughput access tiers. To get
+     * the lowest storage cost on data that can be accessed in minutes to hours, you can choose to activate additional
+     * archiving capabilities.
+     * </p>
+     * <p>
+     * The S3 Intelligent-Tiering storage class is the ideal storage class for data with unknown, changing, or
+     * unpredictable access patterns, independent of object size or retention period. If the size of an object is less
+     * than 128 KB, it is not monitored and not eligible for auto-tiering. Smaller objects can be stored, but they are
+     * always charged at the Frequent Access tier rates in the S3 Intelligent-Tiering storage class.
+     * </p>
+     * <p>
+     * For more information, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/dev/storage-class-intro.html#sc-dynamic-data-access">Storage
+     * class for automatically optimizing frequently and infrequently accessed objects</a>.
+     * </p>
+     * <p>
+     * Operations related to <code>ListBucketIntelligentTieringConfigurations</code> include:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteBucketIntelligentTieringConfiguration.html">
+     * DeleteBucketIntelligentTieringConfiguration</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketIntelligentTieringConfiguration.html">
+     * PutBucketIntelligentTieringConfiguration</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketIntelligentTieringConfiguration.html">
+     * GetBucketIntelligentTieringConfiguration</a>
+     * </p>
+     * </li>
+     * </ul>
+     *
+     * @param listBucketIntelligentTieringConfigurationsRequest
+     * @return Result of the ListBucketIntelligentTieringConfigurations operation returned by the service.
+     * @throws SdkException
+     *         Base class for all exceptions that can be thrown by the SDK (both service and client). Can be used for
+     *         catch all scenarios.
+     * @throws SdkClientException
+     *         If any client side error occurs such as an IO related failure, failure to get credentials, etc.
+     * @throws S3Exception
+     *         Base class for all service exceptions. Unknown exceptions will be thrown as an instance of this type.
+     * @sample S3Client.ListBucketIntelligentTieringConfigurations
+     */
+    @Override
+    public ListBucketIntelligentTieringConfigurationsResponse listBucketIntelligentTieringConfigurations(
+            ListBucketIntelligentTieringConfigurationsRequest listBucketIntelligentTieringConfigurationsRequest)
+            throws AwsServiceException, SdkClientException, S3Exception {
+
+        HttpResponseHandler<Response<ListBucketIntelligentTieringConfigurationsResponse>> responseHandler = protocolFactory
+                .createCombinedResponseHandler(ListBucketIntelligentTieringConfigurationsResponse::builder,
+                        new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(
+                listBucketIntelligentTieringConfigurationsRequest, this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration,
+                listBucketIntelligentTieringConfigurationsRequest.overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+                .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "ListBucketIntelligentTieringConfigurations");
+
+            return clientHandler
+                    .execute(new ClientExecutionParams<ListBucketIntelligentTieringConfigurationsRequest, ListBucketIntelligentTieringConfigurationsResponse>()
+                            .withOperationName("ListBucketIntelligentTieringConfigurations")
+                            .withProtocolMetadata(protocolMetadata).withCombinedResponseHandler(responseHandler)
+                            .withMetricCollector(apiCallMetricCollector).withRequestConfiguration(clientConfiguration)
+                            .withInput(listBucketIntelligentTieringConfigurationsRequest)
+                            .withMarshaller(new ListBucketIntelligentTieringConfigurationsRequestMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    /**
+     * <note>
+     * <p>
+     * This operation is not supported for directory buckets.
+     * </p>
+     * </note>
+     * <p>
+     * Returns a list of inventory configurations for the bucket. You can have up to 1,000 analytics configurations per
+     * bucket.
+     * </p>
+     * <p>
+     * This action supports list pagination and does not return more than 100 configurations at a time. Always check the
+     * <code>IsTruncated</code> element in the response. If there are no more configurations to list,
+     * <code>IsTruncated</code> is set to false. If there are more configurations to list, <code>IsTruncated</code> is
+     * set to true, and there is a value in <code>NextContinuationToken</code>. You use the
+     * <code>NextContinuationToken</code> value to continue the pagination of the list by passing the value in
+     * continuation-token in the request to <code>GET</code> the next page.
+     * </p>
+     * <p>
+     * To use this operation, you must have permissions to perform the <code>s3:GetInventoryConfiguration</code> action.
+     * The bucket owner has this permission by default. The bucket owner can grant this permission to others. For more
+     * information about permissions, see <a href=
+     * "https://docs.aws.amazon.com/AmazonS3/latest/userguide/using-with-s3-actions.html#using-with-s3-actions-related-to-bucket-subresources"
+     * >Permissions Related to Bucket Subresource Operations</a> and <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-access-control.html">Managing Access Permissions
+     * to Your Amazon S3 Resources</a>.
+     * </p>
+     * <p>
+     * For information about the Amazon S3 inventory feature, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/dev/storage-inventory.html">Amazon S3 Inventory</a>
+     * </p>
+     * <p>
+     * The following operations are related to <code>ListBucketInventoryConfigurations</code>:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketInventoryConfiguration.html">
+     * GetBucketInventoryConfiguration</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteBucketInventoryConfiguration.html">
+     * DeleteBucketInventoryConfiguration</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketInventoryConfiguration.html">
+     * PutBucketInventoryConfiguration</a>
+     * </p>
+     * </li>
+     * </ul>
+     *
+     * @param listBucketInventoryConfigurationsRequest
+     * @return Result of the ListBucketInventoryConfigurations operation returned by the service.
+     * @throws SdkException
+     *         Base class for all exceptions that can be thrown by the SDK (both service and client). Can be used for
+     *         catch all scenarios.
+     * @throws SdkClientException
+     *         If any client side error occurs such as an IO related failure, failure to get credentials, etc.
+     * @throws S3Exception
+     *         Base class for all service exceptions. Unknown exceptions will be thrown as an instance of this type.
+     * @sample S3Client.ListBucketInventoryConfigurations
+     */
+    @Override
+    public ListBucketInventoryConfigurationsResponse listBucketInventoryConfigurations(
+            ListBucketInventoryConfigurationsRequest listBucketInventoryConfigurationsRequest) throws AwsServiceException,
+            SdkClientException, S3Exception {
+
+        HttpResponseHandler<Response<ListBucketInventoryConfigurationsResponse>> responseHandler = protocolFactory
+                .createCombinedResponseHandler(ListBucketInventoryConfigurationsResponse::builder,
+                        new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(listBucketInventoryConfigurationsRequest,
+                this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration,
+                listBucketInventoryConfigurationsRequest.overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+                .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "ListBucketInventoryConfigurations");
+
+            return clientHandler
+                    .execute(new ClientExecutionParams<ListBucketInventoryConfigurationsRequest, ListBucketInventoryConfigurationsResponse>()
+                            .withOperationName("ListBucketInventoryConfigurations").withProtocolMetadata(protocolMetadata)
+                            .withCombinedResponseHandler(responseHandler).withMetricCollector(apiCallMetricCollector)
+                            .withRequestConfiguration(clientConfiguration).withInput(listBucketInventoryConfigurationsRequest)
+                            .withMarshaller(new ListBucketInventoryConfigurationsRequestMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    /**
+     * <note>
+     * <p>
+     * This operation is not supported for directory buckets.
+     * </p>
+     * </note>
+     * <p>
+     * Lists the metrics configurations for the bucket. The metrics configurations are only for the request metrics of
+     * the bucket and do not provide information on daily storage metrics. You can have up to 1,000 configurations per
+     * bucket.
+     * </p>
+     * <p>
+     * This action supports list pagination and does not return more than 100 configurations at a time. Always check the
+     * <code>IsTruncated</code> element in the response. If there are no more configurations to list,
+     * <code>IsTruncated</code> is set to false. If there are more configurations to list, <code>IsTruncated</code> is
+     * set to true, and there is a value in <code>NextContinuationToken</code>. You use the
+     * <code>NextContinuationToken</code> value to continue the pagination of the list by passing the value in
+     * <code>continuation-token</code> in the request to <code>GET</code> the next page.
+     * </p>
+     * <p>
+     * To use this operation, you must have permissions to perform the <code>s3:GetMetricsConfiguration</code> action.
+     * The bucket owner has this permission by default. The bucket owner can grant this permission to others. For more
+     * information about permissions, see <a href=
+     * "https://docs.aws.amazon.com/AmazonS3/latest/userguide/using-with-s3-actions.html#using-with-s3-actions-related-to-bucket-subresources"
+     * >Permissions Related to Bucket Subresource Operations</a> and <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-access-control.html">Managing Access Permissions
+     * to Your Amazon S3 Resources</a>.
+     * </p>
+     * <p>
+     * For more information about metrics configurations and CloudWatch request metrics, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/dev/cloudwatch-monitoring.html">Monitoring Metrics with Amazon
+     * CloudWatch</a>.
+     * </p>
+     * <p>
+     * The following operations are related to <code>ListBucketMetricsConfigurations</code>:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketMetricsConfiguration.html">
+     * PutBucketMetricsConfiguration</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketMetricsConfiguration.html">
+     * GetBucketMetricsConfiguration</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteBucketMetricsConfiguration.html">
+     * DeleteBucketMetricsConfiguration</a>
+     * </p>
+     * </li>
+     * </ul>
+     *
+     * @param listBucketMetricsConfigurationsRequest
+     * @return Result of the ListBucketMetricsConfigurations operation returned by the service.
+     * @throws SdkException
+     *         Base class for all exceptions that can be thrown by the SDK (both service and client). Can be used for
+     *         catch all scenarios.
+     * @throws SdkClientException
+     *         If any client side error occurs such as an IO related failure, failure to get credentials, etc.
+     * @throws S3Exception
+     *         Base class for all service exceptions. Unknown exceptions will be thrown as an instance of this type.
+     * @sample S3Client.ListBucketMetricsConfigurations
+     */
+    @Override
+    public ListBucketMetricsConfigurationsResponse listBucketMetricsConfigurations(
+            ListBucketMetricsConfigurationsRequest listBucketMetricsConfigurationsRequest) throws AwsServiceException,
+            SdkClientException, S3Exception {
+
+        HttpResponseHandler<Response<ListBucketMetricsConfigurationsResponse>> responseHandler = protocolFactory
+                .createCombinedResponseHandler(ListBucketMetricsConfigurationsResponse::builder,
+                        new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(listBucketMetricsConfigurationsRequest,
+                this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration,
+                listBucketMetricsConfigurationsRequest.overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+                .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "ListBucketMetricsConfigurations");
+
+            return clientHandler
+                    .execute(new ClientExecutionParams<ListBucketMetricsConfigurationsRequest, ListBucketMetricsConfigurationsResponse>()
+                            .withOperationName("ListBucketMetricsConfigurations").withProtocolMetadata(protocolMetadata)
+                            .withCombinedResponseHandler(responseHandler).withMetricCollector(apiCallMetricCollector)
+                            .withRequestConfiguration(clientConfiguration).withInput(listBucketMetricsConfigurationsRequest)
+                            .withMarshaller(new ListBucketMetricsConfigurationsRequestMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    /**
+     * <note>
+     * <p>
+     * This operation is not supported for directory buckets.
+     * </p>
+     * </note>
+     * <p>
+     * Returns a list of all buckets owned by the authenticated sender of the request. To grant IAM permission to use
+     * this operation, you must add the <code>s3:ListAllMyBuckets</code> policy action.
+     * </p>
+     * <p>
+     * For information about Amazon S3 buckets, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/creating-buckets-s3.html">Creating, configuring, and
+     * working with Amazon S3 buckets</a>.
+     * </p>
+     * <important>
+     * <p>
+     * We strongly recommend using only paginated <code>ListBuckets</code> requests. Unpaginated
+     * <code>ListBuckets</code> requests are only supported for Amazon Web Services accounts set to the default general
+     * purpose bucket quota of 10,000. If you have an approved general purpose bucket quota above 10,000, you must send
+     * paginated <code>ListBuckets</code> requests to list your account’s buckets. All unpaginated
+     * <code>ListBuckets</code> requests will be rejected for Amazon Web Services accounts with a general purpose bucket
+     * quota greater than 10,000.
+     * </p>
+     * </important>
+     *
+     * @param listBucketsRequest
+     * @return Result of the ListBuckets operation returned by the service.
+     * @throws SdkException
+     *         Base class for all exceptions that can be thrown by the SDK (both service and client). Can be used for
+     *         catch all scenarios.
+     * @throws SdkClientException
+     *         If any client side error occurs such as an IO related failure, failure to get credentials, etc.
+     * @throws S3Exception
+     *         Base class for all service exceptions. Unknown exceptions will be thrown as an instance of this type.
+     * @sample S3Client.ListBuckets
+     */
+    @Override
+    public ListBucketsResponse listBuckets(ListBucketsRequest listBucketsRequest) throws AwsServiceException, SdkClientException,
+            S3Exception {
+
+        HttpResponseHandler<Response<ListBucketsResponse>> responseHandler = protocolFactory.createCombinedResponseHandler(
+                ListBucketsResponse::builder, new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(listBucketsRequest, this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration, listBucketsRequest
+                .overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+                .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "ListBuckets");
+
+            return clientHandler.execute(new ClientExecutionParams<ListBucketsRequest, ListBucketsResponse>()
+                    .withOperationName("ListBuckets").withProtocolMetadata(protocolMetadata)
+                    .withCombinedResponseHandler(responseHandler).withMetricCollector(apiCallMetricCollector)
+                    .withRequestConfiguration(clientConfiguration).withInput(listBucketsRequest)
+                    .withMarshaller(new ListBucketsRequestMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    /**
+     * <p>
+     * Returns a list of all Amazon S3 directory buckets owned by the authenticated sender of the request. For more
+     * information about directory buckets, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/directory-buckets-overview.html">Directory
+     * buckets</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * <note>
+     * <p>
+     * <b>Directory buckets </b> - For directory buckets, you must make requests for this API operation to the Regional
+     * endpoint. These endpoints support path-style requests in the format
+     * <code>https://s3express-control.<i>region-code</i>.amazonaws.com/<i>bucket-name</i> </code>. Virtual-hosted-style
+     * requests aren't supported. For more information about endpoints in Availability Zones, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/endpoint-directory-buckets-AZ.html">Regional and
+     * Zonal endpoints for directory buckets in Availability Zones</a> in the <i>Amazon S3 User Guide</i>. For more
+     * information about endpoints in Local Zones, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-lzs-for-directory-buckets.html">Concepts for
+     * directory buckets in Local Zones</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * </note>
+     * <dl>
+     * <dt>Permissions</dt>
+     * <dd>
+     * <p>
+     * You must have the <code>s3express:ListAllMyDirectoryBuckets</code> permission in an IAM identity-based policy
+     * instead of a bucket policy. Cross-account access to this API operation isn't supported. This operation can only
+     * be performed by the Amazon Web Services account that owns the resource. For more information about directory
+     * bucket policies and permissions, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-express-security-iam.html">Amazon Web Services
+     * Identity and Access Management (IAM) for S3 Express One Zone</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * </dd>
+     * <dt>HTTP Host header syntax</dt>
+     * <dd>
+     * <p>
+     * <b>Directory buckets </b> - The HTTP Host header syntax is
+     * <code>s3express-control.<i>region</i>.amazonaws.com</code>.
+     * </p>
+     * </dd>
+     * </dl>
+     * <note>
+     * <p>
+     * The <code>BucketRegion</code> response element is not part of the <code>ListDirectoryBuckets</code> Response
+     * Syntax.
+     * </p>
+     * </note>
+     *
+     * @param listDirectoryBucketsRequest
+     * @return Result of the ListDirectoryBuckets operation returned by the service.
+     * @throws SdkException
+     *         Base class for all exceptions that can be thrown by the SDK (both service and client). Can be used for
+     *         catch all scenarios.
+     * @throws SdkClientException
+     *         If any client side error occurs such as an IO related failure, failure to get credentials, etc.
+     * @throws S3Exception
+     *         Base class for all service exceptions. Unknown exceptions will be thrown as an instance of this type.
+     * @sample S3Client.ListDirectoryBuckets
+     */
+    @Override
+    public ListDirectoryBucketsResponse listDirectoryBuckets(ListDirectoryBucketsRequest listDirectoryBucketsRequest)
+            throws AwsServiceException, SdkClientException, S3Exception {
+
+        HttpResponseHandler<Response<ListDirectoryBucketsResponse>> responseHandler = protocolFactory
+                .createCombinedResponseHandler(ListDirectoryBucketsResponse::builder,
+                        new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(listDirectoryBucketsRequest,
+                this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration, listDirectoryBucketsRequest
+                .overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+                .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "ListDirectoryBuckets");
+
+            return clientHandler.execute(new ClientExecutionParams<ListDirectoryBucketsRequest, ListDirectoryBucketsResponse>()
+                    .withOperationName("ListDirectoryBuckets").withProtocolMetadata(protocolMetadata)
+                    .withCombinedResponseHandler(responseHandler).withMetricCollector(apiCallMetricCollector)
+                    .withRequestConfiguration(clientConfiguration).withInput(listDirectoryBucketsRequest)
+                    .withMarshaller(new ListDirectoryBucketsRequestMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    /**
+     * <p>
+     * This operation lists in-progress multipart uploads in a bucket. An in-progress multipart upload is a multipart
+     * upload that has been initiated by the <code>CreateMultipartUpload</code> request, but has not yet been completed
+     * or aborted.
+     * </p>
+     * <note>
+     * <p>
+     * <b>Directory buckets</b> - If multipart uploads in a directory bucket are in progress, you can't delete the
+     * bucket until all the in-progress multipart uploads are aborted or completed. To delete these in-progress
+     * multipart uploads, use the <code>ListMultipartUploads</code> operation to list the in-progress multipart uploads
+     * in the bucket and use the <code>AbortMultipartUpload</code> operation to abort all the in-progress multipart
+     * uploads.
+     * </p>
+     * </note>
+     * <p>
+     * The <code>ListMultipartUploads</code> operation returns a maximum of 1,000 multipart uploads in the response. The
+     * limit of 1,000 multipart uploads is also the default value. You can further limit the number of uploads in a
+     * response by specifying the <code>max-uploads</code> request parameter. If there are more than 1,000 multipart
+     * uploads that satisfy your <code>ListMultipartUploads</code> request, the response returns an
+     * <code>IsTruncated</code> element with the value of <code>true</code>, a <code>NextKeyMarker</code> element, and a
+     * <code>NextUploadIdMarker</code> element. To list the remaining multipart uploads, you need to make subsequent
+     * <code>ListMultipartUploads</code> requests. In these requests, include two query parameters:
+     * <code>key-marker</code> and <code>upload-id-marker</code>. Set the value of <code>key-marker</code> to the
+     * <code>NextKeyMarker</code> value from the previous response. Similarly, set the value of
+     * <code>upload-id-marker</code> to the <code>NextUploadIdMarker</code> value from the previous response.
+     * </p>
+     * <note>
+     * <p>
+     * <b>Directory buckets</b> - The <code>upload-id-marker</code> element and the <code>NextUploadIdMarker</code>
+     * element aren't supported by directory buckets. To list the additional multipart uploads, you only need to set the
+     * value of <code>key-marker</code> to the <code>NextKeyMarker</code> value from the previous response.
+     * </p>
+     * </note>
+     * <p>
+     * For more information about multipart uploads, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/dev/uploadobjusingmpu.html">Uploading Objects Using Multipart
+     * Upload</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * <note>
+     * <p>
+     * <b>Directory buckets</b> - For directory buckets, you must make requests for this API operation to the Zonal
+     * endpoint. These endpoints support virtual-hosted-style requests in the format
+     * <code>https://<i>amzn-s3-demo-bucket</i>.s3express-<i>zone-id</i>.<i>region-code</i>.amazonaws.com/<i>key-name</i> </code>
+     * . Path-style requests are not supported. For more information about endpoints in Availability Zones, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/endpoint-directory-buckets-AZ.html">Regional and
+     * Zonal endpoints for directory buckets in Availability Zones</a> in the <i>Amazon S3 User Guide</i>. For more
+     * information about endpoints in Local Zones, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-lzs-for-directory-buckets.html">Concepts for
+     * directory buckets in Local Zones</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * </note>
+     * <dl>
+     * <dt>Permissions</dt>
+     * <dd>
+     * <ul>
+     * <li>
+     * <p>
+     * <b>General purpose bucket permissions</b> - For information about permissions required to use the multipart
+     * upload API, see <a href="https://docs.aws.amazon.com/AmazonS3/latest/dev/mpuAndPermissions.html">Multipart Upload
+     * and Permissions</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <b>Directory bucket permissions</b> - To grant access to this API operation on a directory bucket, we recommend
+     * that you use the <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_CreateSession.html">
+     * <code>CreateSession</code> </a> API operation for session-based authorization. Specifically, you grant the
+     * <code>s3express:CreateSession</code> permission to the directory bucket in a bucket policy or an IAM
+     * identity-based policy. Then, you make the <code>CreateSession</code> API call on the bucket to obtain a session
+     * token. With the session token in your request header, you can make API requests to this operation. After the
+     * session token expires, you make another <code>CreateSession</code> API call to generate a new session token for
+     * use. Amazon Web Services CLI or SDKs create session and refresh the session token automatically to avoid service
+     * interruptions when a session expires. For more information about authorization, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_CreateSession.html"> <code>CreateSession</code> </a>.
+     * </p>
+     * </li>
+     * </ul>
+     * </dd>
+     * <dt>Sorting of multipart uploads in response</dt>
+     * <dd>
+     * <ul>
+     * <li>
+     * <p>
+     * <b>General purpose bucket</b> - In the <code>ListMultipartUploads</code> response, the multipart uploads are
+     * sorted based on two criteria:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * Key-based sorting - Multipart uploads are initially sorted in ascending order based on their object keys.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * Time-based sorting - For uploads that share the same object key, they are further sorted in ascending order based
+     * on the upload initiation time. Among uploads with the same key, the one that was initiated first will appear
+     * before the ones that were initiated later.
+     * </p>
+     * </li>
+     * </ul>
+     * </li>
+     * <li>
+     * <p>
+     * <b>Directory bucket</b> - In the <code>ListMultipartUploads</code> response, the multipart uploads aren't sorted
+     * lexicographically based on the object keys.
+     * </p>
+     * </li>
+     * </ul>
+     * </dd>
+     * <dt>HTTP Host header syntax</dt>
+     * <dd>
+     * <p>
+     * <b>Directory buckets </b> - The HTTP Host header syntax is
+     * <code> <i>Bucket-name</i>.s3express-<i>zone-id</i>.<i>region-code</i>.amazonaws.com</code>.
+     * </p>
+     * </dd>
+     * </dl>
+     * <p>
+     * The following operations are related to <code>ListMultipartUploads</code>:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_CreateMultipartUpload.html">CreateMultipartUpload</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_UploadPart.html">UploadPart</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_CompleteMultipartUpload.html">CompleteMultipartUpload
+     * </a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListParts.html">ListParts</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_AbortMultipartUpload.html">AbortMultipartUpload</a>
+     * </p>
+     * </li>
+     * </ul>
+     *
+     * @param listMultipartUploadsRequest
+     * @return Result of the ListMultipartUploads operation returned by the service.
+     * @throws SdkException
+     *         Base class for all exceptions that can be thrown by the SDK (both service and client). Can be used for
+     *         catch all scenarios.
+     * @throws SdkClientException
+     *         If any client side error occurs such as an IO related failure, failure to get credentials, etc.
+     * @throws S3Exception
+     *         Base class for all service exceptions. Unknown exceptions will be thrown as an instance of this type.
+     * @sample S3Client.ListMultipartUploads
+     */
+    @Override
+    public ListMultipartUploadsResponse listMultipartUploads(ListMultipartUploadsRequest listMultipartUploadsRequest)
+            throws AwsServiceException, SdkClientException, S3Exception {
+
+        HttpResponseHandler<Response<ListMultipartUploadsResponse>> responseHandler = protocolFactory
+                .createCombinedResponseHandler(ListMultipartUploadsResponse::builder,
+                        new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(listMultipartUploadsRequest,
+                this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration, listMultipartUploadsRequest
+                .overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+                .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "ListMultipartUploads");
+
+            return clientHandler.execute(new ClientExecutionParams<ListMultipartUploadsRequest, ListMultipartUploadsResponse>()
+                    .withOperationName("ListMultipartUploads").withProtocolMetadata(protocolMetadata)
+                    .withCombinedResponseHandler(responseHandler).withMetricCollector(apiCallMetricCollector)
+                    .withRequestConfiguration(clientConfiguration).withInput(listMultipartUploadsRequest)
+                    .withMarshaller(new ListMultipartUploadsRequestMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    /**
+     * <note>
+     * <p>
+     * This operation is not supported for directory buckets.
+     * </p>
+     * </note>
+     * <p>
+     * Returns metadata about all versions of the objects in a bucket. You can also use request parameters as selection
+     * criteria to return metadata about a subset of all the object versions.
+     * </p>
+     * <important>
+     * <p>
+     * To use this operation, you must have permission to perform the <code>s3:ListBucketVersions</code> action. Be
+     * aware of the name difference.
+     * </p>
+     * </important> <note>
+     * <p>
+     * A <code>200 OK</code> response can contain valid or invalid XML. Make sure to design your application to parse
+     * the contents of the response and handle it appropriately.
+     * </p>
+     * </note>
+     * <p>
+     * To use this operation, you must have READ access to the bucket.
+     * </p>
+     * <p>
+     * The following operations are related to <code>ListObjectVersions</code>:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListObjectsV2.html">ListObjectsV2</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetObject.html">GetObject</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutObject.html">PutObject</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteObject.html">DeleteObject</a>
+     * </p>
+     * </li>
+     * </ul>
+     *
+     * @param listObjectVersionsRequest
+     * @return Result of the ListObjectVersions operation returned by the service.
+     * @throws SdkException
+     *         Base class for all exceptions that can be thrown by the SDK (both service and client). Can be used for
+     *         catch all scenarios.
+     * @throws SdkClientException
+     *         If any client side error occurs such as an IO related failure, failure to get credentials, etc.
+     * @throws S3Exception
+     *         Base class for all service exceptions. Unknown exceptions will be thrown as an instance of this type.
+     * @sample S3Client.ListObjectVersions
+     */
+    @Override
+    public ListObjectVersionsResponse listObjectVersions(ListObjectVersionsRequest listObjectVersionsRequest)
+            throws AwsServiceException, SdkClientException, S3Exception {
+
+        HttpResponseHandler<Response<ListObjectVersionsResponse>> responseHandler = protocolFactory
+                .createCombinedResponseHandler(ListObjectVersionsResponse::builder,
+                        new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(listObjectVersionsRequest,
+                this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration, listObjectVersionsRequest
+                .overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+                .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "ListObjectVersions");
+
+            return clientHandler.execute(new ClientExecutionParams<ListObjectVersionsRequest, ListObjectVersionsResponse>()
+                    .withOperationName("ListObjectVersions").withProtocolMetadata(protocolMetadata)
+                    .withCombinedResponseHandler(responseHandler).withMetricCollector(apiCallMetricCollector)
+                    .withRequestConfiguration(clientConfiguration).withInput(listObjectVersionsRequest)
+                    .withMarshaller(new ListObjectVersionsRequestMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    /**
+     * <note>
+     * <p>
+     * This operation is not supported for directory buckets.
+     * </p>
+     * </note>
+     * <p>
+     * Returns some or all (up to 1,000) of the objects in a bucket. You can use the request parameters as selection
+     * criteria to return a subset of the objects in a bucket. A 200 OK response can contain valid or invalid XML. Be
+     * sure to design your application to parse the contents of the response and handle it appropriately.
+     * </p>
+     * <important>
+     * <p>
+     * This action has been revised. We recommend that you use the newer version, <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListObjectsV2.html">ListObjectsV2</a>, when developing
+     * applications. For backward compatibility, Amazon S3 continues to support <code>ListObjects</code>.
+     * </p>
+     * </important>
+     * <p>
+     * The following operations are related to <code>ListObjects</code>:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListObjectsV2.html">ListObjectsV2</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetObject.html">GetObject</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutObject.html">PutObject</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_CreateBucket.html">CreateBucket</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListBuckets.html">ListBuckets</a>
+     * </p>
+     * </li>
+     * </ul>
+     *
+     * @param listObjectsRequest
+     * @return Result of the ListObjects operation returned by the service.
+     * @throws NoSuchBucketException
+     *         The specified bucket does not exist.
+     * @throws SdkException
+     *         Base class for all exceptions that can be thrown by the SDK (both service and client). Can be used for
+     *         catch all scenarios.
+     * @throws SdkClientException
+     *         If any client side error occurs such as an IO related failure, failure to get credentials, etc.
+     * @throws S3Exception
+     *         Base class for all service exceptions. Unknown exceptions will be thrown as an instance of this type.
+     * @sample S3Client.ListObjects
+     */
+    @Override
+    public ListObjectsResponse listObjects(ListObjectsRequest listObjectsRequest) throws NoSuchBucketException,
+            AwsServiceException, SdkClientException, S3Exception {
+
+        HttpResponseHandler<Response<ListObjectsResponse>> responseHandler = protocolFactory.createCombinedResponseHandler(
+                ListObjectsResponse::builder, new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(listObjectsRequest, this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration, listObjectsRequest
+                .overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+                .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "ListObjects");
+
+            return clientHandler.execute(new ClientExecutionParams<ListObjectsRequest, ListObjectsResponse>()
+                    .withOperationName("ListObjects").withProtocolMetadata(protocolMetadata)
+                    .withCombinedResponseHandler(responseHandler).withMetricCollector(apiCallMetricCollector)
+                    .withRequestConfiguration(clientConfiguration).withInput(listObjectsRequest)
+                    .withMarshaller(new ListObjectsRequestMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    /**
+     * <p>
+     * Returns some or all (up to 1,000) of the objects in a bucket with each request. You can use the request
+     * parameters as selection criteria to return a subset of the objects in a bucket. A <code>200 OK</code> response
+     * can contain valid or invalid XML. Make sure to design your application to parse the contents of the response and
+     * handle it appropriately. For more information about listing objects, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/ListingKeysUsingAPIs.html">Listing object keys
+     * programmatically</a> in the <i>Amazon S3 User Guide</i>. To get a list of your buckets, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListBuckets.html">ListBuckets</a>.
+     * </p>
+     * <note>
+     * <ul>
+     * <li>
+     * <p>
+     * <b>General purpose bucket</b> - For general purpose buckets, <code>ListObjectsV2</code> doesn't return prefixes
+     * that are related only to in-progress multipart uploads.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <b>Directory buckets</b> - For directory buckets, <code>ListObjectsV2</code> response includes the prefixes that
+     * are related only to in-progress multipart uploads.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <b>Directory buckets</b> - For directory buckets, you must make requests for this API operation to the Zonal
+     * endpoint. These endpoints support virtual-hosted-style requests in the format
+     * <code>https://<i>amzn-s3-demo-bucket</i>.s3express-<i>zone-id</i>.<i>region-code</i>.amazonaws.com/<i>key-name</i> </code>
+     * . Path-style requests are not supported. For more information about endpoints in Availability Zones, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/endpoint-directory-buckets-AZ.html">Regional and
+     * Zonal endpoints for directory buckets in Availability Zones</a> in the <i>Amazon S3 User Guide</i>. For more
+     * information about endpoints in Local Zones, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-lzs-for-directory-buckets.html">Concepts for
+     * directory buckets in Local Zones</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * </li>
+     * </ul>
+     * </note>
+     * <dl>
+     * <dt>Permissions</dt>
+     * <dd>
+     * <ul>
+     * <li>
+     * <p>
+     * <b>General purpose bucket permissions</b> - To use this operation, you must have READ access to the bucket. You
+     * must have permission to perform the <code>s3:ListBucket</code> action. The bucket owner has this permission by
+     * default and can grant this permission to others. For more information about permissions, see <a href=
+     * "https://docs.aws.amazon.com/AmazonS3/latest/userguide/using-with-s3-actions.html#using-with-s3-actions-related-to-bucket-subresources"
+     * >Permissions Related to Bucket Subresource Operations</a> and <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-access-control.html">Managing Access Permissions
+     * to Your Amazon S3 Resources</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <b>Directory bucket permissions</b> - To grant access to this API operation on a directory bucket, we recommend
+     * that you use the <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_CreateSession.html">
+     * <code>CreateSession</code> </a> API operation for session-based authorization. Specifically, you grant the
+     * <code>s3express:CreateSession</code> permission to the directory bucket in a bucket policy or an IAM
+     * identity-based policy. Then, you make the <code>CreateSession</code> API call on the bucket to obtain a session
+     * token. With the session token in your request header, you can make API requests to this operation. After the
+     * session token expires, you make another <code>CreateSession</code> API call to generate a new session token for
+     * use. Amazon Web Services CLI or SDKs create session and refresh the session token automatically to avoid service
+     * interruptions when a session expires. For more information about authorization, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_CreateSession.html"> <code>CreateSession</code> </a>.
+     * </p>
+     * </li>
+     * </ul>
+     * </dd>
+     * <dt>Sorting order of returned objects</dt>
+     * <dd>
+     * <ul>
+     * <li>
+     * <p>
+     * <b>General purpose bucket</b> - For general purpose buckets, <code>ListObjectsV2</code> returns objects in
+     * lexicographical order based on their key names.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <b>Directory bucket</b> - For directory buckets, <code>ListObjectsV2</code> does not return objects in
+     * lexicographical order.
+     * </p>
+     * </li>
+     * </ul>
+     * </dd>
+     * <dt>HTTP Host header syntax</dt>
+     * <dd>
+     * <p>
+     * <b>Directory buckets </b> - The HTTP Host header syntax is
+     * <code> <i>Bucket-name</i>.s3express-<i>zone-id</i>.<i>region-code</i>.amazonaws.com</code>.
+     * </p>
+     * </dd>
+     * </dl>
+     * <important>
+     * <p>
+     * This section describes the latest revision of this action. We recommend that you use this revised API operation
+     * for application development. For backward compatibility, Amazon S3 continues to support the prior version of this
+     * API operation, <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListObjects.html">ListObjects</a>.
+     * </p>
+     * </important>
+     * <p>
+     * The following operations are related to <code>ListObjectsV2</code>:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetObject.html">GetObject</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutObject.html">PutObject</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_CreateBucket.html">CreateBucket</a>
+     * </p>
+     * </li>
+     * </ul>
+     *
+     * @param listObjectsV2Request
+     * @return Result of the ListObjectsV2 operation returned by the service.
+     * @throws NoSuchBucketException
+     *         The specified bucket does not exist.
+     * @throws SdkException
+     *         Base class for all exceptions that can be thrown by the SDK (both service and client). Can be used for
+     *         catch all scenarios.
+     * @throws SdkClientException
+     *         If any client side error occurs such as an IO related failure, failure to get credentials, etc.
+     * @throws S3Exception
+     *         Base class for all service exceptions. Unknown exceptions will be thrown as an instance of this type.
+     * @sample S3Client.ListObjectsV2
+     */
+    @Override
+    public ListObjectsV2Response listObjectsV2(ListObjectsV2Request listObjectsV2Request) throws NoSuchBucketException,
+            AwsServiceException, SdkClientException, S3Exception {
+
+        HttpResponseHandler<Response<ListObjectsV2Response>> responseHandler = protocolFactory.createCombinedResponseHandler(
+                ListObjectsV2Response::builder, new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(listObjectsV2Request, this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration, listObjectsV2Request
+                .overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+                .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "ListObjectsV2");
+
+            return clientHandler.execute(new ClientExecutionParams<ListObjectsV2Request, ListObjectsV2Response>()
+                    .withOperationName("ListObjectsV2").withProtocolMetadata(protocolMetadata)
+                    .withCombinedResponseHandler(responseHandler).withMetricCollector(apiCallMetricCollector)
+                    .withRequestConfiguration(clientConfiguration).withInput(listObjectsV2Request)
+                    .withMarshaller(new ListObjectsV2RequestMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    /**
+     * <p>
+     * Lists the parts that have been uploaded for a specific multipart upload.
+     * </p>
+     * <p>
+     * To use this operation, you must provide the <code>upload ID</code> in the request. You obtain this uploadID by
+     * sending the initiate multipart upload request through <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_CreateMultipartUpload.html">CreateMultipartUpload</a>.
+     * </p>
+     * <p>
+     * The <code>ListParts</code> request returns a maximum of 1,000 uploaded parts. The limit of 1,000 parts is also
+     * the default value. You can restrict the number of parts in a response by specifying the <code>max-parts</code>
+     * request parameter. If your multipart upload consists of more than 1,000 parts, the response returns an
+     * <code>IsTruncated</code> field with the value of <code>true</code>, and a <code>NextPartNumberMarker</code>
+     * element. To list remaining uploaded parts, in subsequent <code>ListParts</code> requests, include the
+     * <code>part-number-marker</code> query string parameter and set its value to the <code>NextPartNumberMarker</code>
+     * field value from the previous response.
+     * </p>
+     * <p>
+     * For more information on multipart uploads, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/dev/uploadobjusingmpu.html">Uploading Objects Using Multipart
+     * Upload</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * <note>
+     * <p>
+     * <b>Directory buckets</b> - For directory buckets, you must make requests for this API operation to the Zonal
+     * endpoint. These endpoints support virtual-hosted-style requests in the format
+     * <code>https://<i>amzn-s3-demo-bucket</i>.s3express-<i>zone-id</i>.<i>region-code</i>.amazonaws.com/<i>key-name</i> </code>
+     * . Path-style requests are not supported. For more information about endpoints in Availability Zones, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/endpoint-directory-buckets-AZ.html">Regional and
+     * Zonal endpoints for directory buckets in Availability Zones</a> in the <i>Amazon S3 User Guide</i>. For more
+     * information about endpoints in Local Zones, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-lzs-for-directory-buckets.html">Concepts for
+     * directory buckets in Local Zones</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * </note>
+     * <dl>
+     * <dt>Permissions</dt>
+     * <dd>
+     * <ul>
+     * <li>
+     * <p>
+     * <b>General purpose bucket permissions</b> - For information about permissions required to use the multipart
+     * upload API, see <a href="https://docs.aws.amazon.com/AmazonS3/latest/dev/mpuAndPermissions.html">Multipart Upload
+     * and Permissions</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * <p>
+     * If the upload was created using server-side encryption with Key Management Service (KMS) keys (SSE-KMS) or
+     * dual-layer server-side encryption with Amazon Web Services KMS keys (DSSE-KMS), you must have permission to the
+     * <code>kms:Decrypt</code> action for the <code>ListParts</code> request to succeed.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <b>Directory bucket permissions</b> - To grant access to this API operation on a directory bucket, we recommend
+     * that you use the <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_CreateSession.html">
+     * <code>CreateSession</code> </a> API operation for session-based authorization. Specifically, you grant the
+     * <code>s3express:CreateSession</code> permission to the directory bucket in a bucket policy or an IAM
+     * identity-based policy. Then, you make the <code>CreateSession</code> API call on the bucket to obtain a session
+     * token. With the session token in your request header, you can make API requests to this operation. After the
+     * session token expires, you make another <code>CreateSession</code> API call to generate a new session token for
+     * use. Amazon Web Services CLI or SDKs create session and refresh the session token automatically to avoid service
+     * interruptions when a session expires. For more information about authorization, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_CreateSession.html"> <code>CreateSession</code> </a>.
+     * </p>
+     * </li>
+     * </ul>
+     * </dd>
+     * <dt>HTTP Host header syntax</dt>
+     * <dd>
+     * <p>
+     * <b>Directory buckets </b> - The HTTP Host header syntax is
+     * <code> <i>Bucket-name</i>.s3express-<i>zone-id</i>.<i>region-code</i>.amazonaws.com</code>.
+     * </p>
+     * </dd>
+     * </dl>
+     * <p>
+     * The following operations are related to <code>ListParts</code>:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_CreateMultipartUpload.html">CreateMultipartUpload</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_UploadPart.html">UploadPart</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_CompleteMultipartUpload.html">CompleteMultipartUpload
+     * </a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_AbortMultipartUpload.html">AbortMultipartUpload</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetObjectAttributes.html">GetObjectAttributes</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListMultipartUploads.html">ListMultipartUploads</a>
+     * </p>
+     * </li>
+     * </ul>
+     *
+     * @param listPartsRequest
+     * @return Result of the ListParts operation returned by the service.
+     * @throws SdkException
+     *         Base class for all exceptions that can be thrown by the SDK (both service and client). Can be used for
+     *         catch all scenarios.
+     * @throws SdkClientException
+     *         If any client side error occurs such as an IO related failure, failure to get credentials, etc.
+     * @throws S3Exception
+     *         Base class for all service exceptions. Unknown exceptions will be thrown as an instance of this type.
+     * @sample S3Client.ListParts
+     */
+    @Override
+    public ListPartsResponse listParts(ListPartsRequest listPartsRequest) throws AwsServiceException, SdkClientException,
+            S3Exception {
+
+        HttpResponseHandler<Response<ListPartsResponse>> responseHandler = protocolFactory.createCombinedResponseHandler(
+                ListPartsResponse::builder, new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(listPartsRequest, this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration, listPartsRequest
+                .overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+                .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "ListParts");
+
+            return clientHandler.execute(new ClientExecutionParams<ListPartsRequest, ListPartsResponse>()
+                    .withOperationName("ListParts").withProtocolMetadata(protocolMetadata)
+                    .withCombinedResponseHandler(responseHandler).withMetricCollector(apiCallMetricCollector)
+                    .withRequestConfiguration(clientConfiguration).withInput(listPartsRequest)
+                    .withMarshaller(new ListPartsRequestMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    /**
+     * <note>
+     * <p>
+     * This operation is not supported for directory buckets.
+     * </p>
+     * </note>
+     * <p>
+     * Sets the accelerate configuration of an existing bucket. Amazon S3 Transfer Acceleration is a bucket-level
+     * feature that enables you to perform faster data transfers to Amazon S3.
+     * </p>
+     * <p>
+     * To use this operation, you must have permission to perform the <code>s3:PutAccelerateConfiguration</code> action.
+     * The bucket owner has this permission by default. The bucket owner can grant this permission to others. For more
+     * information about permissions, see <a href=
+     * "https://docs.aws.amazon.com/AmazonS3/latest/userguide/using-with-s3-actions.html#using-with-s3-actions-related-to-bucket-subresources"
+     * >Permissions Related to Bucket Subresource Operations</a> and <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-access-control.html">Managing Access Permissions
+     * to Your Amazon S3 Resources</a>.
+     * </p>
+     * <p>
+     * The Transfer Acceleration state of a bucket can be set to one of the following two values:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * Enabled – Enables accelerated data transfers to the bucket.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * Suspended – Disables accelerated data transfers to the bucket.
+     * </p>
+     * </li>
+     * </ul>
+     * <p>
+     * The <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketAccelerateConfiguration.html">
+     * GetBucketAccelerateConfiguration</a> action returns the transfer acceleration state of a bucket.
+     * </p>
+     * <p>
+     * After setting the Transfer Acceleration state of a bucket to Enabled, it might take up to thirty minutes before
+     * the data transfer rates to the bucket increase.
+     * </p>
+     * <p>
+     * The name of the bucket used for Transfer Acceleration must be DNS-compliant and must not contain periods (".").
+     * </p>
+     * <p>
+     * For more information about transfer acceleration, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/dev/transfer-acceleration.html">Transfer Acceleration</a>.
+     * </p>
+     * <p>
+     * The following operations are related to <code>PutBucketAccelerateConfiguration</code>:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketAccelerateConfiguration.html">
+     * GetBucketAccelerateConfiguration</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_CreateBucket.html">CreateBucket</a>
+     * </p>
+     * </li>
+     * </ul>
+     *
+     * @param putBucketAccelerateConfigurationRequest
+     * @return Result of the PutBucketAccelerateConfiguration operation returned by the service.
+     * @throws SdkException
+     *         Base class for all exceptions that can be thrown by the SDK (both service and client). Can be used for
+     *         catch all scenarios.
+     * @throws SdkClientException
+     *         If any client side error occurs such as an IO related failure, failure to get credentials, etc.
+     * @throws S3Exception
+     *         Base class for all service exceptions. Unknown exceptions will be thrown as an instance of this type.
+     * @sample S3Client.PutBucketAccelerateConfiguration
+     */
+    @Override
+    public PutBucketAccelerateConfigurationResponse putBucketAccelerateConfiguration(
+            PutBucketAccelerateConfigurationRequest putBucketAccelerateConfigurationRequest) throws AwsServiceException,
+            SdkClientException, S3Exception {
+
+        HttpResponseHandler<Response<PutBucketAccelerateConfigurationResponse>> responseHandler = protocolFactory
+                .createCombinedResponseHandler(PutBucketAccelerateConfigurationResponse::builder,
+                        new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(putBucketAccelerateConfigurationRequest,
+                this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration,
+                putBucketAccelerateConfigurationRequest.overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+                .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "PutBucketAccelerateConfiguration");
+
+            return clientHandler
+                    .execute(new ClientExecutionParams<PutBucketAccelerateConfigurationRequest, PutBucketAccelerateConfigurationResponse>()
+                            .withOperationName("PutBucketAccelerateConfiguration")
+                            .withProtocolMetadata(protocolMetadata)
+                            .withCombinedResponseHandler(responseHandler)
+                            .withMetricCollector(apiCallMetricCollector)
+                            .withRequestConfiguration(clientConfiguration)
+                            .withInput(putBucketAccelerateConfigurationRequest)
+                            .putExecutionAttribute(
+                                    SdkInternalExecutionAttribute.HTTP_CHECKSUM,
+                                    HttpChecksum
+                                            .builder()
+                                            .requestChecksumRequired(false)
+                                            .isRequestStreaming(false)
+                                            .requestAlgorithm(putBucketAccelerateConfigurationRequest.checksumAlgorithmAsString())
+                                            .requestAlgorithmHeader("x-amz-sdk-checksum-algorithm").build())
+                            .withMarshaller(new PutBucketAccelerateConfigurationRequestMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    /**
+     * <note>
+     * <p>
+     * This operation is not supported for directory buckets.
+     * </p>
+     * </note>
+     * <p>
+     * Sets the permissions on an existing bucket using access control lists (ACL). For more information, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/dev/S3_ACLs_UsingACLs.html">Using ACLs</a>. To set the ACL of a
+     * bucket, you must have the <code>WRITE_ACP</code> permission.
+     * </p>
+     * <p>
+     * You can use one of the following two ways to set a bucket's permissions:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * Specify the ACL in the request body
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * Specify permissions using request headers
+     * </p>
+     * </li>
+     * </ul>
+     * <note>
+     * <p>
+     * You cannot specify access permission using both the body and the request headers.
+     * </p>
+     * </note>
+     * <p>
+     * Depending on your application needs, you may choose to set the ACL on a bucket using either the request body or
+     * the headers. For example, if you have an existing application that updates a bucket ACL using the request body,
+     * then you can continue to use that approach.
+     * </p>
+     * <important>
+     * <p>
+     * If your bucket uses the bucket owner enforced setting for S3 Object Ownership, ACLs are disabled and no longer
+     * affect permissions. You must use policies to grant access to your bucket and the objects in it. Requests to set
+     * ACLs or update ACLs fail and return the <code>AccessControlListNotSupported</code> error code. Requests to read
+     * ACLs are still supported. For more information, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/about-object-ownership.html">Controlling object
+     * ownership</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * </important>
+     * <dl>
+     * <dt>Permissions</dt>
+     * <dd>
+     * <p>
+     * You can set access permissions by using one of the following methods:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * Specify a canned ACL with the <code>x-amz-acl</code> request header. Amazon S3 supports a set of predefined ACLs,
+     * known as <i>canned ACLs</i>. Each canned ACL has a predefined set of grantees and permissions. Specify the canned
+     * ACL name as the value of <code>x-amz-acl</code>. If you use this header, you cannot use other access
+     * control-specific headers in your request. For more information, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#CannedACL">Canned ACL</a>.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * Specify access permissions explicitly with the <code>x-amz-grant-read</code>, <code>x-amz-grant-read-acp</code>,
+     * <code>x-amz-grant-write-acp</code>, and <code>x-amz-grant-full-control</code> headers. When using these headers,
+     * you specify explicit access permissions and grantees (Amazon Web Services accounts or Amazon S3 groups) who will
+     * receive the permission. If you use these ACL-specific headers, you cannot use the <code>x-amz-acl</code> header
+     * to set a canned ACL. These parameters map to the set of permissions that Amazon S3 supports in an ACL. For more
+     * information, see <a href="https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html">Access Control List
+     * (ACL) Overview</a>.
+     * </p>
+     * <p>
+     * You specify each grantee as a type=value pair, where the type is one of the following:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <code>id</code> – if the value specified is the canonical user ID of an Amazon Web Services account
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <code>uri</code> – if you are granting permissions to a predefined group
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <code>emailAddress</code> – if the value specified is the email address of an Amazon Web Services account
+     * </p>
+     * <note>
+     * <p>
+     * Using email addresses to specify a grantee is only supported in the following Amazon Web Services Regions:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * US East (N. Virginia)
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * US West (N. California)
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * US West (Oregon)
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * Asia Pacific (Singapore)
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * Asia Pacific (Sydney)
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * Asia Pacific (Tokyo)
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * Europe (Ireland)
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * South America (São Paulo)
+     * </p>
+     * </li>
+     * </ul>
+     * <p>
+     * For a list of all the Amazon S3 supported Regions and endpoints, see <a
+     * href="https://docs.aws.amazon.com/general/latest/gr/rande.html#s3_region">Regions and Endpoints</a> in the Amazon
+     * Web Services General Reference.
+     * </p>
+     * </note></li>
+     * </ul>
+     * <p>
+     * For example, the following <code>x-amz-grant-write</code> header grants create, overwrite, and delete objects
+     * permission to LogDelivery group predefined by Amazon S3 and two Amazon Web Services accounts identified by their
+     * email addresses.
+     * </p>
+     * <p>
+     * <code>x-amz-grant-write: uri="http://acs.amazonaws.com/groups/s3/LogDelivery", id="111122223333", id="555566667777" </code>
+     * </p>
+     * </li>
+     * </ul>
+     * <p>
+     * You can use either a canned ACL or specify access permissions explicitly. You cannot do both.
+     * </p>
+     * </dd>
+     * <dt>Grantee Values</dt>
+     * <dd>
+     * <p>
+     * You can specify the person (grantee) to whom you're assigning access rights (using request elements) in the
+     * following ways:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * By the person's ID:
+     * </p>
+     * <p>
+     * <code>&lt;Grantee xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="CanonicalUser"&gt;&lt;ID&gt;&lt;&gt;ID&lt;&gt;&lt;/ID&gt;&lt;DisplayName&gt;&lt;&gt;GranteesEmail&lt;&gt;&lt;/DisplayName&gt; &lt;/Grantee&gt;</code>
+     * </p>
+     * <p>
+     * DisplayName is optional and ignored in the request
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * By URI:
+     * </p>
+     * <p>
+     * <code>&lt;Grantee xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="Group"&gt;&lt;URI&gt;&lt;&gt;http://acs.amazonaws.com/groups/global/AuthenticatedUsers&lt;&gt;&lt;/URI&gt;&lt;/Grantee&gt;</code>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * By Email address:
+     * </p>
+     * <p>
+     * <code>&lt;Grantee xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="AmazonCustomerByEmail"&gt;&lt;EmailAddress&gt;&lt;&gt;Grantees@email.com&lt;&gt;&lt;/EmailAddress&gt;&amp;&lt;/Grantee&gt;</code>
+     * </p>
+     * <p>
+     * The grantee is resolved to the CanonicalUser and, in a response to a GET Object acl request, appears as the
+     * CanonicalUser.
+     * </p>
+     * <note>
+     * <p>
+     * Using email addresses to specify a grantee is only supported in the following Amazon Web Services Regions:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * US East (N. Virginia)
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * US West (N. California)
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * US West (Oregon)
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * Asia Pacific (Singapore)
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * Asia Pacific (Sydney)
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * Asia Pacific (Tokyo)
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * Europe (Ireland)
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * South America (São Paulo)
+     * </p>
+     * </li>
+     * </ul>
+     * <p>
+     * For a list of all the Amazon S3 supported Regions and endpoints, see <a
+     * href="https://docs.aws.amazon.com/general/latest/gr/rande.html#s3_region">Regions and Endpoints</a> in the Amazon
+     * Web Services General Reference.
+     * </p>
+     * </note></li>
+     * </ul>
+     * </dd>
+     * </dl>
+     * <p>
+     * The following operations are related to <code>PutBucketAcl</code>:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_CreateBucket.html">CreateBucket</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteBucket.html">DeleteBucket</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetObjectAcl.html">GetObjectAcl</a>
+     * </p>
+     * </li>
+     * </ul>
+     *
+     * @param putBucketAclRequest
+     * @return Result of the PutBucketAcl operation returned by the service.
+     * @throws SdkException
+     *         Base class for all exceptions that can be thrown by the SDK (both service and client). Can be used for
+     *         catch all scenarios.
+     * @throws SdkClientException
+     *         If any client side error occurs such as an IO related failure, failure to get credentials, etc.
+     * @throws S3Exception
+     *         Base class for all service exceptions. Unknown exceptions will be thrown as an instance of this type.
+     * @sample S3Client.PutBucketAcl
+     */
+    @Override
+    public PutBucketAclResponse putBucketAcl(PutBucketAclRequest putBucketAclRequest) throws AwsServiceException,
+            SdkClientException, S3Exception {
+
+        HttpResponseHandler<Response<PutBucketAclResponse>> responseHandler = protocolFactory.createCombinedResponseHandler(
+                PutBucketAclResponse::builder, new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(putBucketAclRequest, this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration, putBucketAclRequest
+                .overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+                .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "PutBucketAcl");
+
+            return clientHandler.execute(new ClientExecutionParams<PutBucketAclRequest, PutBucketAclResponse>()
+                    .withOperationName("PutBucketAcl")
+                    .withProtocolMetadata(protocolMetadata)
+                    .withCombinedResponseHandler(responseHandler)
+                    .withMetricCollector(apiCallMetricCollector)
+                    .withRequestConfiguration(clientConfiguration)
+                    .withInput(putBucketAclRequest)
+                    .putExecutionAttribute(
+                            SdkInternalExecutionAttribute.HTTP_CHECKSUM,
+                            HttpChecksum.builder().requestChecksumRequired(true).isRequestStreaming(false)
+                                    .requestAlgorithm(putBucketAclRequest.checksumAlgorithmAsString())
+                                    .requestAlgorithmHeader("x-amz-sdk-checksum-algorithm").build())
+                    .withMarshaller(new PutBucketAclRequestMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    /**
+     * <note>
+     * <p>
+     * This operation is not supported for directory buckets.
+     * </p>
+     * </note>
+     * <p>
+     * Sets an analytics configuration for the bucket (specified by the analytics configuration ID). You can have up to
+     * 1,000 analytics configurations per bucket.
+     * </p>
+     * <p>
+     * You can choose to have storage class analysis export analysis reports sent to a comma-separated values (CSV) flat
+     * file. See the <code>DataExport</code> request element. Reports are updated daily and are based on the object
+     * filters that you configure. When selecting data export, you specify a destination bucket and an optional
+     * destination prefix where the file is written. You can export the data to a destination bucket in a different
+     * account. However, the destination bucket must be in the same Region as the bucket that you are making the PUT
+     * analytics configuration to. For more information, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/dev/analytics-storage-class.html">Amazon S3 Analytics – Storage
+     * Class Analysis</a>.
+     * </p>
+     * <important>
+     * <p>
+     * You must create a bucket policy on the destination bucket where the exported file is written to grant permissions
+     * to Amazon S3 to write objects to the bucket. For an example policy, see <a href=
+     * "https://docs.aws.amazon.com/AmazonS3/latest/dev/example-bucket-policies.html#example-bucket-policies-use-case-9"
+     * >Granting Permissions for Amazon S3 Inventory and Storage Class Analysis</a>.
+     * </p>
+     * </important>
+     * <p>
+     * To use this operation, you must have permissions to perform the <code>s3:PutAnalyticsConfiguration</code> action.
+     * The bucket owner has this permission by default. The bucket owner can grant this permission to others. For more
+     * information about permissions, see <a href=
+     * "https://docs.aws.amazon.com/AmazonS3/latest/userguide/using-with-s3-actions.html#using-with-s3-actions-related-to-bucket-subresources"
+     * >Permissions Related to Bucket Subresource Operations</a> and <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-access-control.html">Managing Access Permissions
+     * to Your Amazon S3 Resources</a>.
+     * </p>
+     * <p>
+     * <code>PutBucketAnalyticsConfiguration</code> has the following special errors:
+     * </p>
+     * <ul>
+     * <li>
+     * <ul>
+     * <li>
+     * <p>
+     * <i>HTTP Error: HTTP 400 Bad Request</i>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <i>Code: InvalidArgument</i>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <i>Cause: Invalid argument.</i>
+     * </p>
+     * </li>
+     * </ul>
+     * </li>
+     * <li>
+     * <ul>
+     * <li>
+     * <p>
+     * <i>HTTP Error: HTTP 400 Bad Request</i>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <i>Code: TooManyConfigurations</i>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <i>Cause: You are attempting to create a new configuration but have already reached the 1,000-configuration
+     * limit.</i>
+     * </p>
+     * </li>
+     * </ul>
+     * </li>
+     * <li>
+     * <ul>
+     * <li>
+     * <p>
+     * <i>HTTP Error: HTTP 403 Forbidden</i>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <i>Code: AccessDenied</i>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <i>Cause: You are not the owner of the specified bucket, or you do not have the s3:PutAnalyticsConfiguration
+     * bucket permission to set the configuration on the bucket.</i>
+     * </p>
+     * </li>
+     * </ul>
+     * </li>
+     * </ul>
+     * <p>
+     * The following operations are related to <code>PutBucketAnalyticsConfiguration</code>:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketAnalyticsConfiguration.html">
+     * GetBucketAnalyticsConfiguration</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteBucketAnalyticsConfiguration.html">
+     * DeleteBucketAnalyticsConfiguration</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListBucketAnalyticsConfigurations.html">
+     * ListBucketAnalyticsConfigurations</a>
+     * </p>
+     * </li>
+     * </ul>
+     *
+     * @param putBucketAnalyticsConfigurationRequest
+     * @return Result of the PutBucketAnalyticsConfiguration operation returned by the service.
+     * @throws SdkException
+     *         Base class for all exceptions that can be thrown by the SDK (both service and client). Can be used for
+     *         catch all scenarios.
+     * @throws SdkClientException
+     *         If any client side error occurs such as an IO related failure, failure to get credentials, etc.
+     * @throws S3Exception
+     *         Base class for all service exceptions. Unknown exceptions will be thrown as an instance of this type.
+     * @sample S3Client.PutBucketAnalyticsConfiguration
+     */
+    @Override
+    public PutBucketAnalyticsConfigurationResponse putBucketAnalyticsConfiguration(
+            PutBucketAnalyticsConfigurationRequest putBucketAnalyticsConfigurationRequest) throws AwsServiceException,
+            SdkClientException, S3Exception {
+
+        HttpResponseHandler<Response<PutBucketAnalyticsConfigurationResponse>> responseHandler = protocolFactory
+                .createCombinedResponseHandler(PutBucketAnalyticsConfigurationResponse::builder,
+                        new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(putBucketAnalyticsConfigurationRequest,
+                this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration,
+                putBucketAnalyticsConfigurationRequest.overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+                .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "PutBucketAnalyticsConfiguration");
+
+            return clientHandler
+                    .execute(new ClientExecutionParams<PutBucketAnalyticsConfigurationRequest, PutBucketAnalyticsConfigurationResponse>()
+                            .withOperationName("PutBucketAnalyticsConfiguration").withProtocolMetadata(protocolMetadata)
+                            .withCombinedResponseHandler(responseHandler).withMetricCollector(apiCallMetricCollector)
+                            .withRequestConfiguration(clientConfiguration).withInput(putBucketAnalyticsConfigurationRequest)
+                            .withMarshaller(new PutBucketAnalyticsConfigurationRequestMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    /**
+     * <note>
+     * <p>
+     * This operation is not supported for directory buckets.
+     * </p>
+     * </note>
+     * <p>
+     * Sets the <code>cors</code> configuration for your bucket. If the configuration exists, Amazon S3 replaces it.
+     * </p>
+     * <p>
+     * To use this operation, you must be allowed to perform the <code>s3:PutBucketCORS</code> action. By default, the
+     * bucket owner has this permission and can grant it to others.
+     * </p>
+     * <p>
+     * You set this configuration on a bucket so that the bucket can service cross-origin requests. For example, you
+     * might want to enable a request whose origin is <code>http://www.example.com</code> to access your Amazon S3
+     * bucket at <code>my.example.bucket.com</code> by using the browser's <code>XMLHttpRequest</code> capability.
+     * </p>
+     * <p>
+     * To enable cross-origin resource sharing (CORS) on a bucket, you add the <code>cors</code> subresource to the
+     * bucket. The <code>cors</code> subresource is an XML document in which you configure rules that identify origins
+     * and the HTTP methods that can be executed on your bucket. The document is limited to 64 KB in size.
+     * </p>
+     * <p>
+     * When Amazon S3 receives a cross-origin request (or a pre-flight OPTIONS request) against a bucket, it evaluates
+     * the <code>cors</code> configuration on the bucket and uses the first <code>CORSRule</code> rule that matches the
+     * incoming browser request to enable a cross-origin request. For a rule to match, the following conditions must be
+     * met:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * The request's <code>Origin</code> header must match <code>AllowedOrigin</code> elements.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * The request method (for example, GET, PUT, HEAD, and so on) or the <code>Access-Control-Request-Method</code>
+     * header in case of a pre-flight <code>OPTIONS</code> request must be one of the <code>AllowedMethod</code>
+     * elements.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * Every header specified in the <code>Access-Control-Request-Headers</code> request header of a pre-flight request
+     * must match an <code>AllowedHeader</code> element.
+     * </p>
+     * </li>
+     * </ul>
+     * <p>
+     * For more information about CORS, go to <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/dev/cors.html">Enabling Cross-Origin Resource Sharing</a> in
+     * the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * <p>
+     * The following operations are related to <code>PutBucketCors</code>:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketCors.html">GetBucketCors</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteBucketCors.html">DeleteBucketCors</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/RESTOPTIONSobject.html">RESTOPTIONSobject</a>
+     * </p>
+     * </li>
+     * </ul>
+     *
+     * @param putBucketCorsRequest
+     * @return Result of the PutBucketCors operation returned by the service.
+     * @throws SdkException
+     *         Base class for all exceptions that can be thrown by the SDK (both service and client). Can be used for
+     *         catch all scenarios.
+     * @throws SdkClientException
+     *         If any client side error occurs such as an IO related failure, failure to get credentials, etc.
+     * @throws S3Exception
+     *         Base class for all service exceptions. Unknown exceptions will be thrown as an instance of this type.
+     * @sample S3Client.PutBucketCors
+     */
+    @Override
+    public PutBucketCorsResponse putBucketCors(PutBucketCorsRequest putBucketCorsRequest) throws AwsServiceException,
+            SdkClientException, S3Exception {
+
+        HttpResponseHandler<Response<PutBucketCorsResponse>> responseHandler = protocolFactory.createCombinedResponseHandler(
+                PutBucketCorsResponse::builder, new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(putBucketCorsRequest, this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration, putBucketCorsRequest
+                .overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+                .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "PutBucketCors");
+
+            return clientHandler.execute(new ClientExecutionParams<PutBucketCorsRequest, PutBucketCorsResponse>()
+                    .withOperationName("PutBucketCors")
+                    .withProtocolMetadata(protocolMetadata)
+                    .withCombinedResponseHandler(responseHandler)
+                    .withMetricCollector(apiCallMetricCollector)
+                    .withRequestConfiguration(clientConfiguration)
+                    .withInput(putBucketCorsRequest)
+                    .putExecutionAttribute(
+                            SdkInternalExecutionAttribute.HTTP_CHECKSUM,
+                            HttpChecksum.builder().requestChecksumRequired(true).isRequestStreaming(false)
+                                    .requestAlgorithm(putBucketCorsRequest.checksumAlgorithmAsString())
+                                    .requestAlgorithmHeader("x-amz-sdk-checksum-algorithm").build())
+                    .withMarshaller(new PutBucketCorsRequestMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    /**
+     * <p>
+     * This operation configures default encryption and Amazon S3 Bucket Keys for an existing bucket.
+     * </p>
+     * <note>
+     * <p>
+     * <b>Directory buckets </b> - For directory buckets, you must make requests for this API operation to the Regional
+     * endpoint. These endpoints support path-style requests in the format
+     * <code>https://s3express-control.<i>region-code</i>.amazonaws.com/<i>bucket-name</i> </code>. Virtual-hosted-style
+     * requests aren't supported. For more information about endpoints in Availability Zones, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/endpoint-directory-buckets-AZ.html">Regional and
+     * Zonal endpoints for directory buckets in Availability Zones</a> in the <i>Amazon S3 User Guide</i>. For more
+     * information about endpoints in Local Zones, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-lzs-for-directory-buckets.html">Concepts for
+     * directory buckets in Local Zones</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * </note>
+     * <p>
+     * By default, all buckets have a default encryption configuration that uses server-side encryption with Amazon S3
+     * managed keys (SSE-S3).
+     * </p>
+     * <note>
+     * <ul>
+     * <li>
+     * <p>
+     * <b>General purpose buckets</b>
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * You can optionally configure default encryption for a bucket by using server-side encryption with Key Management
+     * Service (KMS) keys (SSE-KMS) or dual-layer server-side encryption with Amazon Web Services KMS keys (DSSE-KMS).
+     * If you specify default encryption by using SSE-KMS, you can also configure <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/dev/bucket-key.html">Amazon S3 Bucket Keys</a>. For information
+     * about the bucket default encryption feature, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/dev/bucket-encryption.html">Amazon S3 Bucket Default
+     * Encryption</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * If you use PutBucketEncryption to set your <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/dev/bucket-encryption.html">default bucket encryption</a> to
+     * SSE-KMS, you should verify that your KMS key ID is correct. Amazon S3 doesn't validate the KMS key ID provided in
+     * PutBucketEncryption requests.
+     * </p>
+     * </li>
+     * </ul>
+     * </li>
+     * <li>
+     * <p>
+     * <b>Directory buckets </b> - You can optionally configure default encryption for a bucket by using server-side
+     * encryption with Key Management Service (KMS) keys (SSE-KMS).
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * We recommend that the bucket's default encryption uses the desired encryption configuration and you don't
+     * override the bucket default encryption in your <code>CreateSession</code> requests or <code>PUT</code> object
+     * requests. Then, new objects are automatically encrypted with the desired encryption settings. For more
+     * information about the encryption overriding behaviors in directory buckets, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-express-specifying-kms-encryption.html">Specifying
+     * server-side encryption with KMS for new object uploads</a>.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * Your SSE-KMS configuration can only support 1 <a
+     * href="https://docs.aws.amazon.com/kms/latest/developerguide/concepts.html#customer-cmk">customer managed key</a>
+     * per directory bucket's lifetime. The <a
+     * href="https://docs.aws.amazon.com/kms/latest/developerguide/concepts.html#aws-managed-cmk">Amazon Web Services
+     * managed key</a> (<code>aws/s3</code>) isn't supported.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * S3 Bucket Keys are always enabled for <code>GET</code> and <code>PUT</code> operations in a directory bucket and
+     * can’t be disabled. S3 Bucket Keys aren't supported, when you copy SSE-KMS encrypted objects from general purpose
+     * buckets to directory buckets, from directory buckets to general purpose buckets, or between directory buckets,
+     * through <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_CopyObject.html">CopyObject</a>, <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_UploadPartCopy.html">UploadPartCopy</a>, <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/directory-buckets-objects-Batch-Ops">the Copy
+     * operation in Batch Operations</a>, or <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/create-import-job">the import jobs</a>. In this case,
+     * Amazon S3 makes a call to KMS every time a copy request is made for a KMS-encrypted object.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * When you specify an <a
+     * href="https://docs.aws.amazon.com/kms/latest/developerguide/concepts.html#customer-cmk">KMS customer managed
+     * key</a> for encryption in your directory bucket, only use the key ID or key ARN. The key alias format of the KMS
+     * key isn't supported.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * For directory buckets, if you use PutBucketEncryption to set your <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/dev/bucket-encryption.html">default bucket encryption</a> to
+     * SSE-KMS, Amazon S3 validates the KMS key ID provided in PutBucketEncryption requests.
+     * </p>
+     * </li>
+     * </ul>
+     * </li>
+     * </ul>
+     * </note> <important>
+     * <p>
+     * If you're specifying a customer managed KMS key, we recommend using a fully qualified KMS key ARN. If you use a
+     * KMS key alias instead, then KMS resolves the key within the requester’s account. This behavior can result in data
+     * that's encrypted with a KMS key that belongs to the requester, and not the bucket owner.
+     * </p>
+     * <p>
+     * Also, this action requires Amazon Web Services Signature Version 4. For more information, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/API/sig-v4-authenticating-requests.html"> Authenticating
+     * Requests (Amazon Web Services Signature Version 4)</a>.
+     * </p>
+     * </important>
+     * <dl>
+     * <dt>Permissions</dt>
+     * <dd>
+     * <ul>
+     * <li>
+     * <p>
+     * <b>General purpose bucket permissions</b> - The <code>s3:PutEncryptionConfiguration</code> permission is required
+     * in a policy. The bucket owner has this permission by default. The bucket owner can grant this permission to
+     * others. For more information about permissions, see <a href=
+     * "https://docs.aws.amazon.com/AmazonS3/latest/userguide/using-with-s3-actions.html#using-with-s3-actions-related-to-bucket-subresources"
+     * >Permissions Related to Bucket Operations</a> and <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-access-control.html">Managing Access Permissions
+     * to Your Amazon S3 Resources</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <b>Directory bucket permissions</b> - To grant access to this API operation, you must have the
+     * <code>s3express:PutEncryptionConfiguration</code> permission in an IAM identity-based policy instead of a bucket
+     * policy. Cross-account access to this API operation isn't supported. This operation can only be performed by the
+     * Amazon Web Services account that owns the resource. For more information about directory bucket policies and
+     * permissions, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-express-security-iam.html">Amazon Web Services
+     * Identity and Access Management (IAM) for S3 Express One Zone</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * <p>
+     * To set a directory bucket default encryption with SSE-KMS, you must also have the
+     * <code>kms:GenerateDataKey</code> and the <code>kms:Decrypt</code> permissions in IAM identity-based policies and
+     * KMS key policies for the target KMS key.
+     * </p>
+     * </li>
+     * </ul>
+     * </dd>
+     * <dt>HTTP Host header syntax</dt>
+     * <dd>
+     * <p>
+     * <b>Directory buckets </b> - The HTTP Host header syntax is
+     * <code>s3express-control.<i>region-code</i>.amazonaws.com</code>.
+     * </p>
+     * </dd>
+     * </dl>
+     * <p>
+     * The following operations are related to <code>PutBucketEncryption</code>:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketEncryption.html">GetBucketEncryption</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteBucketEncryption.html">DeleteBucketEncryption</a>
+     * </p>
+     * </li>
+     * </ul>
+     *
+     * @param putBucketEncryptionRequest
+     * @return Result of the PutBucketEncryption operation returned by the service.
+     * @throws SdkException
+     *         Base class for all exceptions that can be thrown by the SDK (both service and client). Can be used for
+     *         catch all scenarios.
+     * @throws SdkClientException
+     *         If any client side error occurs such as an IO related failure, failure to get credentials, etc.
+     * @throws S3Exception
+     *         Base class for all service exceptions. Unknown exceptions will be thrown as an instance of this type.
+     * @sample S3Client.PutBucketEncryption
+     */
+    @Override
+    public PutBucketEncryptionResponse putBucketEncryption(PutBucketEncryptionRequest putBucketEncryptionRequest)
+            throws AwsServiceException, SdkClientException, S3Exception {
+
+        HttpResponseHandler<Response<PutBucketEncryptionResponse>> responseHandler = protocolFactory
+                .createCombinedResponseHandler(PutBucketEncryptionResponse::builder,
+                        new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(putBucketEncryptionRequest,
+                this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration, putBucketEncryptionRequest
+                .overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+                .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "PutBucketEncryption");
+
+            return clientHandler.execute(new ClientExecutionParams<PutBucketEncryptionRequest, PutBucketEncryptionResponse>()
+                    .withOperationName("PutBucketEncryption")
+                    .withProtocolMetadata(protocolMetadata)
+                    .withCombinedResponseHandler(responseHandler)
+                    .withMetricCollector(apiCallMetricCollector)
+                    .withRequestConfiguration(clientConfiguration)
+                    .withInput(putBucketEncryptionRequest)
+                    .putExecutionAttribute(
+                            SdkInternalExecutionAttribute.HTTP_CHECKSUM,
+                            HttpChecksum.builder().requestChecksumRequired(true).isRequestStreaming(false)
+                                    .requestAlgorithm(putBucketEncryptionRequest.checksumAlgorithmAsString())
+                                    .requestAlgorithmHeader("x-amz-sdk-checksum-algorithm").build())
+                    .withMarshaller(new PutBucketEncryptionRequestMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    /**
+     * <note>
+     * <p>
+     * This operation is not supported for directory buckets.
+     * </p>
+     * </note>
+     * <p>
+     * Puts a S3 Intelligent-Tiering configuration to the specified bucket. You can have up to 1,000 S3
+     * Intelligent-Tiering configurations per bucket.
+     * </p>
+     * <p>
+     * The S3 Intelligent-Tiering storage class is designed to optimize storage costs by automatically moving data to
+     * the most cost-effective storage access tier, without performance impact or operational overhead. S3
+     * Intelligent-Tiering delivers automatic cost savings in three low latency and high throughput access tiers. To get
+     * the lowest storage cost on data that can be accessed in minutes to hours, you can choose to activate additional
+     * archiving capabilities.
+     * </p>
+     * <p>
+     * The S3 Intelligent-Tiering storage class is the ideal storage class for data with unknown, changing, or
+     * unpredictable access patterns, independent of object size or retention period. If the size of an object is less
+     * than 128 KB, it is not monitored and not eligible for auto-tiering. Smaller objects can be stored, but they are
+     * always charged at the Frequent Access tier rates in the S3 Intelligent-Tiering storage class.
+     * </p>
+     * <p>
+     * For more information, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/dev/storage-class-intro.html#sc-dynamic-data-access">Storage
+     * class for automatically optimizing frequently and infrequently accessed objects</a>.
+     * </p>
+     * <p>
+     * Operations related to <code>PutBucketIntelligentTieringConfiguration</code> include:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteBucketIntelligentTieringConfiguration.html">
+     * DeleteBucketIntelligentTieringConfiguration</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketIntelligentTieringConfiguration.html">
+     * GetBucketIntelligentTieringConfiguration</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListBucketIntelligentTieringConfigurations.html">
+     * ListBucketIntelligentTieringConfigurations</a>
+     * </p>
+     * </li>
+     * </ul>
+     * <note>
+     * <p>
+     * You only need S3 Intelligent-Tiering enabled on a bucket if you want to automatically move objects stored in the
+     * S3 Intelligent-Tiering storage class to the Archive Access or Deep Archive Access tier.
+     * </p>
+     * </note>
+     * <p>
+     * <code>PutBucketIntelligentTieringConfiguration</code> has the following special errors:
+     * </p>
+     * <dl>
+     * <dt>HTTP 400 Bad Request Error</dt>
+     * <dd>
+     * <p>
+     * <i>Code:</i> InvalidArgument
+     * </p>
+     * <p>
+     * <i>Cause:</i> Invalid Argument
+     * </p>
+     * </dd>
+     * <dt>HTTP 400 Bad Request Error</dt>
+     * <dd>
+     * <p>
+     * <i>Code:</i> TooManyConfigurations
+     * </p>
+     * <p>
+     * <i>Cause:</i> You are attempting to create a new configuration but have already reached the 1,000-configuration
+     * limit.
+     * </p>
+     * </dd>
+     * <dt>HTTP 403 Forbidden Error</dt>
+     * <dd>
+     * <p>
+     * <i>Cause:</i> You are not the owner of the specified bucket, or you do not have the
+     * <code>s3:PutIntelligentTieringConfiguration</code> bucket permission to set the configuration on the bucket.
+     * </p>
+     * </dd>
+     * </dl>
+     *
+     * @param putBucketIntelligentTieringConfigurationRequest
+     * @return Result of the PutBucketIntelligentTieringConfiguration operation returned by the service.
+     * @throws SdkException
+     *         Base class for all exceptions that can be thrown by the SDK (both service and client). Can be used for
+     *         catch all scenarios.
+     * @throws SdkClientException
+     *         If any client side error occurs such as an IO related failure, failure to get credentials, etc.
+     * @throws S3Exception
+     *         Base class for all service exceptions. Unknown exceptions will be thrown as an instance of this type.
+     * @sample S3Client.PutBucketIntelligentTieringConfiguration
+     */
+    @Override
+    public PutBucketIntelligentTieringConfigurationResponse putBucketIntelligentTieringConfiguration(
+            PutBucketIntelligentTieringConfigurationRequest putBucketIntelligentTieringConfigurationRequest)
+            throws AwsServiceException, SdkClientException, S3Exception {
+
+        HttpResponseHandler<Response<PutBucketIntelligentTieringConfigurationResponse>> responseHandler = protocolFactory
+                .createCombinedResponseHandler(PutBucketIntelligentTieringConfigurationResponse::builder,
+                        new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(
+                putBucketIntelligentTieringConfigurationRequest, this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration,
+                putBucketIntelligentTieringConfigurationRequest.overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+                .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "PutBucketIntelligentTieringConfiguration");
+
+            return clientHandler
+                    .execute(new ClientExecutionParams<PutBucketIntelligentTieringConfigurationRequest, PutBucketIntelligentTieringConfigurationResponse>()
+                            .withOperationName("PutBucketIntelligentTieringConfiguration").withProtocolMetadata(protocolMetadata)
+                            .withCombinedResponseHandler(responseHandler).withMetricCollector(apiCallMetricCollector)
+                            .withRequestConfiguration(clientConfiguration)
+                            .withInput(putBucketIntelligentTieringConfigurationRequest)
+                            .withMarshaller(new PutBucketIntelligentTieringConfigurationRequestMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    /**
+     * <note>
+     * <p>
+     * This operation is not supported for directory buckets.
+     * </p>
+     * </note>
+     * <p>
+     * This implementation of the <code>PUT</code> action adds an inventory configuration (identified by the inventory
+     * ID) to the bucket. You can have up to 1,000 inventory configurations per bucket.
+     * </p>
+     * <p>
+     * Amazon S3 inventory generates inventories of the objects in the bucket on a daily or weekly basis, and the
+     * results are published to a flat file. The bucket that is inventoried is called the <i>source</i> bucket, and the
+     * bucket where the inventory flat file is stored is called the <i>destination</i> bucket. The <i>destination</i>
+     * bucket must be in the same Amazon Web Services Region as the <i>source</i> bucket.
+     * </p>
+     * <p>
+     * When you configure an inventory for a <i>source</i> bucket, you specify the <i>destination</i> bucket where you
+     * want the inventory to be stored, and whether to generate the inventory daily or weekly. You can also configure
+     * what object metadata to include and whether to inventory all object versions or only current versions. For more
+     * information, see <a href="https://docs.aws.amazon.com/AmazonS3/latest/dev/storage-inventory.html">Amazon S3
+     * Inventory</a> in the Amazon S3 User Guide.
+     * </p>
+     * <important>
+     * <p>
+     * You must create a bucket policy on the <i>destination</i> bucket to grant permissions to Amazon S3 to write
+     * objects to the bucket in the defined location. For an example policy, see <a href=
+     * "https://docs.aws.amazon.com/AmazonS3/latest/dev/example-bucket-policies.html#example-bucket-policies-use-case-9"
+     * > Granting Permissions for Amazon S3 Inventory and Storage Class Analysis</a>.
+     * </p>
+     * </important>
+     * <dl>
+     * <dt>Permissions</dt>
+     * <dd>
+     * <p>
+     * To use this operation, you must have permission to perform the <code>s3:PutInventoryConfiguration</code> action.
+     * The bucket owner has this permission by default and can grant this permission to others.
+     * </p>
+     * <p>
+     * The <code>s3:PutInventoryConfiguration</code> permission allows a user to create an <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-inventory.html">S3 Inventory</a> report that
+     * includes all object metadata fields available and to specify the destination bucket to store the inventory. A
+     * user with read access to objects in the destination bucket can also access all object metadata fields that are
+     * available in the inventory report.
+     * </p>
+     * <p>
+     * To restrict access to an inventory report, see <a href=
+     * "https://docs.aws.amazon.com/AmazonS3/latest/userguide/example-bucket-policies.html#example-bucket-policies-use-case-10"
+     * >Restricting access to an Amazon S3 Inventory report</a> in the <i>Amazon S3 User Guide</i>. For more information
+     * about the metadata fields available in S3 Inventory, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-inventory.html#storage-inventory-contents"
+     * >Amazon S3 Inventory lists</a> in the <i>Amazon S3 User Guide</i>. For more information about permissions, see <a
+     * href=
+     * "https://docs.aws.amazon.com/AmazonS3/latest/userguide/using-with-s3-actions.html#using-with-s3-actions-related-to-bucket-subresources"
+     * >Permissions related to bucket subresource operations</a> and <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-access-control.html">Identity and access
+     * management in Amazon S3</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * </dd>
+     * </dl>
+     * <p>
+     * <code>PutBucketInventoryConfiguration</code> has the following special errors:
+     * </p>
+     * <dl>
+     * <dt>HTTP 400 Bad Request Error</dt>
+     * <dd>
+     * <p>
+     * <i>Code:</i> InvalidArgument
+     * </p>
+     * <p>
+     * <i>Cause:</i> Invalid Argument
+     * </p>
+     * </dd>
+     * <dt>HTTP 400 Bad Request Error</dt>
+     * <dd>
+     * <p>
+     * <i>Code:</i> TooManyConfigurations
+     * </p>
+     * <p>
+     * <i>Cause:</i> You are attempting to create a new configuration but have already reached the 1,000-configuration
+     * limit.
+     * </p>
+     * </dd>
+     * <dt>HTTP 403 Forbidden Error</dt>
+     * <dd>
+     * <p>
+     * <i>Cause:</i> You are not the owner of the specified bucket, or you do not have the
+     * <code>s3:PutInventoryConfiguration</code> bucket permission to set the configuration on the bucket.
+     * </p>
+     * </dd>
+     * </dl>
+     * <p>
+     * The following operations are related to <code>PutBucketInventoryConfiguration</code>:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketInventoryConfiguration.html">
+     * GetBucketInventoryConfiguration</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteBucketInventoryConfiguration.html">
+     * DeleteBucketInventoryConfiguration</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListBucketInventoryConfigurations.html">
+     * ListBucketInventoryConfigurations</a>
+     * </p>
+     * </li>
+     * </ul>
+     *
+     * @param putBucketInventoryConfigurationRequest
+     * @return Result of the PutBucketInventoryConfiguration operation returned by the service.
+     * @throws SdkException
+     *         Base class for all exceptions that can be thrown by the SDK (both service and client). Can be used for
+     *         catch all scenarios.
+     * @throws SdkClientException
+     *         If any client side error occurs such as an IO related failure, failure to get credentials, etc.
+     * @throws S3Exception
+     *         Base class for all service exceptions. Unknown exceptions will be thrown as an instance of this type.
+     * @sample S3Client.PutBucketInventoryConfiguration
+     */
+    @Override
+    public PutBucketInventoryConfigurationResponse putBucketInventoryConfiguration(
+            PutBucketInventoryConfigurationRequest putBucketInventoryConfigurationRequest) throws AwsServiceException,
+            SdkClientException, S3Exception {
+
+        HttpResponseHandler<Response<PutBucketInventoryConfigurationResponse>> responseHandler = protocolFactory
+                .createCombinedResponseHandler(PutBucketInventoryConfigurationResponse::builder,
+                        new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(putBucketInventoryConfigurationRequest,
+                this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration,
+                putBucketInventoryConfigurationRequest.overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+                .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "PutBucketInventoryConfiguration");
+
+            return clientHandler
+                    .execute(new ClientExecutionParams<PutBucketInventoryConfigurationRequest, PutBucketInventoryConfigurationResponse>()
+                            .withOperationName("PutBucketInventoryConfiguration").withProtocolMetadata(protocolMetadata)
+                            .withCombinedResponseHandler(responseHandler).withMetricCollector(apiCallMetricCollector)
+                            .withRequestConfiguration(clientConfiguration).withInput(putBucketInventoryConfigurationRequest)
+                            .withMarshaller(new PutBucketInventoryConfigurationRequestMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    /**
+     * <p>
+     * Creates a new lifecycle configuration for the bucket or replaces an existing lifecycle configuration. Keep in
+     * mind that this will overwrite an existing lifecycle configuration, so if you want to retain any configuration
+     * details, they must be included in the new lifecycle configuration. For information about lifecycle configuration,
+     * see <a href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lifecycle-mgmt.html">Managing your
+     * storage lifecycle</a>.
+     * </p>
+     * <note>
+     * <p>
+     * Bucket lifecycle configuration now supports specifying a lifecycle rule using an object key name prefix, one or
+     * more object tags, object size, or any combination of these. Accordingly, this section describes the latest API.
+     * The previous version of the API supported filtering based only on an object key name prefix, which is supported
+     * for backward compatibility. For the related API description, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketLifecycle.html">PutBucketLifecycle</a>.
+     * </p>
+     * </note>
+     * <dl>
+     * <dt>Rules</dt>
+     * <dt>Permissions</dt>
+     * <dt>HTTP Host header syntax</dt>
+     * <dd>
+     * <p>
+     * You specify the lifecycle configuration in your request body. The lifecycle configuration is specified as XML
+     * consisting of one or more rules. An Amazon S3 Lifecycle configuration can have up to 1,000 rules. This limit is
+     * not adjustable.
+     * </p>
+     * <p>
+     * Bucket lifecycle configuration supports specifying a lifecycle rule using an object key name prefix, one or more
+     * object tags, object size, or any combination of these. Accordingly, this section describes the latest API. The
+     * previous version of the API supported filtering based only on an object key name prefix, which is supported for
+     * backward compatibility for general purpose buckets. For the related API description, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketLifecycle.html">PutBucketLifecycle</a>.
+     * </p>
+     * <note>
+     * <p>
+     * Lifecyle configurations for directory buckets only support expiring objects and cancelling multipart uploads.
+     * Expiring of versioned objects,transitions and tag filters are not supported.
+     * </p>
+     * </note>
+     * <p>
+     * A lifecycle rule consists of the following:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * A filter identifying a subset of objects to which the rule applies. The filter can be based on a key name prefix,
+     * object tags, object size, or any combination of these.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * A status indicating whether the rule is in effect.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * One or more lifecycle transition and expiration actions that you want Amazon S3 to perform on the objects
+     * identified by the filter. If the state of your bucket is versioning-enabled or versioning-suspended, you can have
+     * many versions of the same object (one current version and zero or more noncurrent versions). Amazon S3 provides
+     * predefined actions that you can specify for current and noncurrent object versions.
+     * </p>
+     * </li>
+     * </ul>
+     * <p>
+     * For more information, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lifecycle-mgmt.html">Object Lifecycle Management</a>
+     * and <a href="https://docs.aws.amazon.com/AmazonS3/latest/dev/intro-lifecycle-rules.html">Lifecycle Configuration
+     * Elements</a>.
+     * </p>
+     * </dd>
+     * <dd>
+     * <ul>
+     * <li>
+     * <p>
+     * <b>General purpose bucket permissions</b> - By default, all Amazon S3 resources are private, including buckets,
+     * objects, and related subresources (for example, lifecycle configuration and website configuration). Only the
+     * resource owner (that is, the Amazon Web Services account that created it) can access the resource. The resource
+     * owner can optionally grant access permissions to others by writing an access policy. For this operation, a user
+     * must have the <code>s3:PutLifecycleConfiguration</code> permission.
+     * </p>
+     * <p>
+     * You can also explicitly deny permissions. An explicit deny also supersedes any other permissions. If you want to
+     * block users or accounts from removing or deleting objects from your bucket, you must deny them permissions for
+     * the following actions:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <code>s3:DeleteObject</code>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <code>s3:DeleteObjectVersion</code>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <code>s3:PutLifecycleConfiguration</code>
+     * </p>
+     * <p>
+     * For more information about permissions, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-access-control.html">Managing Access Permissions
+     * to Your Amazon S3 Resources</a>.
+     * </p>
+     * </li>
+     * </ul>
+     * </li>
+     * </ul>
+     * <ul>
+     * <li>
+     * <p>
+     * <b>Directory bucket permissions</b> - You must have the <code>s3express:PutLifecycleConfiguration</code>
+     * permission in an IAM identity-based policy to use this operation. Cross-account access to this API operation
+     * isn't supported. The resource owner can optionally grant access permissions to others by creating a role or user
+     * for them as long as they are within the same account as the owner and resource.
+     * </p>
+     * <p>
+     * For more information about directory bucket policies and permissions, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-express-security-iam.html">Authorizing Regional
+     * endpoint APIs with IAM</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * <note>
+     * <p>
+     * <b>Directory buckets </b> - For directory buckets, you must make requests for this API operation to the Regional
+     * endpoint. These endpoints support path-style requests in the format
+     * <code>https://s3express-control.<i>region-code</i>.amazonaws.com/<i>bucket-name</i> </code>. Virtual-hosted-style
+     * requests aren't supported. For more information about endpoints in Availability Zones, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/endpoint-directory-buckets-AZ.html">Regional and
+     * Zonal endpoints for directory buckets in Availability Zones</a> in the <i>Amazon S3 User Guide</i>. For more
+     * information about endpoints in Local Zones, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-lzs-for-directory-buckets.html">Concepts for
+     * directory buckets in Local Zones</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * </note></li>
+     * </ul>
+     * </dd>
+     * <dd>
+     * <p>
+     * <b>Directory buckets </b> - The HTTP Host header syntax is
+     * <code>s3express-control.<i>region</i>.amazonaws.com</code>.
+     * </p>
+     * <p>
+     * The following operations are related to <code>PutBucketLifecycleConfiguration</code>:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketLifecycleConfiguration.html">
+     * GetBucketLifecycleConfiguration</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteBucketLifecycle.html">DeleteBucketLifecycle</a>
+     * </p>
+     * </li>
+     * </ul>
+     * </dd>
+     * </dl>
+     *
+     * @param putBucketLifecycleConfigurationRequest
+     * @return Result of the PutBucketLifecycleConfiguration operation returned by the service.
+     * @throws SdkException
+     *         Base class for all exceptions that can be thrown by the SDK (both service and client). Can be used for
+     *         catch all scenarios.
+     * @throws SdkClientException
+     *         If any client side error occurs such as an IO related failure, failure to get credentials, etc.
+     * @throws S3Exception
+     *         Base class for all service exceptions. Unknown exceptions will be thrown as an instance of this type.
+     * @sample S3Client.PutBucketLifecycleConfiguration
+     */
+    @Override
+    public PutBucketLifecycleConfigurationResponse putBucketLifecycleConfiguration(
+            PutBucketLifecycleConfigurationRequest putBucketLifecycleConfigurationRequest) throws AwsServiceException,
+            SdkClientException, S3Exception {
+
+        HttpResponseHandler<Response<PutBucketLifecycleConfigurationResponse>> responseHandler = protocolFactory
+                .createCombinedResponseHandler(PutBucketLifecycleConfigurationResponse::builder,
+                        new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(putBucketLifecycleConfigurationRequest,
+                this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration,
+                putBucketLifecycleConfigurationRequest.overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+                .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "PutBucketLifecycleConfiguration");
+
+            return clientHandler
+                    .execute(new ClientExecutionParams<PutBucketLifecycleConfigurationRequest, PutBucketLifecycleConfigurationResponse>()
+                            .withOperationName("PutBucketLifecycleConfiguration")
+                            .withProtocolMetadata(protocolMetadata)
+                            .withCombinedResponseHandler(responseHandler)
+                            .withMetricCollector(apiCallMetricCollector)
+                            .withRequestConfiguration(clientConfiguration)
+                            .withInput(putBucketLifecycleConfigurationRequest)
+                            .putExecutionAttribute(
+                                    SdkInternalExecutionAttribute.HTTP_CHECKSUM,
+                                    HttpChecksum.builder().requestChecksumRequired(true).isRequestStreaming(false)
+                                            .requestAlgorithm(putBucketLifecycleConfigurationRequest.checksumAlgorithmAsString())
+                                            .requestAlgorithmHeader("x-amz-sdk-checksum-algorithm").build())
+                            .withMarshaller(new PutBucketLifecycleConfigurationRequestMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    /**
+     * <note>
+     * <p>
+     * This operation is not supported for directory buckets.
+     * </p>
+     * </note>
+     * <p>
+     * Set the logging parameters for a bucket and to specify permissions for who can view and modify the logging
+     * parameters. All logs are saved to buckets in the same Amazon Web Services Region as the source bucket. To set the
+     * logging status of a bucket, you must be the bucket owner.
+     * </p>
+     * <p>
+     * The bucket owner is automatically granted FULL_CONTROL to all logs. You use the <code>Grantee</code> request
+     * element to grant access to other people. The <code>Permissions</code> request element specifies the kind of
+     * access the grantee has to the logs.
+     * </p>
+     * <important>
+     * <p>
+     * If the target bucket for log delivery uses the bucket owner enforced setting for S3 Object Ownership, you can't
+     * use the <code>Grantee</code> request element to grant access to others. Permissions can only be granted using
+     * policies. For more information, see <a href=
+     * "https://docs.aws.amazon.com/AmazonS3/latest/userguide/enable-server-access-logging.html#grant-log-delivery-permissions-general"
+     * >Permissions for server access log delivery</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * </important>
+     * <dl>
+     * <dt>Grantee Values</dt>
+     * <dd>
+     * <p>
+     * You can specify the person (grantee) to whom you're assigning access rights (by using request elements) in the
+     * following ways:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * By the person's ID:
+     * </p>
+     * <p>
+     * <code>&lt;Grantee xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="CanonicalUser"&gt;&lt;ID&gt;&lt;&gt;ID&lt;&gt;&lt;/ID&gt;&lt;DisplayName&gt;&lt;&gt;GranteesEmail&lt;&gt;&lt;/DisplayName&gt; &lt;/Grantee&gt;</code>
+     * </p>
+     * <p>
+     * <code>DisplayName</code> is optional and ignored in the request.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * By Email address:
+     * </p>
+     * <p>
+     * <code> &lt;Grantee xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="AmazonCustomerByEmail"&gt;&lt;EmailAddress&gt;&lt;&gt;Grantees@email.com&lt;&gt;&lt;/EmailAddress&gt;&lt;/Grantee&gt;</code>
+     * </p>
+     * <p>
+     * The grantee is resolved to the <code>CanonicalUser</code> and, in a response to a <code>GETObjectAcl</code>
+     * request, appears as the CanonicalUser.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * By URI:
+     * </p>
+     * <p>
+     * <code>&lt;Grantee xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="Group"&gt;&lt;URI&gt;&lt;&gt;http://acs.amazonaws.com/groups/global/AuthenticatedUsers&lt;&gt;&lt;/URI&gt;&lt;/Grantee&gt;</code>
+     * </p>
+     * </li>
+     * </ul>
+     * </dd>
+     * </dl>
+     * <p>
+     * To enable logging, you use <code>LoggingEnabled</code> and its children request elements. To disable logging, you
+     * use an empty <code>BucketLoggingStatus</code> request element:
+     * </p>
+     * <p>
+     * <code>&lt;BucketLoggingStatus xmlns="http://doc.s3.amazonaws.com/2006-03-01" /&gt;</code>
+     * </p>
+     * <p>
+     * For more information about server access logging, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/ServerLogs.html">Server Access Logging</a> in the
+     * <i>Amazon S3 User Guide</i>.
+     * </p>
+     * <p>
+     * For more information about creating a bucket, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_CreateBucket.html">CreateBucket</a>. For more
+     * information about returning the logging status of a bucket, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketLogging.html">GetBucketLogging</a>.
+     * </p>
+     * <p>
+     * The following operations are related to <code>PutBucketLogging</code>:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutObject.html">PutObject</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteBucket.html">DeleteBucket</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_CreateBucket.html">CreateBucket</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketLogging.html">GetBucketLogging</a>
+     * </p>
+     * </li>
+     * </ul>
+     *
+     * @param putBucketLoggingRequest
+     * @return Result of the PutBucketLogging operation returned by the service.
+     * @throws SdkException
+     *         Base class for all exceptions that can be thrown by the SDK (both service and client). Can be used for
+     *         catch all scenarios.
+     * @throws SdkClientException
+     *         If any client side error occurs such as an IO related failure, failure to get credentials, etc.
+     * @throws S3Exception
+     *         Base class for all service exceptions. Unknown exceptions will be thrown as an instance of this type.
+     * @sample S3Client.PutBucketLogging
+     */
+    @Override
+    public PutBucketLoggingResponse putBucketLogging(PutBucketLoggingRequest putBucketLoggingRequest) throws AwsServiceException,
+            SdkClientException, S3Exception {
+
+        HttpResponseHandler<Response<PutBucketLoggingResponse>> responseHandler = protocolFactory.createCombinedResponseHandler(
+                PutBucketLoggingResponse::builder, new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(putBucketLoggingRequest,
+                this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration, putBucketLoggingRequest
+                .overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+                .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "PutBucketLogging");
+
+            return clientHandler.execute(new ClientExecutionParams<PutBucketLoggingRequest, PutBucketLoggingResponse>()
+                    .withOperationName("PutBucketLogging")
+                    .withProtocolMetadata(protocolMetadata)
+                    .withCombinedResponseHandler(responseHandler)
+                    .withMetricCollector(apiCallMetricCollector)
+                    .withRequestConfiguration(clientConfiguration)
+                    .withInput(putBucketLoggingRequest)
+                    .putExecutionAttribute(
+                            SdkInternalExecutionAttribute.HTTP_CHECKSUM,
+                            HttpChecksum.builder().requestChecksumRequired(true).isRequestStreaming(false)
+                                    .requestAlgorithm(putBucketLoggingRequest.checksumAlgorithmAsString())
+                                    .requestAlgorithmHeader("x-amz-sdk-checksum-algorithm").build())
+                    .withMarshaller(new PutBucketLoggingRequestMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    /**
+     * <note>
+     * <p>
+     * This operation is not supported for directory buckets.
+     * </p>
+     * </note>
+     * <p>
+     * Sets a metrics configuration (specified by the metrics configuration ID) for the bucket. You can have up to 1,000
+     * metrics configurations per bucket. If you're updating an existing metrics configuration, note that this is a full
+     * replacement of the existing metrics configuration. If you don't include the elements you want to keep, they are
+     * erased.
+     * </p>
+     * <p>
+     * To use this operation, you must have permissions to perform the <code>s3:PutMetricsConfiguration</code> action.
+     * The bucket owner has this permission by default. The bucket owner can grant this permission to others. For more
+     * information about permissions, see <a href=
+     * "https://docs.aws.amazon.com/AmazonS3/latest/userguide/using-with-s3-actions.html#using-with-s3-actions-related-to-bucket-subresources"
+     * >Permissions Related to Bucket Subresource Operations</a> and <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-access-control.html">Managing Access Permissions
+     * to Your Amazon S3 Resources</a>.
+     * </p>
+     * <p>
+     * For information about CloudWatch request metrics for Amazon S3, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/dev/cloudwatch-monitoring.html">Monitoring Metrics with Amazon
+     * CloudWatch</a>.
+     * </p>
+     * <p>
+     * The following operations are related to <code>PutBucketMetricsConfiguration</code>:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteBucketMetricsConfiguration.html">
+     * DeleteBucketMetricsConfiguration</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketMetricsConfiguration.html">
+     * GetBucketMetricsConfiguration</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListBucketMetricsConfigurations.html">
+     * ListBucketMetricsConfigurations</a>
+     * </p>
+     * </li>
+     * </ul>
+     * <p>
+     * <code>PutBucketMetricsConfiguration</code> has the following special error:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * Error code: <code>TooManyConfigurations</code>
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * Description: You are attempting to create a new configuration but have already reached the 1,000-configuration
+     * limit.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * HTTP Status Code: HTTP 400 Bad Request
+     * </p>
+     * </li>
+     * </ul>
+     * </li>
+     * </ul>
+     *
+     * @param putBucketMetricsConfigurationRequest
+     * @return Result of the PutBucketMetricsConfiguration operation returned by the service.
+     * @throws SdkException
+     *         Base class for all exceptions that can be thrown by the SDK (both service and client). Can be used for
+     *         catch all scenarios.
+     * @throws SdkClientException
+     *         If any client side error occurs such as an IO related failure, failure to get credentials, etc.
+     * @throws S3Exception
+     *         Base class for all service exceptions. Unknown exceptions will be thrown as an instance of this type.
+     * @sample S3Client.PutBucketMetricsConfiguration
+     */
+    @Override
+    public PutBucketMetricsConfigurationResponse putBucketMetricsConfiguration(
+            PutBucketMetricsConfigurationRequest putBucketMetricsConfigurationRequest) throws AwsServiceException,
+            SdkClientException, S3Exception {
+
+        HttpResponseHandler<Response<PutBucketMetricsConfigurationResponse>> responseHandler = protocolFactory
+                .createCombinedResponseHandler(PutBucketMetricsConfigurationResponse::builder,
+                        new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(putBucketMetricsConfigurationRequest,
+                this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration,
+                putBucketMetricsConfigurationRequest.overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+                .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "PutBucketMetricsConfiguration");
+
+            return clientHandler
+                    .execute(new ClientExecutionParams<PutBucketMetricsConfigurationRequest, PutBucketMetricsConfigurationResponse>()
+                            .withOperationName("PutBucketMetricsConfiguration").withProtocolMetadata(protocolMetadata)
+                            .withCombinedResponseHandler(responseHandler).withMetricCollector(apiCallMetricCollector)
+                            .withRequestConfiguration(clientConfiguration).withInput(putBucketMetricsConfigurationRequest)
+                            .withMarshaller(new PutBucketMetricsConfigurationRequestMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    /**
+     * <note>
+     * <p>
+     * This operation is not supported for directory buckets.
+     * </p>
+     * </note>
+     * <p>
+     * Enables notifications of specified events for a bucket. For more information about event notifications, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/dev/NotificationHowTo.html">Configuring Event
+     * Notifications</a>.
+     * </p>
+     * <p>
+     * Using this API, you can replace an existing notification configuration. The configuration is an XML file that
+     * defines the event types that you want Amazon S3 to publish and the destination where you want Amazon S3 to
+     * publish an event notification when it detects an event of the specified type.
+     * </p>
+     * <p>
+     * By default, your bucket has no event notifications configured. That is, the notification configuration will be an
+     * empty <code>NotificationConfiguration</code>.
+     * </p>
+     * <p>
+     * <code>&lt;NotificationConfiguration&gt;</code>
+     * </p>
+     * <p>
+     * <code>&lt;/NotificationConfiguration&gt;</code>
+     * </p>
+     * <p>
+     * This action replaces the existing notification configuration with the configuration you include in the request
+     * body.
+     * </p>
+     * <p>
+     * After Amazon S3 receives this request, it first verifies that any Amazon Simple Notification Service (Amazon SNS)
+     * or Amazon Simple Queue Service (Amazon SQS) destination exists, and that the bucket owner has permission to
+     * publish to it by sending a test notification. In the case of Lambda destinations, Amazon S3 verifies that the
+     * Lambda function permissions grant Amazon S3 permission to invoke the function from the Amazon S3 bucket. For more
+     * information, see <a href="https://docs.aws.amazon.com/AmazonS3/latest/dev/NotificationHowTo.html">Configuring
+     * Notifications for Amazon S3 Events</a>.
+     * </p>
+     * <p>
+     * You can disable notifications by adding the empty NotificationConfiguration element.
+     * </p>
+     * <p>
+     * For more information about the number of event notification configurations that you can create per bucket, see <a
+     * href="https://docs.aws.amazon.com/general/latest/gr/s3.html#limits_s3">Amazon S3 service quotas</a> in <i>Amazon
+     * Web Services General Reference</i>.
+     * </p>
+     * <p>
+     * By default, only the bucket owner can configure notifications on a bucket. However, bucket owners can use a
+     * bucket policy to grant permission to other users to set this configuration with the required
+     * <code>s3:PutBucketNotification</code> permission.
+     * </p>
+     * <note>
+     * <p>
+     * The PUT notification is an atomic operation. For example, suppose your notification configuration includes SNS
+     * topic, SQS queue, and Lambda function configurations. When you send a PUT request with this configuration, Amazon
+     * S3 sends test messages to your SNS topic. If the message fails, the entire PUT action will fail, and Amazon S3
+     * will not add the configuration to your bucket.
+     * </p>
+     * </note>
+     * <p>
+     * If the configuration in the request body includes only one <code>TopicConfiguration</code> specifying only the
+     * <code>s3:ReducedRedundancyLostObject</code> event type, the response will also include the
+     * <code>x-amz-sns-test-message-id</code> header containing the message ID of the test notification sent to the
+     * topic.
+     * </p>
+     * <p>
+     * The following action is related to <code>PutBucketNotificationConfiguration</code>:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketNotificationConfiguration.html">
+     * GetBucketNotificationConfiguration</a>
+     * </p>
+     * </li>
+     * </ul>
+     *
+     * @param putBucketNotificationConfigurationRequest
+     * @return Result of the PutBucketNotificationConfiguration operation returned by the service.
+     * @throws SdkException
+     *         Base class for all exceptions that can be thrown by the SDK (both service and client). Can be used for
+     *         catch all scenarios.
+     * @throws SdkClientException
+     *         If any client side error occurs such as an IO related failure, failure to get credentials, etc.
+     * @throws S3Exception
+     *         Base class for all service exceptions. Unknown exceptions will be thrown as an instance of this type.
+     * @sample S3Client.PutBucketNotificationConfiguration
+     */
+    @Override
+    public PutBucketNotificationConfigurationResponse putBucketNotificationConfiguration(
+            PutBucketNotificationConfigurationRequest putBucketNotificationConfigurationRequest) throws AwsServiceException,
+            SdkClientException, S3Exception {
+
+        HttpResponseHandler<Response<PutBucketNotificationConfigurationResponse>> responseHandler = protocolFactory
+                .createCombinedResponseHandler(PutBucketNotificationConfigurationResponse::builder,
+                        new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(putBucketNotificationConfigurationRequest,
+                this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration,
+                putBucketNotificationConfigurationRequest.overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+                .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "PutBucketNotificationConfiguration");
+
+            return clientHandler
+                    .execute(new ClientExecutionParams<PutBucketNotificationConfigurationRequest, PutBucketNotificationConfigurationResponse>()
+                            .withOperationName("PutBucketNotificationConfiguration").withProtocolMetadata(protocolMetadata)
+                            .withCombinedResponseHandler(responseHandler).withMetricCollector(apiCallMetricCollector)
+                            .withRequestConfiguration(clientConfiguration).withInput(putBucketNotificationConfigurationRequest)
+                            .withMarshaller(new PutBucketNotificationConfigurationRequestMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    /**
+     * <note>
+     * <p>
+     * This operation is not supported for directory buckets.
+     * </p>
+     * </note>
+     * <p>
+     * Creates or modifies <code>OwnershipControls</code> for an Amazon S3 bucket. To use this operation, you must have
+     * the <code>s3:PutBucketOwnershipControls</code> permission. For more information about Amazon S3 permissions, see
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/user-guide/using-with-s3-actions.html">Specifying
+     * permissions in a policy</a>.
+     * </p>
+     * <p>
+     * For information about Amazon S3 Object Ownership, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/user-guide/about-object-ownership.html">Using object
+     * ownership</a>.
+     * </p>
+     * <p>
+     * The following operations are related to <code>PutBucketOwnershipControls</code>:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <a>GetBucketOwnershipControls</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a>DeleteBucketOwnershipControls</a>
+     * </p>
+     * </li>
+     * </ul>
+     *
+     * @param putBucketOwnershipControlsRequest
+     * @return Result of the PutBucketOwnershipControls operation returned by the service.
+     * @throws SdkException
+     *         Base class for all exceptions that can be thrown by the SDK (both service and client). Can be used for
+     *         catch all scenarios.
+     * @throws SdkClientException
+     *         If any client side error occurs such as an IO related failure, failure to get credentials, etc.
+     * @throws S3Exception
+     *         Base class for all service exceptions. Unknown exceptions will be thrown as an instance of this type.
+     * @sample S3Client.PutBucketOwnershipControls
+     */
+    @Override
+    public PutBucketOwnershipControlsResponse putBucketOwnershipControls(
+            PutBucketOwnershipControlsRequest putBucketOwnershipControlsRequest) throws AwsServiceException, SdkClientException,
+            S3Exception {
+
+        HttpResponseHandler<Response<PutBucketOwnershipControlsResponse>> responseHandler = protocolFactory
+                .createCombinedResponseHandler(PutBucketOwnershipControlsResponse::builder,
+                        new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(putBucketOwnershipControlsRequest,
+                this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration, putBucketOwnershipControlsRequest
+                .overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+                .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "PutBucketOwnershipControls");
+
+            return clientHandler
+                    .execute(new ClientExecutionParams<PutBucketOwnershipControlsRequest, PutBucketOwnershipControlsResponse>()
+                            .withOperationName("PutBucketOwnershipControls")
+                            .withProtocolMetadata(protocolMetadata)
+                            .withCombinedResponseHandler(responseHandler)
+                            .withMetricCollector(apiCallMetricCollector)
+                            .withRequestConfiguration(clientConfiguration)
+                            .withInput(putBucketOwnershipControlsRequest)
+                            .putExecutionAttribute(SdkInternalExecutionAttribute.HTTP_CHECKSUM,
+                                    HttpChecksum.builder().requestChecksumRequired(true).isRequestStreaming(false).build())
+                            .withMarshaller(new PutBucketOwnershipControlsRequestMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    /**
+     * <p>
+     * Applies an Amazon S3 bucket policy to an Amazon S3 bucket.
+     * </p>
+     * <note>
+     * <p>
+     * <b>Directory buckets </b> - For directory buckets, you must make requests for this API operation to the Regional
+     * endpoint. These endpoints support path-style requests in the format
+     * <code>https://s3express-control.<i>region-code</i>.amazonaws.com/<i>bucket-name</i> </code>. Virtual-hosted-style
+     * requests aren't supported. For more information about endpoints in Availability Zones, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/endpoint-directory-buckets-AZ.html">Regional and
+     * Zonal endpoints for directory buckets in Availability Zones</a> in the <i>Amazon S3 User Guide</i>. For more
+     * information about endpoints in Local Zones, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-lzs-for-directory-buckets.html">Concepts for
+     * directory buckets in Local Zones</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * </note>
+     * <dl>
+     * <dt>Permissions</dt>
+     * <dd>
+     * <p>
+     * If you are using an identity other than the root user of the Amazon Web Services account that owns the bucket,
+     * the calling identity must both have the <code>PutBucketPolicy</code> permissions on the specified bucket and
+     * belong to the bucket owner's account in order to use this operation.
+     * </p>
+     * <p>
+     * If you don't have <code>PutBucketPolicy</code> permissions, Amazon S3 returns a <code>403 Access Denied</code>
+     * error. If you have the correct permissions, but you're not using an identity that belongs to the bucket owner's
+     * account, Amazon S3 returns a <code>405 Method Not Allowed</code> error.
+     * </p>
+     * <important>
+     * <p>
+     * To ensure that bucket owners don't inadvertently lock themselves out of their own buckets, the root principal in
+     * a bucket owner's Amazon Web Services account can perform the <code>GetBucketPolicy</code>,
+     * <code>PutBucketPolicy</code>, and <code>DeleteBucketPolicy</code> API actions, even if their bucket policy
+     * explicitly denies the root principal's access. Bucket owner root principals can only be blocked from performing
+     * these API actions by VPC endpoint policies and Amazon Web Services Organizations policies.
+     * </p>
+     * </important>
+     * <ul>
+     * <li>
+     * <p>
+     * <b>General purpose bucket permissions</b> - The <code>s3:PutBucketPolicy</code> permission is required in a
+     * policy. For more information about general purpose buckets bucket policies, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/dev/using-iam-policies.html">Using Bucket Policies and User
+     * Policies</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <b>Directory bucket permissions</b> - To grant access to this API operation, you must have the
+     * <code>s3express:PutBucketPolicy</code> permission in an IAM identity-based policy instead of a bucket policy.
+     * Cross-account access to this API operation isn't supported. This operation can only be performed by the Amazon
+     * Web Services account that owns the resource. For more information about directory bucket policies and
+     * permissions, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-express-security-iam.html">Amazon Web Services
+     * Identity and Access Management (IAM) for S3 Express One Zone</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * </li>
+     * </ul>
+     * </dd>
+     * <dt>Example bucket policies</dt>
+     * <dd>
+     * <p>
+     * <b>General purpose buckets example bucket policies</b> - See <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/example-bucket-policies.html">Bucket policy
+     * examples</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * <p>
+     * <b>Directory bucket example bucket policies</b> - See <a href=
+     * "https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-express-security-iam-example-bucket-policies.html"
+     * >Example bucket policies for S3 Express One Zone</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * </dd>
+     * <dt>HTTP Host header syntax</dt>
+     * <dd>
+     * <p>
+     * <b>Directory buckets </b> - The HTTP Host header syntax is
+     * <code>s3express-control.<i>region-code</i>.amazonaws.com</code>.
+     * </p>
+     * </dd>
+     * </dl>
+     * <p>
+     * The following operations are related to <code>PutBucketPolicy</code>:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_CreateBucket.html">CreateBucket</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteBucket.html">DeleteBucket</a>
+     * </p>
+     * </li>
+     * </ul>
+     *
+     * @param putBucketPolicyRequest
+     * @return Result of the PutBucketPolicy operation returned by the service.
+     * @throws SdkException
+     *         Base class for all exceptions that can be thrown by the SDK (both service and client). Can be used for
+     *         catch all scenarios.
+     * @throws SdkClientException
+     *         If any client side error occurs such as an IO related failure, failure to get credentials, etc.
+     * @throws S3Exception
+     *         Base class for all service exceptions. Unknown exceptions will be thrown as an instance of this type.
+     * @sample S3Client.PutBucketPolicy
+     */
+    @Override
+    public PutBucketPolicyResponse putBucketPolicy(PutBucketPolicyRequest putBucketPolicyRequest) throws AwsServiceException,
+            SdkClientException, S3Exception {
+
+        HttpResponseHandler<Response<PutBucketPolicyResponse>> responseHandler = protocolFactory.createCombinedResponseHandler(
+                PutBucketPolicyResponse::builder, new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(putBucketPolicyRequest,
+                this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration, putBucketPolicyRequest
+                .overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+                .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "PutBucketPolicy");
+
+            return clientHandler.execute(new ClientExecutionParams<PutBucketPolicyRequest, PutBucketPolicyResponse>()
+                    .withOperationName("PutBucketPolicy")
+                    .withProtocolMetadata(protocolMetadata)
+                    .withCombinedResponseHandler(responseHandler)
+                    .withMetricCollector(apiCallMetricCollector)
+                    .withRequestConfiguration(clientConfiguration)
+                    .withInput(putBucketPolicyRequest)
+                    .putExecutionAttribute(
+                            SdkInternalExecutionAttribute.HTTP_CHECKSUM,
+                            HttpChecksum.builder().requestChecksumRequired(true).isRequestStreaming(false)
+                                    .requestAlgorithm(putBucketPolicyRequest.checksumAlgorithmAsString())
+                                    .requestAlgorithmHeader("x-amz-sdk-checksum-algorithm").build())
+                    .withMarshaller(new PutBucketPolicyRequestMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    /**
+     * <note>
+     * <p>
+     * This operation is not supported for directory buckets.
+     * </p>
+     * </note>
+     * <p>
+     * Creates a replication configuration or replaces an existing one. For more information, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/dev/replication.html">Replication</a> in the <i>Amazon S3 User
+     * Guide</i>.
+     * </p>
+     * <p>
+     * Specify the replication configuration in the request body. In the replication configuration, you provide the name
+     * of the destination bucket or buckets where you want Amazon S3 to replicate objects, the IAM role that Amazon S3
+     * can assume to replicate objects on your behalf, and other relevant information. You can invoke this request for a
+     * specific Amazon Web Services Region by using the <a href=
+     * "https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_condition-keys.html#condition-keys-requestedregion"
+     * > <code>aws:RequestedRegion</code> </a> condition key.
+     * </p>
+     * <p>
+     * A replication configuration must include at least one rule, and can contain a maximum of 1,000. Each rule
+     * identifies a subset of objects to replicate by filtering the objects in the source bucket. To choose additional
+     * subsets of objects to replicate, add a rule for each subset.
+     * </p>
+     * <p>
+     * To specify a subset of the objects in the source bucket to apply a replication rule to, add the Filter element as
+     * a child of the Rule element. You can filter objects based on an object key prefix, one or more object tags, or
+     * both. When you add the Filter element in the configuration, you must also add the following elements:
+     * <code>DeleteMarkerReplication</code>, <code>Status</code>, and <code>Priority</code>.
+     * </p>
+     * <note>
+     * <p>
+     * If you are using an earlier version of the replication configuration, Amazon S3 handles replication of delete
+     * markers differently. For more information, see <a href=
+     * "https://docs.aws.amazon.com/AmazonS3/latest/dev/replication-add-config.html#replication-backward-compat-considerations"
+     * >Backward Compatibility</a>.
+     * </p>
+     * </note>
+     * <p>
+     * For information about enabling versioning on a bucket, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/dev/Versioning.html">Using Versioning</a>.
+     * </p>
+     * <dl>
+     * <dt>Handling Replication of Encrypted Objects</dt>
+     * <dd>
+     * <p>
+     * By default, Amazon S3 doesn't replicate objects that are stored at rest using server-side encryption with KMS
+     * keys. To replicate Amazon Web Services KMS-encrypted objects, add the following:
+     * <code>SourceSelectionCriteria</code>, <code>SseKmsEncryptedObjects</code>, <code>Status</code>,
+     * <code>EncryptionConfiguration</code>, and <code>ReplicaKmsKeyID</code>. For information about replication
+     * configuration, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/dev/replication-config-for-kms-objects.html">Replicating
+     * Objects Created with SSE Using KMS keys</a>.
+     * </p>
+     * <p>
+     * For information on <code>PutBucketReplication</code> errors, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/API/ErrorResponses.html#ReplicationErrorCodeList">List of
+     * replication-related error codes</a>
+     * </p>
+     * </dd>
+     * <dt>Permissions</dt>
+     * <dd>
+     * <p>
+     * To create a <code>PutBucketReplication</code> request, you must have <code>s3:PutReplicationConfiguration</code>
+     * permissions for the bucket.
+     * </p>
+     * <p>
+     * By default, a resource owner, in this case the Amazon Web Services account that created the bucket, can perform
+     * this operation. The resource owner can also grant others permissions to perform the operation. For more
+     * information about permissions, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/dev/using-with-s3-actions.html">Specifying Permissions in a
+     * Policy</a> and <a href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-access-control.html">Managing
+     * Access Permissions to Your Amazon S3 Resources</a>.
+     * </p>
+     * <note>
+     * <p>
+     * To perform this operation, the user or role performing the action must have the <a
+     * href="https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use_passrole.html">iam:PassRole</a> permission.
+     * </p>
+     * </note></dd>
+     * </dl>
+     * <p>
+     * The following operations are related to <code>PutBucketReplication</code>:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketReplication.html">GetBucketReplication</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteBucketReplication.html">DeleteBucketReplication
+     * </a>
+     * </p>
+     * </li>
+     * </ul>
+     *
+     * @param putBucketReplicationRequest
+     * @return Result of the PutBucketReplication operation returned by the service.
+     * @throws SdkException
+     *         Base class for all exceptions that can be thrown by the SDK (both service and client). Can be used for
+     *         catch all scenarios.
+     * @throws SdkClientException
+     *         If any client side error occurs such as an IO related failure, failure to get credentials, etc.
+     * @throws S3Exception
+     *         Base class for all service exceptions. Unknown exceptions will be thrown as an instance of this type.
+     * @sample S3Client.PutBucketReplication
+     */
+    @Override
+    public PutBucketReplicationResponse putBucketReplication(PutBucketReplicationRequest putBucketReplicationRequest)
+            throws AwsServiceException, SdkClientException, S3Exception {
+
+        HttpResponseHandler<Response<PutBucketReplicationResponse>> responseHandler = protocolFactory
+                .createCombinedResponseHandler(PutBucketReplicationResponse::builder,
+                        new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(putBucketReplicationRequest,
+                this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration, putBucketReplicationRequest
+                .overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+                .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "PutBucketReplication");
+
+            return clientHandler.execute(new ClientExecutionParams<PutBucketReplicationRequest, PutBucketReplicationResponse>()
+                    .withOperationName("PutBucketReplication")
+                    .withProtocolMetadata(protocolMetadata)
+                    .withCombinedResponseHandler(responseHandler)
+                    .withMetricCollector(apiCallMetricCollector)
+                    .withRequestConfiguration(clientConfiguration)
+                    .withInput(putBucketReplicationRequest)
+                    .putExecutionAttribute(
+                            SdkInternalExecutionAttribute.HTTP_CHECKSUM,
+                            HttpChecksum.builder().requestChecksumRequired(true).isRequestStreaming(false)
+                                    .requestAlgorithm(putBucketReplicationRequest.checksumAlgorithmAsString())
+                                    .requestAlgorithmHeader("x-amz-sdk-checksum-algorithm").build())
+                    .withMarshaller(new PutBucketReplicationRequestMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    /**
+     * <note>
+     * <p>
+     * This operation is not supported for directory buckets.
+     * </p>
+     * </note>
+     * <p>
+     * Sets the request payment configuration for a bucket. By default, the bucket owner pays for downloads from the
+     * bucket. This configuration parameter enables the bucket owner (only) to specify that the person requesting the
+     * download will be charged for the download. For more information, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/dev/RequesterPaysBuckets.html">Requester Pays Buckets</a>.
+     * </p>
+     * <p>
+     * The following operations are related to <code>PutBucketRequestPayment</code>:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_CreateBucket.html">CreateBucket</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketRequestPayment.html">GetBucketRequestPayment
+     * </a>
+     * </p>
+     * </li>
+     * </ul>
+     *
+     * @param putBucketRequestPaymentRequest
+     * @return Result of the PutBucketRequestPayment operation returned by the service.
+     * @throws SdkException
+     *         Base class for all exceptions that can be thrown by the SDK (both service and client). Can be used for
+     *         catch all scenarios.
+     * @throws SdkClientException
+     *         If any client side error occurs such as an IO related failure, failure to get credentials, etc.
+     * @throws S3Exception
+     *         Base class for all service exceptions. Unknown exceptions will be thrown as an instance of this type.
+     * @sample S3Client.PutBucketRequestPayment
+     */
+    @Override
+    public PutBucketRequestPaymentResponse putBucketRequestPayment(PutBucketRequestPaymentRequest putBucketRequestPaymentRequest)
+            throws AwsServiceException, SdkClientException, S3Exception {
+
+        HttpResponseHandler<Response<PutBucketRequestPaymentResponse>> responseHandler = protocolFactory
+                .createCombinedResponseHandler(PutBucketRequestPaymentResponse::builder,
+                        new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(putBucketRequestPaymentRequest,
+                this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration, putBucketRequestPaymentRequest
+                .overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+                .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "PutBucketRequestPayment");
+
+            return clientHandler
+                    .execute(new ClientExecutionParams<PutBucketRequestPaymentRequest, PutBucketRequestPaymentResponse>()
+                            .withOperationName("PutBucketRequestPayment")
+                            .withProtocolMetadata(protocolMetadata)
+                            .withCombinedResponseHandler(responseHandler)
+                            .withMetricCollector(apiCallMetricCollector)
+                            .withRequestConfiguration(clientConfiguration)
+                            .withInput(putBucketRequestPaymentRequest)
+                            .putExecutionAttribute(
+                                    SdkInternalExecutionAttribute.HTTP_CHECKSUM,
+                                    HttpChecksum.builder().requestChecksumRequired(true).isRequestStreaming(false)
+                                            .requestAlgorithm(putBucketRequestPaymentRequest.checksumAlgorithmAsString())
+                                            .requestAlgorithmHeader("x-amz-sdk-checksum-algorithm").build())
+                            .withMarshaller(new PutBucketRequestPaymentRequestMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    /**
+     * <note>
+     * <p>
+     * This operation is not supported for directory buckets.
+     * </p>
+     * </note>
+     * <p>
+     * Sets the tags for a bucket.
+     * </p>
+     * <p>
+     * Use tags to organize your Amazon Web Services bill to reflect your own cost structure. To do this, sign up to get
+     * your Amazon Web Services account bill with tag key values included. Then, to see the cost of combined resources,
+     * organize your billing information according to resources with the same tag key values. For example, you can tag
+     * several resources with a specific application name, and then organize your billing information to see the total
+     * cost of that application across several services. For more information, see <a
+     * href="https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/cost-alloc-tags.html">Cost Allocation and
+     * Tagging</a> and <a href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/CostAllocTagging.html">Using Cost
+     * Allocation in Amazon S3 Bucket Tags</a>.
+     * </p>
+     * <note>
+     * <p>
+     * When this operation sets the tags for a bucket, it will overwrite any current tags the bucket already has. You
+     * cannot use this operation to add tags to an existing list of tags.
+     * </p>
+     * </note>
+     * <p>
+     * To use this operation, you must have permissions to perform the <code>s3:PutBucketTagging</code> action. The
+     * bucket owner has this permission by default and can grant this permission to others. For more information about
+     * permissions, see <a href=
+     * "https://docs.aws.amazon.com/AmazonS3/latest/userguide/using-with-s3-actions.html#using-with-s3-actions-related-to-bucket-subresources"
+     * >Permissions Related to Bucket Subresource Operations</a> and <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-access-control.html">Managing Access Permissions
+     * to Your Amazon S3 Resources</a>.
+     * </p>
+     * <p>
+     * <code>PutBucketTagging</code> has the following special errors. For more Amazon S3 errors see, <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/API/ErrorResponses.html">Error Responses</a>.
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <code>InvalidTag</code> - The tag provided was not a valid tag. This error can occur if the tag did not pass
+     * input validation. For more information, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/CostAllocTagging.html">Using Cost Allocation in
+     * Amazon S3 Bucket Tags</a>.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <code>MalformedXML</code> - The XML provided does not match the schema.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <code>OperationAborted</code> - A conflicting conditional action is currently in progress against this resource.
+     * Please try again.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <code>InternalError</code> - The service was unable to apply the provided tag to the bucket.
+     * </p>
+     * </li>
+     * </ul>
+     * <p>
+     * The following operations are related to <code>PutBucketTagging</code>:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketTagging.html">GetBucketTagging</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteBucketTagging.html">DeleteBucketTagging</a>
+     * </p>
+     * </li>
+     * </ul>
+     *
+     * @param putBucketTaggingRequest
+     * @return Result of the PutBucketTagging operation returned by the service.
+     * @throws SdkException
+     *         Base class for all exceptions that can be thrown by the SDK (both service and client). Can be used for
+     *         catch all scenarios.
+     * @throws SdkClientException
+     *         If any client side error occurs such as an IO related failure, failure to get credentials, etc.
+     * @throws S3Exception
+     *         Base class for all service exceptions. Unknown exceptions will be thrown as an instance of this type.
+     * @sample S3Client.PutBucketTagging
+     */
+    @Override
+    public PutBucketTaggingResponse putBucketTagging(PutBucketTaggingRequest putBucketTaggingRequest) throws AwsServiceException,
+            SdkClientException, S3Exception {
+
+        HttpResponseHandler<Response<PutBucketTaggingResponse>> responseHandler = protocolFactory.createCombinedResponseHandler(
+                PutBucketTaggingResponse::builder, new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(putBucketTaggingRequest,
+                this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration, putBucketTaggingRequest
+                .overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+                .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "PutBucketTagging");
+
+            return clientHandler.execute(new ClientExecutionParams<PutBucketTaggingRequest, PutBucketTaggingResponse>()
+                    .withOperationName("PutBucketTagging")
+                    .withProtocolMetadata(protocolMetadata)
+                    .withCombinedResponseHandler(responseHandler)
+                    .withMetricCollector(apiCallMetricCollector)
+                    .withRequestConfiguration(clientConfiguration)
+                    .withInput(putBucketTaggingRequest)
+                    .putExecutionAttribute(
+                            SdkInternalExecutionAttribute.HTTP_CHECKSUM,
+                            HttpChecksum.builder().requestChecksumRequired(true).isRequestStreaming(false)
+                                    .requestAlgorithm(putBucketTaggingRequest.checksumAlgorithmAsString())
+                                    .requestAlgorithmHeader("x-amz-sdk-checksum-algorithm").build())
+                    .withMarshaller(new PutBucketTaggingRequestMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    /**
+     * <note>
+     * <p>
+     * This operation is not supported for directory buckets.
+     * </p>
+     * </note> <note>
+     * <p>
+     * When you enable versioning on a bucket for the first time, it might take a short amount of time for the change to
+     * be fully propagated. While this change is propagating, you might encounter intermittent
+     * <code>HTTP 404 NoSuchKey</code> errors for requests to objects created or updated after enabling versioning. We
+     * recommend that you wait for 15 minutes after enabling versioning before issuing write operations (
+     * <code>PUT</code> or <code>DELETE</code>) on objects in the bucket.
+     * </p>
+     * </note>
+     * <p>
+     * Sets the versioning state of an existing bucket.
+     * </p>
+     * <p>
+     * You can set the versioning state with one of the following values:
+     * </p>
+     * <p>
+     * <b>Enabled</b>—Enables versioning for the objects in the bucket. All objects added to the bucket receive a unique
+     * version ID.
+     * </p>
+     * <p>
+     * <b>Suspended</b>—Disables versioning for the objects in the bucket. All objects added to the bucket receive the
+     * version ID null.
+     * </p>
+     * <p>
+     * If the versioning state has never been set on a bucket, it has no versioning state; a <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketVersioning.html">GetBucketVersioning</a>
+     * request does not return a versioning state value.
+     * </p>
+     * <p>
+     * In order to enable MFA Delete, you must be the bucket owner. If you are the bucket owner and want to enable MFA
+     * Delete in the bucket versioning configuration, you must include the <code>x-amz-mfa request</code> header and the
+     * <code>Status</code> and the <code>MfaDelete</code> request elements in a request to set the versioning state of
+     * the bucket.
+     * </p>
+     * <important>
+     * <p>
+     * If you have an object expiration lifecycle configuration in your non-versioned bucket and you want to maintain
+     * the same permanent delete behavior when you enable versioning, you must add a noncurrent expiration policy. The
+     * noncurrent expiration lifecycle configuration will manage the deletes of the noncurrent object versions in the
+     * version-enabled bucket. (A version-enabled bucket maintains one current and zero or more noncurrent object
+     * versions.) For more information, see <a href=
+     * "https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lifecycle-mgmt.html#lifecycle-and-other-bucket-config"
+     * >Lifecycle and Versioning</a>.
+     * </p>
+     * </important>
+     * <p>
+     * The following operations are related to <code>PutBucketVersioning</code>:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_CreateBucket.html">CreateBucket</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteBucket.html">DeleteBucket</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketVersioning.html">GetBucketVersioning</a>
+     * </p>
+     * </li>
+     * </ul>
+     *
+     * @param putBucketVersioningRequest
+     * @return Result of the PutBucketVersioning operation returned by the service.
+     * @throws SdkException
+     *         Base class for all exceptions that can be thrown by the SDK (both service and client). Can be used for
+     *         catch all scenarios.
+     * @throws SdkClientException
+     *         If any client side error occurs such as an IO related failure, failure to get credentials, etc.
+     * @throws S3Exception
+     *         Base class for all service exceptions. Unknown exceptions will be thrown as an instance of this type.
+     * @sample S3Client.PutBucketVersioning
+     */
+    @Override
+    public PutBucketVersioningResponse putBucketVersioning(PutBucketVersioningRequest putBucketVersioningRequest)
+            throws AwsServiceException, SdkClientException, S3Exception {
+
+        HttpResponseHandler<Response<PutBucketVersioningResponse>> responseHandler = protocolFactory
+                .createCombinedResponseHandler(PutBucketVersioningResponse::builder,
+                        new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(putBucketVersioningRequest,
+                this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration, putBucketVersioningRequest
+                .overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+                .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "PutBucketVersioning");
+
+            return clientHandler.execute(new ClientExecutionParams<PutBucketVersioningRequest, PutBucketVersioningResponse>()
+                    .withOperationName("PutBucketVersioning")
+                    .withProtocolMetadata(protocolMetadata)
+                    .withCombinedResponseHandler(responseHandler)
+                    .withMetricCollector(apiCallMetricCollector)
+                    .withRequestConfiguration(clientConfiguration)
+                    .withInput(putBucketVersioningRequest)
+                    .putExecutionAttribute(
+                            SdkInternalExecutionAttribute.HTTP_CHECKSUM,
+                            HttpChecksum.builder().requestChecksumRequired(true).isRequestStreaming(false)
+                                    .requestAlgorithm(putBucketVersioningRequest.checksumAlgorithmAsString())
+                                    .requestAlgorithmHeader("x-amz-sdk-checksum-algorithm").build())
+                    .withMarshaller(new PutBucketVersioningRequestMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    /**
+     * <note>
+     * <p>
+     * This operation is not supported for directory buckets.
+     * </p>
+     * </note>
+     * <p>
+     * Sets the configuration of the website that is specified in the <code>website</code> subresource. To configure a
+     * bucket as a website, you can add this subresource on the bucket with website configuration information such as
+     * the file name of the index document and any redirect rules. For more information, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/dev/WebsiteHosting.html">Hosting Websites on Amazon S3</a>.
+     * </p>
+     * <p>
+     * This PUT action requires the <code>S3:PutBucketWebsite</code> permission. By default, only the bucket owner can
+     * configure the website attached to a bucket; however, bucket owners can allow other users to set the website
+     * configuration by writing a bucket policy that grants them the <code>S3:PutBucketWebsite</code> permission.
+     * </p>
+     * <p>
+     * To redirect all website requests sent to the bucket's website endpoint, you add a website configuration with the
+     * following elements. Because all requests are sent to another website, you don't need to provide index document
+     * name for the bucket.
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <code>WebsiteConfiguration</code>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <code>RedirectAllRequestsTo</code>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <code>HostName</code>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <code>Protocol</code>
+     * </p>
+     * </li>
+     * </ul>
+     * <p>
+     * If you want granular control over redirects, you can use the following elements to add routing rules that
+     * describe conditions for redirecting requests and information about the redirect destination. In this case, the
+     * website configuration must provide an index document for the bucket, because some requests might not be
+     * redirected.
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <code>WebsiteConfiguration</code>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <code>IndexDocument</code>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <code>Suffix</code>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <code>ErrorDocument</code>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <code>Key</code>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <code>RoutingRules</code>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <code>RoutingRule</code>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <code>Condition</code>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <code>HttpErrorCodeReturnedEquals</code>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <code>KeyPrefixEquals</code>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <code>Redirect</code>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <code>Protocol</code>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <code>HostName</code>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <code>ReplaceKeyPrefixWith</code>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <code>ReplaceKeyWith</code>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <code>HttpRedirectCode</code>
+     * </p>
+     * </li>
+     * </ul>
+     * <p>
+     * Amazon S3 has a limitation of 50 routing rules per website configuration. If you require more than 50 routing
+     * rules, you can use object redirect. For more information, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/dev/how-to-page-redirect.html">Configuring an Object
+     * Redirect</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * <p>
+     * The maximum request length is limited to 128 KB.
+     * </p>
+     *
+     * @param putBucketWebsiteRequest
+     * @return Result of the PutBucketWebsite operation returned by the service.
+     * @throws SdkException
+     *         Base class for all exceptions that can be thrown by the SDK (both service and client). Can be used for
+     *         catch all scenarios.
+     * @throws SdkClientException
+     *         If any client side error occurs such as an IO related failure, failure to get credentials, etc.
+     * @throws S3Exception
+     *         Base class for all service exceptions. Unknown exceptions will be thrown as an instance of this type.
+     * @sample S3Client.PutBucketWebsite
+     */
+    @Override
+    public PutBucketWebsiteResponse putBucketWebsite(PutBucketWebsiteRequest putBucketWebsiteRequest) throws AwsServiceException,
+            SdkClientException, S3Exception {
+
+        HttpResponseHandler<Response<PutBucketWebsiteResponse>> responseHandler = protocolFactory.createCombinedResponseHandler(
+                PutBucketWebsiteResponse::builder, new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(putBucketWebsiteRequest,
+                this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration, putBucketWebsiteRequest
+                .overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+                .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "PutBucketWebsite");
+
+            return clientHandler.execute(new ClientExecutionParams<PutBucketWebsiteRequest, PutBucketWebsiteResponse>()
+                    .withOperationName("PutBucketWebsite")
+                    .withProtocolMetadata(protocolMetadata)
+                    .withCombinedResponseHandler(responseHandler)
+                    .withMetricCollector(apiCallMetricCollector)
+                    .withRequestConfiguration(clientConfiguration)
+                    .withInput(putBucketWebsiteRequest)
+                    .putExecutionAttribute(
+                            SdkInternalExecutionAttribute.HTTP_CHECKSUM,
+                            HttpChecksum.builder().requestChecksumRequired(true).isRequestStreaming(false)
+                                    .requestAlgorithm(putBucketWebsiteRequest.checksumAlgorithmAsString())
+                                    .requestAlgorithmHeader("x-amz-sdk-checksum-algorithm").build())
+                    .withMarshaller(new PutBucketWebsiteRequestMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    /**
+     * <p>
+     * Adds an object to a bucket.
+     * </p>
+     * <note>
+     * <ul>
+     * <li>
+     * <p>
+     * Amazon S3 never adds partial objects; if you receive a success response, Amazon S3 added the entire object to the
+     * bucket. You cannot use <code>PutObject</code> to only update a single piece of metadata for an existing object.
+     * You must put the entire object with updated metadata if you want to update some values.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * If your bucket uses the bucket owner enforced setting for Object Ownership, ACLs are disabled and no longer
+     * affect permissions. All objects written to the bucket by any account will be owned by the bucket owner.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <b>Directory buckets</b> - For directory buckets, you must make requests for this API operation to the Zonal
+     * endpoint. These endpoints support virtual-hosted-style requests in the format
+     * <code>https://<i>amzn-s3-demo-bucket</i>.s3express-<i>zone-id</i>.<i>region-code</i>.amazonaws.com/<i>key-name</i> </code>
+     * . Path-style requests are not supported. For more information about endpoints in Availability Zones, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/endpoint-directory-buckets-AZ.html">Regional and
+     * Zonal endpoints for directory buckets in Availability Zones</a> in the <i>Amazon S3 User Guide</i>. For more
+     * information about endpoints in Local Zones, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-lzs-for-directory-buckets.html">Concepts for
+     * directory buckets in Local Zones</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * </li>
+     * </ul>
+     * </note>
+     * <p>
+     * Amazon S3 is a distributed system. If it receives multiple write requests for the same object simultaneously, it
+     * overwrites all but the last object written. However, Amazon S3 provides features that can modify this behavior:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <b>S3 Object Lock</b> - To prevent objects from being deleted or overwritten, you can use <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lock.html">Amazon S3 Object Lock</a> in the
+     * <i>Amazon S3 User Guide</i>.
+     * </p>
+     * <note>
+     * <p>
+     * This functionality is not supported for directory buckets.
+     * </p>
+     * </note></li>
+     * <li>
+     * <p>
+     * <b>If-None-Match</b> - Uploads the object only if the object key name does not already exist in the specified
+     * bucket. Otherwise, Amazon S3 returns a <code>412 Precondition Failed</code> error. If a conflicting operation
+     * occurs during the upload, S3 returns a <code>409 ConditionalRequestConflict</code> response. On a 409 failure,
+     * retry the upload.
+     * </p>
+     * <p>
+     * Expects the * character (asterisk).
+     * </p>
+     * <p>
+     * For more information, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/conditional-requests.html">Add preconditions to S3
+     * operations with conditional requests</a> in the <i>Amazon S3 User Guide</i> or <a
+     * href="https://datatracker.ietf.org/doc/rfc7232/">RFC 7232</a>.
+     * </p>
+     * <note>
+     * <p>
+     * This functionality is not supported for S3 on Outposts.
+     * </p>
+     * </note></li>
+     * <li>
+     * <p>
+     * <b>S3 Versioning</b> - When you enable versioning for a bucket, if Amazon S3 receives multiple write requests for
+     * the same object simultaneously, it stores all versions of the objects. For each write request that is made to the
+     * same object, Amazon S3 automatically generates a unique version ID of that object being stored in Amazon S3. You
+     * can retrieve, replace, or delete any version of the object. For more information about versioning, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/dev/AddingObjectstoVersioningEnabledBuckets.html">Adding
+     * Objects to Versioning-Enabled Buckets</a> in the <i>Amazon S3 User Guide</i>. For information about returning the
+     * versioning state of a bucket, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketVersioning.html">GetBucketVersioning</a>.
+     * </p>
+     * <note>
+     * <p>
+     * This functionality is not supported for directory buckets.
+     * </p>
+     * </note></li>
+     * </ul>
+     * <dl>
+     * <dt>Permissions</dt>
+     * <dd>
+     * <ul>
+     * <li>
+     * <p>
+     * <b>General purpose bucket permissions</b> - The following permissions are required in your policies when your
+     * <code>PutObject</code> request includes specific headers.
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <b> <code>s3:PutObject</code> </b> - To successfully complete the <code>PutObject</code> request, you must always
+     * have the <code>s3:PutObject</code> permission on a bucket to add an object to it.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <b> <code>s3:PutObjectAcl</code> </b> - To successfully change the objects ACL of your <code>PutObject</code>
+     * request, you must have the <code>s3:PutObjectAcl</code>.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <b> <code>s3:PutObjectTagging</code> </b> - To successfully set the tag-set with your <code>PutObject</code>
+     * request, you must have the <code>s3:PutObjectTagging</code>.
+     * </p>
+     * </li>
+     * </ul>
+     * </li>
+     * <li>
+     * <p>
+     * <b>Directory bucket permissions</b> - To grant access to this API operation on a directory bucket, we recommend
+     * that you use the <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_CreateSession.html">
+     * <code>CreateSession</code> </a> API operation for session-based authorization. Specifically, you grant the
+     * <code>s3express:CreateSession</code> permission to the directory bucket in a bucket policy or an IAM
+     * identity-based policy. Then, you make the <code>CreateSession</code> API call on the bucket to obtain a session
+     * token. With the session token in your request header, you can make API requests to this operation. After the
+     * session token expires, you make another <code>CreateSession</code> API call to generate a new session token for
+     * use. Amazon Web Services CLI or SDKs create session and refresh the session token automatically to avoid service
+     * interruptions when a session expires. For more information about authorization, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_CreateSession.html"> <code>CreateSession</code> </a>.
+     * </p>
+     * <p>
+     * If the object is encrypted with SSE-KMS, you must also have the <code>kms:GenerateDataKey</code> and
+     * <code>kms:Decrypt</code> permissions in IAM identity-based policies and KMS key policies for the KMS key.
+     * </p>
+     * </li>
+     * </ul>
+     * </dd>
+     * <dt>Data integrity with Content-MD5</dt>
+     * <dd>
+     * <ul>
+     * <li>
+     * <p>
+     * <b>General purpose bucket</b> - To ensure that data is not corrupted traversing the network, use the
+     * <code>Content-MD5</code> header. When you use this header, Amazon S3 checks the object against the provided MD5
+     * value and, if they do not match, Amazon S3 returns an error. Alternatively, when the object's ETag is its MD5
+     * digest, you can calculate the MD5 while putting the object to Amazon S3 and compare the returned ETag to the
+     * calculated MD5 value.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <b>Directory bucket</b> - This functionality is not supported for directory buckets.
+     * </p>
+     * </li>
+     * </ul>
+     * </dd>
+     * <dt>HTTP Host header syntax</dt>
+     * <dd>
+     * <p>
+     * <b>Directory buckets </b> - The HTTP Host header syntax is
+     * <code> <i>Bucket-name</i>.s3express-<i>zone-id</i>.<i>region-code</i>.amazonaws.com</code>.
+     * </p>
+     * </dd>
+     * </dl>
+     * <p>
+     * For more information about related Amazon S3 APIs, see the following:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_CopyObject.html">CopyObject</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteObject.html">DeleteObject</a>
+     * </p>
+     * </li>
+     * </ul>
+     *
+     * @param putObjectRequest
+     * @param requestBody
+     *        The content to send to the service. A {@link RequestBody} can be created using one of several factory
+     *        methods for various sources of data. For example, to create a request body from a file you can do the
+     *        following.
+     * 
+     *        <pre>
+     * {@code RequestBody.fromFile(new File("myfile.txt"))}
+     * </pre>
+     * 
+     *        See documentation in {@link RequestBody} for additional details and which sources of data are supported.
+     *        The service documentation for the request content is as follows '
+     *        <p>
+     *        Object data.
+     *        </p>
+     *        '
+     * @return Result of the PutObject operation returned by the service.
+     * @throws InvalidRequestException
+     *         You may receive this error in multiple cases. Depending on the reason for the error, you may receive one
+     *         of the messages below:</p>
+     *         <ul>
+     *         <li>
+     *         <p>
+     *         Cannot specify both a write offset value and user-defined object metadata for existing objects.
+     *         </p>
+     *         </li>
+     *         <li>
+     *         <p>
+     *         Checksum Type mismatch occurred, expected checksum Type: sha1, actual checksum Type: crc32c.
+     *         </p>
+     *         </li>
+     *         <li>
+     *         <p>
+     *         Request body cannot be empty when 'write offset' is specified.
+     *         </p>
+     *         </li>
+     * @throws InvalidWriteOffsetException
+     *         The write offset value that you specified does not match the current object size.
+     * @throws TooManyPartsException
+     *         You have attempted to add more parts than the maximum of 10000 that are allowed for this object. You can
+     *         use the CopyObject operation to copy this object to another and then add more data to the newly copied
+     *         object.
+     * @throws EncryptionTypeMismatchException
+     *         The existing object was created with a different encryption type. Subsequent write requests must include
+     *         the appropriate encryption parameters in the request or while creating the session.
+     * @throws SdkException
+     *         Base class for all exceptions that can be thrown by the SDK (both service and client). Can be used for
+     *         catch all scenarios.
+     * @throws SdkClientException
+     *         If any client side error occurs such as an IO related failure, failure to get credentials, etc.
+     * @throws S3Exception
+     *         Base class for all service exceptions. Unknown exceptions will be thrown as an instance of this type.
+     * @sample S3Client.PutObject
+     */
+    @Override
+    public PutObjectResponse putObject(PutObjectRequest putObjectRequest, RequestBody requestBody)
+            throws InvalidRequestException, InvalidWriteOffsetException, TooManyPartsException, EncryptionTypeMismatchException,
+            AwsServiceException, SdkClientException, S3Exception {
+
+        HttpResponseHandler<Response<PutObjectResponse>> responseHandler = protocolFactory.createCombinedResponseHandler(
+                PutObjectResponse::builder, new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(putObjectRequest, this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration, putObjectRequest
+                .overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+                .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "PutObject");
+
+            return clientHandler.execute(new ClientExecutionParams<PutObjectRequest, PutObjectResponse>()
+                    .withOperationName("PutObject")
+                    .withProtocolMetadata(protocolMetadata)
+                    .withCombinedResponseHandler(responseHandler)
+                    .withMetricCollector(apiCallMetricCollector)
+                    .withRequestConfiguration(clientConfiguration)
+                    .withInput(putObjectRequest)
+                    .putExecutionAttribute(
+                            SdkInternalExecutionAttribute.HTTP_CHECKSUM,
+                            HttpChecksum.builder().requestChecksumRequired(false).isRequestStreaming(true)
+                                    .requestAlgorithm(putObjectRequest.checksumAlgorithmAsString())
+                                    .requestAlgorithmHeader("x-amz-sdk-checksum-algorithm").build())
+                    .withRequestBody(requestBody)
+                    .withMarshaller(
+                            StreamingRequestMarshaller.builder()
+                                    .delegateMarshaller(new PutObjectRequestMarshaller(protocolFactory)).requestBody(requestBody)
+                                    .build()));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    /**
+     * <note>
+     * <p>
+     * This operation is not supported for directory buckets.
+     * </p>
+     * </note>
+     * <p>
+     * Uses the <code>acl</code> subresource to set the access control list (ACL) permissions for a new or existing
+     * object in an S3 bucket. You must have the <code>WRITE_ACP</code> permission to set the ACL of an object. For more
+     * information, see <a href="https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#permissions">What
+     * permissions can I grant?</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * <p>
+     * This functionality is not supported for Amazon S3 on Outposts.
+     * </p>
+     * <p>
+     * Depending on your application needs, you can choose to set the ACL on an object using either the request body or
+     * the headers. For example, if you have an existing application that updates a bucket ACL using the request body,
+     * you can continue to use that approach. For more information, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html">Access Control List (ACL) Overview</a>
+     * in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * <important>
+     * <p>
+     * If your bucket uses the bucket owner enforced setting for S3 Object Ownership, ACLs are disabled and no longer
+     * affect permissions. You must use policies to grant access to your bucket and the objects in it. Requests to set
+     * ACLs or update ACLs fail and return the <code>AccessControlListNotSupported</code> error code. Requests to read
+     * ACLs are still supported. For more information, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/about-object-ownership.html">Controlling object
+     * ownership</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * </important>
+     * <dl>
+     * <dt>Permissions</dt>
+     * <dd>
+     * <p>
+     * You can set access permissions using one of the following methods:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * Specify a canned ACL with the <code>x-amz-acl</code> request header. Amazon S3 supports a set of predefined ACLs,
+     * known as canned ACLs. Each canned ACL has a predefined set of grantees and permissions. Specify the canned ACL
+     * name as the value of <code>x-amz-ac</code>l. If you use this header, you cannot use other access control-specific
+     * headers in your request. For more information, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#CannedACL">Canned ACL</a>.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * Specify access permissions explicitly with the <code>x-amz-grant-read</code>, <code>x-amz-grant-read-acp</code>,
+     * <code>x-amz-grant-write-acp</code>, and <code>x-amz-grant-full-control</code> headers. When using these headers,
+     * you specify explicit access permissions and grantees (Amazon Web Services accounts or Amazon S3 groups) who will
+     * receive the permission. If you use these ACL-specific headers, you cannot use <code>x-amz-acl</code> header to
+     * set a canned ACL. These parameters map to the set of permissions that Amazon S3 supports in an ACL. For more
+     * information, see <a href="https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html">Access Control List
+     * (ACL) Overview</a>.
+     * </p>
+     * <p>
+     * You specify each grantee as a type=value pair, where the type is one of the following:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <code>id</code> – if the value specified is the canonical user ID of an Amazon Web Services account
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <code>uri</code> – if you are granting permissions to a predefined group
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <code>emailAddress</code> – if the value specified is the email address of an Amazon Web Services account
+     * </p>
+     * <note>
+     * <p>
+     * Using email addresses to specify a grantee is only supported in the following Amazon Web Services Regions:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * US East (N. Virginia)
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * US West (N. California)
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * US West (Oregon)
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * Asia Pacific (Singapore)
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * Asia Pacific (Sydney)
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * Asia Pacific (Tokyo)
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * Europe (Ireland)
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * South America (São Paulo)
+     * </p>
+     * </li>
+     * </ul>
+     * <p>
+     * For a list of all the Amazon S3 supported Regions and endpoints, see <a
+     * href="https://docs.aws.amazon.com/general/latest/gr/rande.html#s3_region">Regions and Endpoints</a> in the Amazon
+     * Web Services General Reference.
+     * </p>
+     * </note></li>
+     * </ul>
+     * <p>
+     * For example, the following <code>x-amz-grant-read</code> header grants list objects permission to the two Amazon
+     * Web Services accounts identified by their email addresses.
+     * </p>
+     * <p>
+     * <code>x-amz-grant-read: emailAddress="xyz@amazon.com", emailAddress="abc@amazon.com" </code>
+     * </p>
+     * </li>
+     * </ul>
+     * <p>
+     * You can use either a canned ACL or specify access permissions explicitly. You cannot do both.
+     * </p>
+     * </dd>
+     * <dt>Grantee Values</dt>
+     * <dd>
+     * <p>
+     * You can specify the person (grantee) to whom you're assigning access rights (using request elements) in the
+     * following ways:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * By the person's ID:
+     * </p>
+     * <p>
+     * <code>&lt;Grantee xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="CanonicalUser"&gt;&lt;ID&gt;&lt;&gt;ID&lt;&gt;&lt;/ID&gt;&lt;DisplayName&gt;&lt;&gt;GranteesEmail&lt;&gt;&lt;/DisplayName&gt; &lt;/Grantee&gt;</code>
+     * </p>
+     * <p>
+     * DisplayName is optional and ignored in the request.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * By URI:
+     * </p>
+     * <p>
+     * <code>&lt;Grantee xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="Group"&gt;&lt;URI&gt;&lt;&gt;http://acs.amazonaws.com/groups/global/AuthenticatedUsers&lt;&gt;&lt;/URI&gt;&lt;/Grantee&gt;</code>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * By Email address:
+     * </p>
+     * <p>
+     * <code>&lt;Grantee xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="AmazonCustomerByEmail"&gt;&lt;EmailAddress&gt;&lt;&gt;Grantees@email.com&lt;&gt;&lt;/EmailAddress&gt;lt;/Grantee&gt;</code>
+     * </p>
+     * <p>
+     * The grantee is resolved to the CanonicalUser and, in a response to a GET Object acl request, appears as the
+     * CanonicalUser.
+     * </p>
+     * <note>
+     * <p>
+     * Using email addresses to specify a grantee is only supported in the following Amazon Web Services Regions:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * US East (N. Virginia)
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * US West (N. California)
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * US West (Oregon)
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * Asia Pacific (Singapore)
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * Asia Pacific (Sydney)
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * Asia Pacific (Tokyo)
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * Europe (Ireland)
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * South America (São Paulo)
+     * </p>
+     * </li>
+     * </ul>
+     * <p>
+     * For a list of all the Amazon S3 supported Regions and endpoints, see <a
+     * href="https://docs.aws.amazon.com/general/latest/gr/rande.html#s3_region">Regions and Endpoints</a> in the Amazon
+     * Web Services General Reference.
+     * </p>
+     * </note></li>
+     * </ul>
+     * </dd>
+     * <dt>Versioning</dt>
+     * <dd>
+     * <p>
+     * The ACL of an object is set at the object version level. By default, PUT sets the ACL of the current version of
+     * an object. To set the ACL of a different version, use the <code>versionId</code> subresource.
+     * </p>
+     * </dd>
+     * </dl>
+     * <p>
+     * The following operations are related to <code>PutObjectAcl</code>:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_CopyObject.html">CopyObject</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetObject.html">GetObject</a>
+     * </p>
+     * </li>
+     * </ul>
+     *
+     * @param putObjectAclRequest
+     * @return Result of the PutObjectAcl operation returned by the service.
+     * @throws NoSuchKeyException
+     *         The specified key does not exist.
+     * @throws SdkException
+     *         Base class for all exceptions that can be thrown by the SDK (both service and client). Can be used for
+     *         catch all scenarios.
+     * @throws SdkClientException
+     *         If any client side error occurs such as an IO related failure, failure to get credentials, etc.
+     * @throws S3Exception
+     *         Base class for all service exceptions. Unknown exceptions will be thrown as an instance of this type.
+     * @sample S3Client.PutObjectAcl
+     */
+    @Override
+    public PutObjectAclResponse putObjectAcl(PutObjectAclRequest putObjectAclRequest) throws NoSuchKeyException,
+            AwsServiceException, SdkClientException, S3Exception {
+
+        HttpResponseHandler<Response<PutObjectAclResponse>> responseHandler = protocolFactory.createCombinedResponseHandler(
+                PutObjectAclResponse::builder, new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(putObjectAclRequest, this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration, putObjectAclRequest
+                .overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+                .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "PutObjectAcl");
+
+            return clientHandler.execute(new ClientExecutionParams<PutObjectAclRequest, PutObjectAclResponse>()
+                    .withOperationName("PutObjectAcl")
+                    .withProtocolMetadata(protocolMetadata)
+                    .withCombinedResponseHandler(responseHandler)
+                    .withMetricCollector(apiCallMetricCollector)
+                    .withRequestConfiguration(clientConfiguration)
+                    .withInput(putObjectAclRequest)
+                    .putExecutionAttribute(
+                            SdkInternalExecutionAttribute.HTTP_CHECKSUM,
+                            HttpChecksum.builder().requestChecksumRequired(true).isRequestStreaming(false)
+                                    .requestAlgorithm(putObjectAclRequest.checksumAlgorithmAsString())
+                                    .requestAlgorithmHeader("x-amz-sdk-checksum-algorithm").build())
+                    .withMarshaller(new PutObjectAclRequestMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    /**
+     * <note>
+     * <p>
+     * This operation is not supported for directory buckets.
+     * </p>
+     * </note>
+     * <p>
+     * Applies a legal hold configuration to the specified object. For more information, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lock.html">Locking Objects</a>.
+     * </p>
+     * <p>
+     * This functionality is not supported for Amazon S3 on Outposts.
+     * </p>
+     *
+     * @param putObjectLegalHoldRequest
+     * @return Result of the PutObjectLegalHold operation returned by the service.
+     * @throws SdkException
+     *         Base class for all exceptions that can be thrown by the SDK (both service and client). Can be used for
+     *         catch all scenarios.
+     * @throws SdkClientException
+     *         If any client side error occurs such as an IO related failure, failure to get credentials, etc.
+     * @throws S3Exception
+     *         Base class for all service exceptions. Unknown exceptions will be thrown as an instance of this type.
+     * @sample S3Client.PutObjectLegalHold
+     */
+    @Override
+    public PutObjectLegalHoldResponse putObjectLegalHold(PutObjectLegalHoldRequest putObjectLegalHoldRequest)
+            throws AwsServiceException, SdkClientException, S3Exception {
+
+        HttpResponseHandler<Response<PutObjectLegalHoldResponse>> responseHandler = protocolFactory
+                .createCombinedResponseHandler(PutObjectLegalHoldResponse::builder,
+                        new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(putObjectLegalHoldRequest,
+                this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration, putObjectLegalHoldRequest
+                .overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+                .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "PutObjectLegalHold");
+
+            return clientHandler.execute(new ClientExecutionParams<PutObjectLegalHoldRequest, PutObjectLegalHoldResponse>()
+                    .withOperationName("PutObjectLegalHold")
+                    .withProtocolMetadata(protocolMetadata)
+                    .withCombinedResponseHandler(responseHandler)
+                    .withMetricCollector(apiCallMetricCollector)
+                    .withRequestConfiguration(clientConfiguration)
+                    .withInput(putObjectLegalHoldRequest)
+                    .putExecutionAttribute(
+                            SdkInternalExecutionAttribute.HTTP_CHECKSUM,
+                            HttpChecksum.builder().requestChecksumRequired(true).isRequestStreaming(false)
+                                    .requestAlgorithm(putObjectLegalHoldRequest.checksumAlgorithmAsString())
+                                    .requestAlgorithmHeader("x-amz-sdk-checksum-algorithm").build())
+                    .withMarshaller(new PutObjectLegalHoldRequestMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    /**
+     * <note>
+     * <p>
+     * This operation is not supported for directory buckets.
+     * </p>
+     * </note>
+     * <p>
+     * Places an Object Lock configuration on the specified bucket. The rule specified in the Object Lock configuration
+     * will be applied by default to every new object placed in the specified bucket. For more information, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lock.html">Locking Objects</a>.
+     * </p>
+     * <note>
+     * <ul>
+     * <li>
+     * <p>
+     * The <code>DefaultRetention</code> settings require both a mode and a period.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * The <code>DefaultRetention</code> period can be either <code>Days</code> or <code>Years</code> but you must
+     * select one. You cannot specify <code>Days</code> and <code>Years</code> at the same time.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * You can enable Object Lock for new or existing buckets. For more information, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lock-configure.html">Configuring Object
+     * Lock</a>.
+     * </p>
+     * </li>
+     * </ul>
+     * </note>
+     *
+     * @param putObjectLockConfigurationRequest
+     * @return Result of the PutObjectLockConfiguration operation returned by the service.
+     * @throws SdkException
+     *         Base class for all exceptions that can be thrown by the SDK (both service and client). Can be used for
+     *         catch all scenarios.
+     * @throws SdkClientException
+     *         If any client side error occurs such as an IO related failure, failure to get credentials, etc.
+     * @throws S3Exception
+     *         Base class for all service exceptions. Unknown exceptions will be thrown as an instance of this type.
+     * @sample S3Client.PutObjectLockConfiguration
+     */
+    @Override
+    public PutObjectLockConfigurationResponse putObjectLockConfiguration(
+            PutObjectLockConfigurationRequest putObjectLockConfigurationRequest) throws AwsServiceException, SdkClientException,
+            S3Exception {
+
+        HttpResponseHandler<Response<PutObjectLockConfigurationResponse>> responseHandler = protocolFactory
+                .createCombinedResponseHandler(PutObjectLockConfigurationResponse::builder,
+                        new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(putObjectLockConfigurationRequest,
+                this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration, putObjectLockConfigurationRequest
+                .overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+                .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "PutObjectLockConfiguration");
+
+            return clientHandler
+                    .execute(new ClientExecutionParams<PutObjectLockConfigurationRequest, PutObjectLockConfigurationResponse>()
+                            .withOperationName("PutObjectLockConfiguration")
+                            .withProtocolMetadata(protocolMetadata)
+                            .withCombinedResponseHandler(responseHandler)
+                            .withMetricCollector(apiCallMetricCollector)
+                            .withRequestConfiguration(clientConfiguration)
+                            .withInput(putObjectLockConfigurationRequest)
+                            .putExecutionAttribute(
+                                    SdkInternalExecutionAttribute.HTTP_CHECKSUM,
+                                    HttpChecksum.builder().requestChecksumRequired(true).isRequestStreaming(false)
+                                            .requestAlgorithm(putObjectLockConfigurationRequest.checksumAlgorithmAsString())
+                                            .requestAlgorithmHeader("x-amz-sdk-checksum-algorithm").build())
+                            .withMarshaller(new PutObjectLockConfigurationRequestMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    /**
+     * <note>
+     * <p>
+     * This operation is not supported for directory buckets.
+     * </p>
+     * </note>
+     * <p>
+     * Places an Object Retention configuration on an object. For more information, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lock.html">Locking Objects</a>. Users or accounts
+     * require the <code>s3:PutObjectRetention</code> permission in order to place an Object Retention configuration on
+     * objects. Bypassing a Governance Retention configuration requires the <code>s3:BypassGovernanceRetention</code>
+     * permission.
+     * </p>
+     * <p>
+     * This functionality is not supported for Amazon S3 on Outposts.
+     * </p>
+     *
+     * @param putObjectRetentionRequest
+     * @return Result of the PutObjectRetention operation returned by the service.
+     * @throws SdkException
+     *         Base class for all exceptions that can be thrown by the SDK (both service and client). Can be used for
+     *         catch all scenarios.
+     * @throws SdkClientException
+     *         If any client side error occurs such as an IO related failure, failure to get credentials, etc.
+     * @throws S3Exception
+     *         Base class for all service exceptions. Unknown exceptions will be thrown as an instance of this type.
+     * @sample S3Client.PutObjectRetention
+     */
+    @Override
+    public PutObjectRetentionResponse putObjectRetention(PutObjectRetentionRequest putObjectRetentionRequest)
+            throws AwsServiceException, SdkClientException, S3Exception {
+
+        HttpResponseHandler<Response<PutObjectRetentionResponse>> responseHandler = protocolFactory
+                .createCombinedResponseHandler(PutObjectRetentionResponse::builder,
+                        new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(putObjectRetentionRequest,
+                this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration, putObjectRetentionRequest
+                .overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+                .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "PutObjectRetention");
+
+            return clientHandler.execute(new ClientExecutionParams<PutObjectRetentionRequest, PutObjectRetentionResponse>()
+                    .withOperationName("PutObjectRetention")
+                    .withProtocolMetadata(protocolMetadata)
+                    .withCombinedResponseHandler(responseHandler)
+                    .withMetricCollector(apiCallMetricCollector)
+                    .withRequestConfiguration(clientConfiguration)
+                    .withInput(putObjectRetentionRequest)
+                    .putExecutionAttribute(
+                            SdkInternalExecutionAttribute.HTTP_CHECKSUM,
+                            HttpChecksum.builder().requestChecksumRequired(true).isRequestStreaming(false)
+                                    .requestAlgorithm(putObjectRetentionRequest.checksumAlgorithmAsString())
+                                    .requestAlgorithmHeader("x-amz-sdk-checksum-algorithm").build())
+                    .withMarshaller(new PutObjectRetentionRequestMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    /**
+     * <note>
+     * <p>
+     * This operation is not supported for directory buckets.
+     * </p>
+     * </note>
+     * <p>
+     * Sets the supplied tag-set to an object that already exists in a bucket. A tag is a key-value pair. For more
+     * information, see <a href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-tagging.html">Object
+     * Tagging</a>.
+     * </p>
+     * <p>
+     * You can associate tags with an object by sending a PUT request against the tagging subresource that is associated
+     * with the object. You can retrieve tags by sending a GET request. For more information, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetObjectTagging.html">GetObjectTagging</a>.
+     * </p>
+     * <p>
+     * For tagging-related restrictions related to characters and encodings, see <a
+     * href="https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/allocation-tag-restrictions.html">Tag
+     * Restrictions</a>. Note that Amazon S3 limits the maximum number of tags to 10 tags per object.
+     * </p>
+     * <p>
+     * To use this operation, you must have permission to perform the <code>s3:PutObjectTagging</code> action. By
+     * default, the bucket owner has this permission and can grant this permission to others.
+     * </p>
+     * <p>
+     * To put tags of any other version, use the <code>versionId</code> query parameter. You also need permission for
+     * the <code>s3:PutObjectVersionTagging</code> action.
+     * </p>
+     * <p>
+     * <code>PutObjectTagging</code> has the following special errors. For more Amazon S3 errors see, <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/API/ErrorResponses.html">Error Responses</a>.
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <code>InvalidTag</code> - The tag provided was not a valid tag. This error can occur if the tag did not pass
+     * input validation. For more information, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-tagging.html">Object Tagging</a>.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <code>MalformedXML</code> - The XML provided does not match the schema.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <code>OperationAborted</code> - A conflicting conditional action is currently in progress against this resource.
+     * Please try again.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <code>InternalError</code> - The service was unable to apply the provided tag to the object.
+     * </p>
+     * </li>
+     * </ul>
+     * <p>
+     * The following operations are related to <code>PutObjectTagging</code>:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetObjectTagging.html">GetObjectTagging</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteObjectTagging.html">DeleteObjectTagging</a>
+     * </p>
+     * </li>
+     * </ul>
+     *
+     * @param putObjectTaggingRequest
+     * @return Result of the PutObjectTagging operation returned by the service.
+     * @throws SdkException
+     *         Base class for all exceptions that can be thrown by the SDK (both service and client). Can be used for
+     *         catch all scenarios.
+     * @throws SdkClientException
+     *         If any client side error occurs such as an IO related failure, failure to get credentials, etc.
+     * @throws S3Exception
+     *         Base class for all service exceptions. Unknown exceptions will be thrown as an instance of this type.
+     * @sample S3Client.PutObjectTagging
+     */
+    @Override
+    public PutObjectTaggingResponse putObjectTagging(PutObjectTaggingRequest putObjectTaggingRequest) throws AwsServiceException,
+            SdkClientException, S3Exception {
+
+        HttpResponseHandler<Response<PutObjectTaggingResponse>> responseHandler = protocolFactory.createCombinedResponseHandler(
+                PutObjectTaggingResponse::builder, new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(putObjectTaggingRequest,
+                this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration, putObjectTaggingRequest
+                .overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+                .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "PutObjectTagging");
+
+            return clientHandler.execute(new ClientExecutionParams<PutObjectTaggingRequest, PutObjectTaggingResponse>()
+                    .withOperationName("PutObjectTagging")
+                    .withProtocolMetadata(protocolMetadata)
+                    .withCombinedResponseHandler(responseHandler)
+                    .withMetricCollector(apiCallMetricCollector)
+                    .withRequestConfiguration(clientConfiguration)
+                    .withInput(putObjectTaggingRequest)
+                    .putExecutionAttribute(
+                            SdkInternalExecutionAttribute.HTTP_CHECKSUM,
+                            HttpChecksum.builder().requestChecksumRequired(true).isRequestStreaming(false)
+                                    .requestAlgorithm(putObjectTaggingRequest.checksumAlgorithmAsString())
+                                    .requestAlgorithmHeader("x-amz-sdk-checksum-algorithm").build())
+                    .withMarshaller(new PutObjectTaggingRequestMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    /**
+     * <note>
+     * <p>
+     * This operation is not supported for directory buckets.
+     * </p>
+     * </note>
+     * <p>
+     * Creates or modifies the <code>PublicAccessBlock</code> configuration for an Amazon S3 bucket. To use this
+     * operation, you must have the <code>s3:PutBucketPublicAccessBlock</code> permission. For more information about
+     * Amazon S3 permissions, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/dev/using-with-s3-actions.html">Specifying Permissions in a
+     * Policy</a>.
+     * </p>
+     * <important>
+     * <p>
+     * When Amazon S3 evaluates the <code>PublicAccessBlock</code> configuration for a bucket or an object, it checks
+     * the <code>PublicAccessBlock</code> configuration for both the bucket (or the bucket that contains the object) and
+     * the bucket owner's account. If the <code>PublicAccessBlock</code> configurations are different between the bucket
+     * and the account, Amazon S3 uses the most restrictive combination of the bucket-level and account-level settings.
+     * </p>
+     * </important>
+     * <p>
+     * For more information about when Amazon S3 considers a bucket or an object public, see <a href=
+     * "https://docs.aws.amazon.com/AmazonS3/latest/dev/access-control-block-public-access.html#access-control-block-public-access-policy-status"
+     * >The Meaning of "Public"</a>.
+     * </p>
+     * <p>
+     * The following operations are related to <code>PutPublicAccessBlock</code>:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetPublicAccessBlock.html">GetPublicAccessBlock</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeletePublicAccessBlock.html">DeletePublicAccessBlock
+     * </a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketPolicyStatus.html">GetBucketPolicyStatus</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/dev/access-control-block-public-access.html">Using Amazon S3
+     * Block Public Access</a>
+     * </p>
+     * </li>
+     * </ul>
+     *
+     * @param putPublicAccessBlockRequest
+     * @return Result of the PutPublicAccessBlock operation returned by the service.
+     * @throws SdkException
+     *         Base class for all exceptions that can be thrown by the SDK (both service and client). Can be used for
+     *         catch all scenarios.
+     * @throws SdkClientException
+     *         If any client side error occurs such as an IO related failure, failure to get credentials, etc.
+     * @throws S3Exception
+     *         Base class for all service exceptions. Unknown exceptions will be thrown as an instance of this type.
+     * @sample S3Client.PutPublicAccessBlock
+     */
+    @Override
+    public PutPublicAccessBlockResponse putPublicAccessBlock(PutPublicAccessBlockRequest putPublicAccessBlockRequest)
+            throws AwsServiceException, SdkClientException, S3Exception {
+
+        HttpResponseHandler<Response<PutPublicAccessBlockResponse>> responseHandler = protocolFactory
+                .createCombinedResponseHandler(PutPublicAccessBlockResponse::builder,
+                        new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(putPublicAccessBlockRequest,
+                this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration, putPublicAccessBlockRequest
+                .overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+                .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "PutPublicAccessBlock");
+
+            return clientHandler.execute(new ClientExecutionParams<PutPublicAccessBlockRequest, PutPublicAccessBlockResponse>()
+                    .withOperationName("PutPublicAccessBlock")
+                    .withProtocolMetadata(protocolMetadata)
+                    .withCombinedResponseHandler(responseHandler)
+                    .withMetricCollector(apiCallMetricCollector)
+                    .withRequestConfiguration(clientConfiguration)
+                    .withInput(putPublicAccessBlockRequest)
+                    .putExecutionAttribute(
+                            SdkInternalExecutionAttribute.HTTP_CHECKSUM,
+                            HttpChecksum.builder().requestChecksumRequired(true).isRequestStreaming(false)
+                                    .requestAlgorithm(putPublicAccessBlockRequest.checksumAlgorithmAsString())
+                                    .requestAlgorithmHeader("x-amz-sdk-checksum-algorithm").build())
+                    .withMarshaller(new PutPublicAccessBlockRequestMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    /**
+     * <note>
+     * <p>
+     * This operation is not supported for directory buckets.
+     * </p>
+     * </note>
+     * <p>
+     * Restores an archived copy of an object back into Amazon S3
+     * </p>
+     * <p>
+     * This functionality is not supported for Amazon S3 on Outposts.
+     * </p>
+     * <p>
+     * This action performs the following types of requests:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <code>restore an archive</code> - Restore an archived object
+     * </p>
+     * </li>
+     * </ul>
+     * <p>
+     * For more information about the <code>S3</code> structure in the request body, see the following:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutObject.html">PutObject</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/dev/S3_ACLs_UsingACLs.html">Managing Access with ACLs</a> in
+     * the <i>Amazon S3 User Guide</i>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/dev/serv-side-encryption.html">Protecting Data Using
+     * Server-Side Encryption</a> in the <i>Amazon S3 User Guide</i>
+     * </p>
+     * </li>
+     * </ul>
+     * <dl>
+     * <dt>Permissions</dt>
+     * <dd>
+     * <p>
+     * To use this operation, you must have permissions to perform the <code>s3:RestoreObject</code> action. The bucket
+     * owner has this permission by default and can grant this permission to others. For more information about
+     * permissions, see <a href=
+     * "https://docs.aws.amazon.com/AmazonS3/latest/userguide/using-with-s3-actions.html#using-with-s3-actions-related-to-bucket-subresources"
+     * >Permissions Related to Bucket Subresource Operations</a> and <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-access-control.html">Managing Access Permissions
+     * to Your Amazon S3 Resources</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * </dd>
+     * <dt>Restoring objects</dt>
+     * <dd>
+     * <p>
+     * Objects that you archive to the S3 Glacier Flexible Retrieval or S3 Glacier Deep Archive storage class, and S3
+     * Intelligent-Tiering Archive or S3 Intelligent-Tiering Deep Archive tiers, are not accessible in real time. For
+     * objects in the S3 Glacier Flexible Retrieval or S3 Glacier Deep Archive storage classes, you must first initiate
+     * a restore request, and then wait until a temporary copy of the object is available. If you want a permanent copy
+     * of the object, create a copy of it in the Amazon S3 Standard storage class in your S3 bucket. To access an
+     * archived object, you must restore the object for the duration (number of days) that you specify. For objects in
+     * the Archive Access or Deep Archive Access tiers of S3 Intelligent-Tiering, you must first initiate a restore
+     * request, and then wait until the object is moved into the Frequent Access tier.
+     * </p>
+     * <p>
+     * To restore a specific object version, you can provide a version ID. If you don't provide a version ID, Amazon S3
+     * restores the current version.
+     * </p>
+     * <p>
+     * When restoring an archived object, you can specify one of the following data access tier options in the
+     * <code>Tier</code> element of the request body:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <code>Expedited</code> - Expedited retrievals allow you to quickly access your data stored in the S3 Glacier
+     * Flexible Retrieval storage class or S3 Intelligent-Tiering Archive tier when occasional urgent requests for
+     * restoring archives are required. For all but the largest archived objects (250 MB+), data accessed using
+     * Expedited retrievals is typically made available within 1–5 minutes. Provisioned capacity ensures that retrieval
+     * capacity for Expedited retrievals is available when you need it. Expedited retrievals and provisioned capacity
+     * are not available for objects stored in the S3 Glacier Deep Archive storage class or S3 Intelligent-Tiering Deep
+     * Archive tier.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <code>Standard</code> - Standard retrievals allow you to access any of your archived objects within several
+     * hours. This is the default option for retrieval requests that do not specify the retrieval option. Standard
+     * retrievals typically finish within 3–5 hours for objects stored in the S3 Glacier Flexible Retrieval storage
+     * class or S3 Intelligent-Tiering Archive tier. They typically finish within 12 hours for objects stored in the S3
+     * Glacier Deep Archive storage class or S3 Intelligent-Tiering Deep Archive tier. Standard retrievals are free for
+     * objects stored in S3 Intelligent-Tiering.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <code>Bulk</code> - Bulk retrievals free for objects stored in the S3 Glacier Flexible Retrieval and S3
+     * Intelligent-Tiering storage classes, enabling you to retrieve large amounts, even petabytes, of data at no cost.
+     * Bulk retrievals typically finish within 5–12 hours for objects stored in the S3 Glacier Flexible Retrieval
+     * storage class or S3 Intelligent-Tiering Archive tier. Bulk retrievals are also the lowest-cost retrieval option
+     * when restoring objects from S3 Glacier Deep Archive. They typically finish within 48 hours for objects stored in
+     * the S3 Glacier Deep Archive storage class or S3 Intelligent-Tiering Deep Archive tier.
+     * </p>
+     * </li>
+     * </ul>
+     * <p>
+     * For more information about archive retrieval options and provisioned capacity for <code>Expedited</code> data
+     * access, see <a href="https://docs.aws.amazon.com/AmazonS3/latest/dev/restoring-objects.html">Restoring Archived
+     * Objects</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * <p>
+     * You can use Amazon S3 restore speed upgrade to change the restore speed to a faster speed while it is in
+     * progress. For more information, see <a href=
+     * "https://docs.aws.amazon.com/AmazonS3/latest/dev/restoring-objects.html#restoring-objects-upgrade-tier.title.html"
+     * > Upgrading the speed of an in-progress restore</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * <p>
+     * To get the status of object restoration, you can send a <code>HEAD</code> request. Operations return the
+     * <code>x-amz-restore</code> header, which provides information about the restoration status, in the response. You
+     * can use Amazon S3 event notifications to notify you when a restore is initiated or completed. For more
+     * information, see <a href="https://docs.aws.amazon.com/AmazonS3/latest/dev/NotificationHowTo.html">Configuring
+     * Amazon S3 Event Notifications</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * <p>
+     * After restoring an archived object, you can update the restoration period by reissuing the request with a new
+     * period. Amazon S3 updates the restoration period relative to the current time and charges only for the
+     * request-there are no data transfer charges. You cannot update the restoration period when Amazon S3 is actively
+     * processing your current restore request for the object.
+     * </p>
+     * <p>
+     * If your bucket has a lifecycle configuration with a rule that includes an expiration action, the object
+     * expiration overrides the life span that you specify in a restore request. For example, if you restore an object
+     * copy for 10 days, but the object is scheduled to expire in 3 days, Amazon S3 deletes the object in 3 days. For
+     * more information about lifecycle configuration, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketLifecycleConfiguration.html"
+     * >PutBucketLifecycleConfiguration</a> and <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lifecycle-mgmt.html">Object Lifecycle Management</a>
+     * in <i>Amazon S3 User Guide</i>.
+     * </p>
+     * </dd>
+     * <dt>Responses</dt>
+     * <dd>
+     * <p>
+     * A successful action returns either the <code>200 OK</code> or <code>202 Accepted</code> status code.
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * If the object is not previously restored, then Amazon S3 returns <code>202 Accepted</code> in the response.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * If the object is previously restored, Amazon S3 returns <code>200 OK</code> in the response.
+     * </p>
+     * </li>
+     * </ul>
+     * <ul>
+     * <li>
+     * <p>
+     * Special errors:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <i>Code: RestoreAlreadyInProgress</i>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <i>Cause: Object restore is already in progress.</i>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <i>HTTP Status Code: 409 Conflict</i>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <i>SOAP Fault Code Prefix: Client</i>
+     * </p>
+     * </li>
+     * </ul>
+     * </li>
+     * <li>
+     * <ul>
+     * <li>
+     * <p>
+     * <i>Code: GlacierExpeditedRetrievalNotAvailable</i>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <i>Cause: expedited retrievals are currently not available. Try again later. (Returned if there is insufficient
+     * capacity to process the Expedited request. This error applies only to Expedited retrievals and not to S3 Standard
+     * or Bulk retrievals.)</i>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <i>HTTP Status Code: 503</i>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <i>SOAP Fault Code Prefix: N/A</i>
+     * </p>
+     * </li>
+     * </ul>
+     * </li>
+     * </ul>
+     * </dd>
+     * </dl>
+     * <p>
+     * The following operations are related to <code>RestoreObject</code>:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketLifecycleConfiguration.html">
+     * PutBucketLifecycleConfiguration</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketNotificationConfiguration.html">
+     * GetBucketNotificationConfiguration</a>
+     * </p>
+     * </li>
+     * </ul>
+     *
+     * @param restoreObjectRequest
+     * @return Result of the RestoreObject operation returned by the service.
+     * @throws ObjectAlreadyInActiveTierErrorException
+     *         This action is not allowed against this storage tier.
+     * @throws SdkException
+     *         Base class for all exceptions that can be thrown by the SDK (both service and client). Can be used for
+     *         catch all scenarios.
+     * @throws SdkClientException
+     *         If any client side error occurs such as an IO related failure, failure to get credentials, etc.
+     * @throws S3Exception
+     *         Base class for all service exceptions. Unknown exceptions will be thrown as an instance of this type.
+     * @sample S3Client.RestoreObject
+     */
+    @Override
+    public RestoreObjectResponse restoreObject(RestoreObjectRequest restoreObjectRequest)
+            throws ObjectAlreadyInActiveTierErrorException, AwsServiceException, SdkClientException, S3Exception {
+
+        HttpResponseHandler<Response<RestoreObjectResponse>> responseHandler = protocolFactory.createCombinedResponseHandler(
+                RestoreObjectResponse::builder, new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(restoreObjectRequest, this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration, restoreObjectRequest
+                .overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+                .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "RestoreObject");
+
+            return clientHandler.execute(new ClientExecutionParams<RestoreObjectRequest, RestoreObjectResponse>()
+                    .withOperationName("RestoreObject")
+                    .withProtocolMetadata(protocolMetadata)
+                    .withCombinedResponseHandler(responseHandler)
+                    .withMetricCollector(apiCallMetricCollector)
+                    .withRequestConfiguration(clientConfiguration)
+                    .withInput(restoreObjectRequest)
+                    .putExecutionAttribute(
+                            SdkInternalExecutionAttribute.HTTP_CHECKSUM,
+                            HttpChecksum.builder().requestChecksumRequired(false).isRequestStreaming(false)
+                                    .requestAlgorithm(restoreObjectRequest.checksumAlgorithmAsString())
+                                    .requestAlgorithmHeader("x-amz-sdk-checksum-algorithm").build())
+                    .withMarshaller(new RestoreObjectRequestMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    /**
+     * <p>
+     * Uploads a part in a multipart upload.
+     * </p>
+     * <note>
+     * <p>
+     * In this operation, you provide new data as a part of an object in your request. However, you have an option to
+     * specify your existing Amazon S3 object as a data source for the part you are uploading. To upload a part from an
+     * existing object, you use the <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_UploadPartCopy.html">UploadPartCopy</a> operation.
+     * </p>
+     * </note>
+     * <p>
+     * You must initiate a multipart upload (see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_CreateMultipartUpload.html">CreateMultipartUpload</a>)
+     * before you can upload any part. In response to your initiate request, Amazon S3 returns an upload ID, a unique
+     * identifier that you must include in your upload part request.
+     * </p>
+     * <p>
+     * Part numbers can be any number from 1 to 10,000, inclusive. A part number uniquely identifies a part and also
+     * defines its position within the object being created. If you upload a new part using the same part number that
+     * was used with a previous part, the previously uploaded part is overwritten.
+     * </p>
+     * <p>
+     * For information about maximum and minimum part sizes and other multipart upload specifications, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/qfacts.html">Multipart upload limits</a> in the
+     * <i>Amazon S3 User Guide</i>.
+     * </p>
+     * <note>
+     * <p>
+     * After you initiate multipart upload and upload one or more parts, you must either complete or abort multipart
+     * upload in order to stop getting charged for storage of the uploaded parts. Only after you either complete or
+     * abort multipart upload, Amazon S3 frees up the parts storage and stops charging you for the parts storage.
+     * </p>
+     * </note>
+     * <p>
+     * For more information on multipart uploads, go to <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/dev/mpuoverview.html">Multipart Upload Overview</a> in the
+     * <i>Amazon S3 User Guide </i>.
+     * </p>
+     * <note>
+     * <p>
+     * <b>Directory buckets</b> - For directory buckets, you must make requests for this API operation to the Zonal
+     * endpoint. These endpoints support virtual-hosted-style requests in the format
+     * <code>https://<i>amzn-s3-demo-bucket</i>.s3express-<i>zone-id</i>.<i>region-code</i>.amazonaws.com/<i>key-name</i> </code>
+     * . Path-style requests are not supported. For more information about endpoints in Availability Zones, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/endpoint-directory-buckets-AZ.html">Regional and
+     * Zonal endpoints for directory buckets in Availability Zones</a> in the <i>Amazon S3 User Guide</i>. For more
+     * information about endpoints in Local Zones, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-lzs-for-directory-buckets.html">Concepts for
+     * directory buckets in Local Zones</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * </note>
+     * <dl>
+     * <dt>Permissions</dt>
+     * <dd>
+     * <ul>
+     * <li>
+     * <p>
+     * <b>General purpose bucket permissions</b> - To perform a multipart upload with encryption using an Key Management
+     * Service key, the requester must have permission to the <code>kms:Decrypt</code> and
+     * <code>kms:GenerateDataKey</code> actions on the key. The requester must also have permissions for the
+     * <code>kms:GenerateDataKey</code> action for the <code>CreateMultipartUpload</code> API. Then, the requester needs
+     * permissions for the <code>kms:Decrypt</code> action on the <code>UploadPart</code> and
+     * <code>UploadPartCopy</code> APIs.
+     * </p>
+     * <p>
+     * These permissions are required because Amazon S3 must decrypt and read data from the encrypted file parts before
+     * it completes the multipart upload. For more information about KMS permissions, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingKMSEncryption.html">Protecting data using
+     * server-side encryption with KMS</a> in the <i>Amazon S3 User Guide</i>. For information about the permissions
+     * required to use the multipart upload API, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/dev/mpuAndPermissions.html">Multipart upload and
+     * permissions</a> and <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/mpuoverview.html#mpuAndPermissions">Multipart upload
+     * API and permissions</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <b>Directory bucket permissions</b> - To grant access to this API operation on a directory bucket, we recommend
+     * that you use the <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_CreateSession.html">
+     * <code>CreateSession</code> </a> API operation for session-based authorization. Specifically, you grant the
+     * <code>s3express:CreateSession</code> permission to the directory bucket in a bucket policy or an IAM
+     * identity-based policy. Then, you make the <code>CreateSession</code> API call on the bucket to obtain a session
+     * token. With the session token in your request header, you can make API requests to this operation. After the
+     * session token expires, you make another <code>CreateSession</code> API call to generate a new session token for
+     * use. Amazon Web Services CLI or SDKs create session and refresh the session token automatically to avoid service
+     * interruptions when a session expires. For more information about authorization, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_CreateSession.html"> <code>CreateSession</code> </a>.
+     * </p>
+     * <p>
+     * If the object is encrypted with SSE-KMS, you must also have the <code>kms:GenerateDataKey</code> and
+     * <code>kms:Decrypt</code> permissions in IAM identity-based policies and KMS key policies for the KMS key.
+     * </p>
+     * </li>
+     * </ul>
+     * </dd>
+     * <dt>Data integrity</dt>
+     * <dd>
+     * <p>
+     * <b>General purpose bucket</b> - To ensure that data is not corrupted traversing the network, specify the
+     * <code>Content-MD5</code> header in the upload part request. Amazon S3 checks the part data against the provided
+     * MD5 value. If they do not match, Amazon S3 returns an error. If the upload request is signed with Signature
+     * Version 4, then Amazon Web Services S3 uses the <code>x-amz-content-sha256</code> header as a checksum instead of
+     * <code>Content-MD5</code>. For more information see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/API/sigv4-auth-using-authorization-header.html">Authenticating
+     * Requests: Using the Authorization Header (Amazon Web Services Signature Version 4)</a>.
+     * </p>
+     * <note>
+     * <p>
+     * <b>Directory buckets</b> - MD5 is not supported by directory buckets. You can use checksum algorithms to check
+     * object integrity.
+     * </p>
+     * </note></dd>
+     * <dt>Encryption</dt>
+     * <dd>
+     * <ul>
+     * <li>
+     * <p>
+     * <b>General purpose bucket</b> - Server-side encryption is for data encryption at rest. Amazon S3 encrypts your
+     * data as it writes it to disks in its data centers and decrypts it when you access it. You have mutually exclusive
+     * options to protect data using server-side encryption in Amazon S3, depending on how you choose to manage the
+     * encryption keys. Specifically, the encryption key options are Amazon S3 managed keys (SSE-S3), Amazon Web
+     * Services KMS keys (SSE-KMS), and Customer-Provided Keys (SSE-C). Amazon S3 encrypts data with server-side
+     * encryption using Amazon S3 managed keys (SSE-S3) by default. You can optionally tell Amazon S3 to encrypt data at
+     * rest using server-side encryption with other key options. The option you use depends on whether you want to use
+     * KMS keys (SSE-KMS) or provide your own encryption key (SSE-C).
+     * </p>
+     * <p>
+     * Server-side encryption is supported by the S3 Multipart Upload operations. Unless you are using a
+     * customer-provided encryption key (SSE-C), you don't need to specify the encryption parameters in each UploadPart
+     * request. Instead, you only need to specify the server-side encryption parameters in the initial Initiate
+     * Multipart request. For more information, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_CreateMultipartUpload.html">CreateMultipartUpload</a>.
+     * </p>
+     * <p>
+     * If you request server-side encryption using a customer-provided encryption key (SSE-C) in your initiate multipart
+     * upload request, you must provide identical encryption information in each part upload using the following request
+     * headers.
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * x-amz-server-side-encryption-customer-algorithm
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * x-amz-server-side-encryption-customer-key
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * x-amz-server-side-encryption-customer-key-MD5
+     * </p>
+     * </li>
+     * </ul>
+     * <p>
+     * For more information, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingServerSideEncryption.html">Using Server-Side
+     * Encryption</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <b>Directory buckets </b> - For directory buckets, there are only two supported options for server-side
+     * encryption: server-side encryption with Amazon S3 managed keys (SSE-S3) (<code>AES256</code>) and server-side
+     * encryption with KMS keys (SSE-KMS) (<code>aws:kms</code>).
+     * </p>
+     * </li>
+     * </ul>
+     * </dd>
+     * <dt>Special errors</dt>
+     * <dd>
+     * <ul>
+     * <li>
+     * <p>
+     * Error Code: <code>NoSuchUpload</code>
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * Description: The specified multipart upload does not exist. The upload ID might be invalid, or the multipart
+     * upload might have been aborted or completed.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * HTTP Status Code: 404 Not Found
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * SOAP Fault Code Prefix: Client
+     * </p>
+     * </li>
+     * </ul>
+     * </li>
+     * </ul>
+     * </dd>
+     * <dt>HTTP Host header syntax</dt>
+     * <dd>
+     * <p>
+     * <b>Directory buckets </b> - The HTTP Host header syntax is
+     * <code> <i>Bucket-name</i>.s3express-<i>zone-id</i>.<i>region-code</i>.amazonaws.com</code>.
+     * </p>
+     * </dd>
+     * </dl>
+     * <p>
+     * The following operations are related to <code>UploadPart</code>:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_CreateMultipartUpload.html">CreateMultipartUpload</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_CompleteMultipartUpload.html">CompleteMultipartUpload
+     * </a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_AbortMultipartUpload.html">AbortMultipartUpload</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListParts.html">ListParts</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListMultipartUploads.html">ListMultipartUploads</a>
+     * </p>
+     * </li>
+     * </ul>
+     *
+     * @param uploadPartRequest
+     * @param requestBody
+     *        The content to send to the service. A {@link RequestBody} can be created using one of several factory
+     *        methods for various sources of data. For example, to create a request body from a file you can do the
+     *        following.
+     * 
+     *        <pre>
+     * {@code RequestBody.fromFile(new File("myfile.txt"))}
+     * </pre>
+     * 
+     *        See documentation in {@link RequestBody} for additional details and which sources of data are supported.
+     *        The service documentation for the request content is as follows '
+     *        <p>
+     *        Object data.
+     *        </p>
+     *        '
+     * @return Result of the UploadPart operation returned by the service.
+     * @throws SdkException
+     *         Base class for all exceptions that can be thrown by the SDK (both service and client). Can be used for
+     *         catch all scenarios.
+     * @throws SdkClientException
+     *         If any client side error occurs such as an IO related failure, failure to get credentials, etc.
+     * @throws S3Exception
+     *         Base class for all service exceptions. Unknown exceptions will be thrown as an instance of this type.
+     * @sample S3Client.UploadPart
+     */
+    @Override
+    public UploadPartResponse uploadPart(UploadPartRequest uploadPartRequest, RequestBody requestBody)
+            throws AwsServiceException, SdkClientException, S3Exception {
+
+        HttpResponseHandler<Response<UploadPartResponse>> responseHandler = protocolFactory.createCombinedResponseHandler(
+                UploadPartResponse::builder, new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(uploadPartRequest, this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration, uploadPartRequest
+                .overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+                .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "UploadPart");
+
+            return clientHandler.execute(new ClientExecutionParams<UploadPartRequest, UploadPartResponse>()
+                    .withOperationName("UploadPart")
+                    .withProtocolMetadata(protocolMetadata)
+                    .withCombinedResponseHandler(responseHandler)
+                    .withMetricCollector(apiCallMetricCollector)
+                    .withRequestConfiguration(clientConfiguration)
+                    .withInput(uploadPartRequest)
+                    .putExecutionAttribute(
+                            SdkInternalExecutionAttribute.HTTP_CHECKSUM,
+                            HttpChecksum.builder().requestChecksumRequired(false).isRequestStreaming(true)
+                                    .requestAlgorithm(uploadPartRequest.checksumAlgorithmAsString())
+                                    .requestAlgorithmHeader("x-amz-sdk-checksum-algorithm").build())
+                    .withRequestBody(requestBody)
+                    .withMarshaller(
+                            StreamingRequestMarshaller.builder()
+                                    .delegateMarshaller(new UploadPartRequestMarshaller(protocolFactory))
+                                    .requestBody(requestBody).build()));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    /**
+     * <p>
+     * Uploads a part by copying data from an existing object as data source. To specify the data source, you add the
+     * request header <code>x-amz-copy-source</code> in your request. To specify a byte range, you add the request
+     * header <code>x-amz-copy-source-range</code> in your request.
+     * </p>
+     * <p>
+     * For information about maximum and minimum part sizes and other multipart upload specifications, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/qfacts.html">Multipart upload limits</a> in the
+     * <i>Amazon S3 User Guide</i>.
+     * </p>
+     * <note>
+     * <p>
+     * Instead of copying data from an existing object as part data, you might use the <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_UploadPart.html">UploadPart</a> action to upload new
+     * data as a part of an object in your request.
+     * </p>
+     * </note>
+     * <p>
+     * You must initiate a multipart upload before you can upload any part. In response to your initiate request, Amazon
+     * S3 returns the upload ID, a unique identifier that you must include in your upload part request.
+     * </p>
+     * <p>
+     * For conceptual information about multipart uploads, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/dev/uploadobjusingmpu.html">Uploading Objects Using Multipart
+     * Upload</a> in the <i>Amazon S3 User Guide</i>. For information about copying objects using a single atomic action
+     * vs. a multipart upload, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/dev/ObjectOperations.html">Operations on Objects</a> in the
+     * <i>Amazon S3 User Guide</i>.
+     * </p>
+     * <note>
+     * <p>
+     * <b>Directory buckets</b> - For directory buckets, you must make requests for this API operation to the Zonal
+     * endpoint. These endpoints support virtual-hosted-style requests in the format
+     * <code>https://<i>amzn-s3-demo-bucket</i>.s3express-<i>zone-id</i>.<i>region-code</i>.amazonaws.com/<i>key-name</i> </code>
+     * . Path-style requests are not supported. For more information about endpoints in Availability Zones, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/endpoint-directory-buckets-AZ.html">Regional and
+     * Zonal endpoints for directory buckets in Availability Zones</a> in the <i>Amazon S3 User Guide</i>. For more
+     * information about endpoints in Local Zones, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-lzs-for-directory-buckets.html">Concepts for
+     * directory buckets in Local Zones</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * </note>
+     * <dl>
+     * <dt>Authentication and authorization</dt>
+     * <dd>
+     * <p>
+     * All <code>UploadPartCopy</code> requests must be authenticated and signed by using IAM credentials (access key ID
+     * and secret access key for the IAM identities). All headers with the <code>x-amz-</code> prefix, including
+     * <code>x-amz-copy-source</code>, must be signed. For more information, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/dev/RESTAuthentication.html">REST Authentication</a>.
+     * </p>
+     * <p>
+     * <b>Directory buckets</b> - You must use IAM credentials to authenticate and authorize your access to the
+     * <code>UploadPartCopy</code> API operation, instead of using the temporary security credentials through the
+     * <code>CreateSession</code> API operation.
+     * </p>
+     * <p>
+     * Amazon Web Services CLI or SDKs handles authentication and authorization on your behalf.
+     * </p>
+     * </dd>
+     * <dt>Permissions</dt>
+     * <dd>
+     * <p>
+     * You must have <code>READ</code> access to the source object and <code>WRITE</code> access to the destination
+     * bucket.
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <b>General purpose bucket permissions</b> - You must have the permissions in a policy based on the bucket types
+     * of your source bucket and destination bucket in an <code>UploadPartCopy</code> operation.
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * If the source object is in a general purpose bucket, you must have the <b> <code>s3:GetObject</code> </b>
+     * permission to read the source object that is being copied.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * If the destination bucket is a general purpose bucket, you must have the <b> <code>s3:PutObject</code> </b>
+     * permission to write the object copy to the destination bucket.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * To perform a multipart upload with encryption using an Key Management Service key, the requester must have
+     * permission to the <code>kms:Decrypt</code> and <code>kms:GenerateDataKey</code> actions on the key. The requester
+     * must also have permissions for the <code>kms:GenerateDataKey</code> action for the
+     * <code>CreateMultipartUpload</code> API. Then, the requester needs permissions for the <code>kms:Decrypt</code>
+     * action on the <code>UploadPart</code> and <code>UploadPartCopy</code> APIs. These permissions are required
+     * because Amazon S3 must decrypt and read data from the encrypted file parts before it completes the multipart
+     * upload. For more information about KMS permissions, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingKMSEncryption.html">Protecting data using
+     * server-side encryption with KMS</a> in the <i>Amazon S3 User Guide</i>. For information about the permissions
+     * required to use the multipart upload API, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/dev/mpuAndPermissions.html">Multipart upload and
+     * permissions</a> and <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/mpuoverview.html#mpuAndPermissions">Multipart upload
+     * API and permissions</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * </li>
+     * </ul>
+     * </li>
+     * <li>
+     * <p>
+     * <b>Directory bucket permissions</b> - You must have permissions in a bucket policy or an IAM identity-based
+     * policy based on the source and destination bucket types in an <code>UploadPartCopy</code> operation.
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * If the source object that you want to copy is in a directory bucket, you must have the <b>
+     * <code>s3express:CreateSession</code> </b> permission in the <code>Action</code> element of a policy to read the
+     * object. By default, the session is in the <code>ReadWrite</code> mode. If you want to restrict the access, you
+     * can explicitly set the <code>s3express:SessionMode</code> condition key to <code>ReadOnly</code> on the copy
+     * source bucket.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * If the copy destination is a directory bucket, you must have the <b> <code>s3express:CreateSession</code> </b>
+     * permission in the <code>Action</code> element of a policy to write the object to the destination. The
+     * <code>s3express:SessionMode</code> condition key cannot be set to <code>ReadOnly</code> on the copy destination.
+     * </p>
+     * </li>
+     * </ul>
+     * <p>
+     * If the object is encrypted with SSE-KMS, you must also have the <code>kms:GenerateDataKey</code> and
+     * <code>kms:Decrypt</code> permissions in IAM identity-based policies and KMS key policies for the KMS key.
+     * </p>
+     * <p>
+     * For example policies, see <a href=
+     * "https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-express-security-iam-example-bucket-policies.html"
+     * >Example bucket policies for S3 Express One Zone</a> and <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-express-security-iam-identity-policies.html"
+     * >Amazon Web Services Identity and Access Management (IAM) identity-based policies for S3 Express One Zone</a> in
+     * the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * </li>
+     * </ul>
+     * </dd>
+     * <dt>Encryption</dt>
+     * <dd>
+     * <ul>
+     * <li>
+     * <p>
+     * <b>General purpose buckets </b> - For information about using server-side encryption with customer-provided
+     * encryption keys with the <code>UploadPartCopy</code> operation, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_CopyObject.html">CopyObject</a> and <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_UploadPart.html">UploadPart</a>.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <b>Directory buckets </b> - For directory buckets, there are only two supported options for server-side
+     * encryption: server-side encryption with Amazon S3 managed keys (SSE-S3) (<code>AES256</code>) and server-side
+     * encryption with KMS keys (SSE-KMS) (<code>aws:kms</code>). For more information, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-express-serv-side-encryption.html">Protecting data
+     * with server-side encryption</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * <note>
+     * <p>
+     * For directory buckets, when you perform a <code>CreateMultipartUpload</code> operation and an
+     * <code>UploadPartCopy</code> operation, the request headers you provide in the <code>CreateMultipartUpload</code>
+     * request must match the default encryption configuration of the destination bucket.
+     * </p>
+     * </note>
+     * <p>
+     * S3 Bucket Keys aren't supported, when you copy SSE-KMS encrypted objects from general purpose buckets to
+     * directory buckets, from directory buckets to general purpose buckets, or between directory buckets, through <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_UploadPartCopy.html">UploadPartCopy</a>. In this case,
+     * Amazon S3 makes a call to KMS every time a copy request is made for a KMS-encrypted object.
+     * </p>
+     * </li>
+     * </ul>
+     * </dd>
+     * <dt>Special errors</dt>
+     * <dd>
+     * <ul>
+     * <li>
+     * <p>
+     * Error Code: <code>NoSuchUpload</code>
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * Description: The specified multipart upload does not exist. The upload ID might be invalid, or the multipart
+     * upload might have been aborted or completed.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * HTTP Status Code: 404 Not Found
+     * </p>
+     * </li>
+     * </ul>
+     * </li>
+     * <li>
+     * <p>
+     * Error Code: <code>InvalidRequest</code>
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * Description: The specified copy source is not supported as a byte-range copy source.
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * HTTP Status Code: 400 Bad Request
+     * </p>
+     * </li>
+     * </ul>
+     * </li>
+     * </ul>
+     * </dd>
+     * <dt>HTTP Host header syntax</dt>
+     * <dd>
+     * <p>
+     * <b>Directory buckets </b> - The HTTP Host header syntax is
+     * <code> <i>Bucket-name</i>.s3express-<i>zone-id</i>.<i>region-code</i>.amazonaws.com</code>.
+     * </p>
+     * </dd>
+     * </dl>
+     * <p>
+     * The following operations are related to <code>UploadPartCopy</code>:
+     * </p>
+     * <ul>
+     * <li>
+     * <p>
+     * <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_CreateMultipartUpload.html">CreateMultipartUpload</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_UploadPart.html">UploadPart</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_CompleteMultipartUpload.html">CompleteMultipartUpload
+     * </a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_AbortMultipartUpload.html">AbortMultipartUpload</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListParts.html">ListParts</a>
+     * </p>
+     * </li>
+     * <li>
+     * <p>
+     * <a href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListMultipartUploads.html">ListMultipartUploads</a>
+     * </p>
+     * </li>
+     * </ul>
+     *
+     * @param uploadPartCopyRequest
+     * @return Result of the UploadPartCopy operation returned by the service.
+     * @throws SdkException
+     *         Base class for all exceptions that can be thrown by the SDK (both service and client). Can be used for
+     *         catch all scenarios.
+     * @throws SdkClientException
+     *         If any client side error occurs such as an IO related failure, failure to get credentials, etc.
+     * @throws S3Exception
+     *         Base class for all service exceptions. Unknown exceptions will be thrown as an instance of this type.
+     * @sample S3Client.UploadPartCopy
+     */
+    @Override
+    public UploadPartCopyResponse uploadPartCopy(UploadPartCopyRequest uploadPartCopyRequest) throws AwsServiceException,
+            SdkClientException, S3Exception {
+        uploadPartCopyRequest = CustomRequestTransformerUtils.modifyUploadPartCopyRequest(uploadPartCopyRequest);
+
+        HttpResponseHandler<Response<UploadPartCopyResponse>> responseHandler = protocolFactory.createCombinedResponseHandler(
+                UploadPartCopyResponse::builder, new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(uploadPartCopyRequest, this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration, uploadPartCopyRequest
+                .overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+                .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "UploadPartCopy");
+
+            return clientHandler.execute(new ClientExecutionParams<UploadPartCopyRequest, UploadPartCopyResponse>()
+                    .withOperationName("UploadPartCopy").withProtocolMetadata(protocolMetadata)
+                    .withCombinedResponseHandler(responseHandler).withMetricCollector(apiCallMetricCollector)
+                    .withRequestConfiguration(clientConfiguration).withInput(uploadPartCopyRequest)
+                    .withMarshaller(new UploadPartCopyRequestMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    /**
+     * <note>
+     * <p>
+     * This operation is not supported for directory buckets.
+     * </p>
+     * </note>
+     * <p>
+     * Passes transformed objects to a <code>GetObject</code> operation when using Object Lambda access points. For
+     * information about Object Lambda access points, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/transforming-objects.html">Transforming objects with
+     * Object Lambda access points</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     * <p>
+     * This operation supports metadata that can be returned by <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetObject.html">GetObject</a>, in addition to
+     * <code>RequestRoute</code>, <code>RequestToken</code>, <code>StatusCode</code>, <code>ErrorCode</code>, and
+     * <code>ErrorMessage</code>. The <code>GetObject</code> response metadata is supported so that the
+     * <code>WriteGetObjectResponse</code> caller, typically an Lambda function, can provide the same metadata when it
+     * internally invokes <code>GetObject</code>. When <code>WriteGetObjectResponse</code> is called by a customer-owned
+     * Lambda function, the metadata returned to the end user <code>GetObject</code> call might differ from what Amazon
+     * S3 would normally return.
+     * </p>
+     * <p>
+     * You can include any number of metadata headers. When including a metadata header, it should be prefaced with
+     * <code>x-amz-meta</code>. For example, <code>x-amz-meta-my-custom-header: MyCustomValue</code>. The primary use
+     * case for this is to forward <code>GetObject</code> metadata.
+     * </p>
+     * <p>
+     * Amazon Web Services provides some prebuilt Lambda functions that you can use with S3 Object Lambda to detect and
+     * redact personally identifiable information (PII) and decompress S3 objects. These Lambda functions are available
+     * in the Amazon Web Services Serverless Application Repository, and can be selected through the Amazon Web Services
+     * Management Console when you create your Object Lambda access point.
+     * </p>
+     * <p>
+     * Example 1: PII Access Control - This Lambda function uses Amazon Comprehend, a natural language processing (NLP)
+     * service using machine learning to find insights and relationships in text. It automatically detects personally
+     * identifiable information (PII) such as names, addresses, dates, credit card numbers, and social security numbers
+     * from documents in your Amazon S3 bucket.
+     * </p>
+     * <p>
+     * Example 2: PII Redaction - This Lambda function uses Amazon Comprehend, a natural language processing (NLP)
+     * service using machine learning to find insights and relationships in text. It automatically redacts personally
+     * identifiable information (PII) such as names, addresses, dates, credit card numbers, and social security numbers
+     * from documents in your Amazon S3 bucket.
+     * </p>
+     * <p>
+     * Example 3: Decompression - The Lambda function S3ObjectLambdaDecompression, is equipped to decompress objects
+     * stored in S3 in one of six compressed file formats including bzip2, gzip, snappy, zlib, zstandard and ZIP.
+     * </p>
+     * <p>
+     * For information on how to view and use these functions, see <a
+     * href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/olap-examples.html">Using Amazon Web Services built
+     * Lambda functions</a> in the <i>Amazon S3 User Guide</i>.
+     * </p>
+     *
+     * @param writeGetObjectResponseRequest
+     * @param requestBody
+     *        The content to send to the service. A {@link RequestBody} can be created using one of several factory
+     *        methods for various sources of data. For example, to create a request body from a file you can do the
+     *        following.
+     * 
+     *        <pre>
+     * {@code RequestBody.fromFile(new File("myfile.txt"))}
+     * </pre>
+     * 
+     *        See documentation in {@link RequestBody} for additional details and which sources of data are supported.
+     *        The service documentation for the request content is as follows '
+     *        <p>
+     *        The object data.
+     *        </p>
+     *        '
+     * @return Result of the WriteGetObjectResponse operation returned by the service.
+     * @throws SdkException
+     *         Base class for all exceptions that can be thrown by the SDK (both service and client). Can be used for
+     *         catch all scenarios.
+     * @throws SdkClientException
+     *         If any client side error occurs such as an IO related failure, failure to get credentials, etc.
+     * @throws S3Exception
+     *         Base class for all service exceptions. Unknown exceptions will be thrown as an instance of this type.
+     * @sample S3Client.WriteGetObjectResponse
+     */
+    @Override
+    public WriteGetObjectResponseResponse writeGetObjectResponse(WriteGetObjectResponseRequest writeGetObjectResponseRequest,
+            RequestBody requestBody) throws AwsServiceException, SdkClientException, S3Exception {
+
+        HttpResponseHandler<Response<WriteGetObjectResponseResponse>> responseHandler = protocolFactory
+                .createCombinedResponseHandler(WriteGetObjectResponseResponse::builder,
+                        new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(writeGetObjectResponseRequest,
+                this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration, writeGetObjectResponseRequest
+                .overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+                .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "WriteGetObjectResponse");
+            String hostPrefix = "{RequestRoute}.";
+            HostnameValidator.validateHostnameCompliant(writeGetObjectResponseRequest.requestRoute(), "RequestRoute",
+                    "writeGetObjectResponseRequest");
+            String resolvedHostExpression = String.format("%s.", writeGetObjectResponseRequest.requestRoute());
+
+            return clientHandler
+                    .execute(new ClientExecutionParams<WriteGetObjectResponseRequest, WriteGetObjectResponseResponse>()
+                            .withOperationName("WriteGetObjectResponse")
+                            .withProtocolMetadata(protocolMetadata)
+                            .withCombinedResponseHandler(responseHandler)
+                            .withMetricCollector(apiCallMetricCollector)
+                            .hostPrefixExpression(resolvedHostExpression)
+                            .withRequestConfiguration(clientConfiguration)
+                            .withInput(writeGetObjectResponseRequest)
+                            .withRequestBody(requestBody)
+                            .withMarshaller(
+                                    StreamingRequestMarshaller.builder()
+                                            .delegateMarshaller(new WriteGetObjectResponseRequestMarshaller(protocolFactory))
+                                            .requestBody(requestBody).transferEncoding(true).build()));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    /**
+     * Creates an instance of {@link S3Utilities} object with the configuration set on this client.
+     */
+    @Override
+    public S3Utilities utilities() {
+        return S3Utilities.create(clientConfiguration);
+    }
+
+    /**
+     * Create an instance of {@link S3Waiter} using this client.
+     * <p>
+     * Waiters created via this method are managed by the SDK and resources will be released when the service client is
+     * closed.
+     *
+     * @return an instance of {@link S3Waiter}
+     */
+    @Override
+    public S3Waiter waiter() {
+        return S3Waiter.builder().client(this).build();
+    }
+
+    @Override
+    public final String serviceName() {
+        return SERVICE_NAME;
+    }
+
+    private static List<MetricPublisher> resolveMetricPublishers(SdkClientConfiguration clientConfiguration,
+            RequestOverrideConfiguration requestOverrideConfiguration) {
+        List<MetricPublisher> publishers = null;
+        if (requestOverrideConfiguration != null) {
+            publishers = requestOverrideConfiguration.metricPublishers();
+        }
+        if (publishers == null || publishers.isEmpty()) {
+            publishers = clientConfiguration.option(SdkClientOption.METRIC_PUBLISHERS);
+        }
+        if (publishers == null) {
+            publishers = Collections.emptyList();
+        }
+        return publishers;
+    }
+
+    private void updateRetryStrategyClientConfiguration(SdkClientConfiguration.Builder configuration) {
+        ClientOverrideConfiguration.Builder builder = configuration.asOverrideConfigurationBuilder();
+        RetryMode retryMode = builder.retryMode();
+        if (retryMode != null) {
+            configuration.option(SdkClientOption.RETRY_STRATEGY, AwsRetryStrategy.forRetryMode(retryMode));
+        } else {
+            Consumer<RetryStrategy.Builder<?, ?>> configurator = builder.retryStrategyConfigurator();
+            if (configurator != null) {
+                RetryStrategy.Builder<?, ?> defaultBuilder = AwsRetryStrategy.defaultRetryStrategy().toBuilder();
+                configurator.accept(defaultBuilder);
+                configuration.option(SdkClientOption.RETRY_STRATEGY, defaultBuilder.build());
+            } else {
+                RetryStrategy retryStrategy = builder.retryStrategy();
+                if (retryStrategy != null) {
+                    configuration.option(SdkClientOption.RETRY_STRATEGY, retryStrategy);
+                }
+            }
+        }
+        configuration.option(SdkClientOption.CONFIGURED_RETRY_MODE, null);
+        configuration.option(SdkClientOption.CONFIGURED_RETRY_STRATEGY, null);
+        configuration.option(SdkClientOption.CONFIGURED_RETRY_CONFIGURATOR, null);
+    }
+
+    private SdkClientConfiguration updateSdkClientConfiguration(SdkRequest request, SdkClientConfiguration clientConfiguration) {
+        List<SdkPlugin> plugins = request.overrideConfiguration().map(c -> c.plugins()).orElse(Collections.emptyList());
+        SdkClientConfiguration.Builder configuration = clientConfiguration.toBuilder();
+        if (plugins.isEmpty()) {
+            return configuration.build();
+        }
+        S3ServiceClientConfigurationBuilder serviceConfigBuilder = new S3ServiceClientConfigurationBuilder(configuration);
+        for (SdkPlugin plugin : plugins) {
+            plugin.configureClient(serviceConfigBuilder);
+        }
+        AttributeMap newContextParams = configuration.option(SdkClientOption.CLIENT_CONTEXT_PARAMS);
+        AttributeMap originalContextParams = clientConfiguration.option(SdkClientOption.CLIENT_CONTEXT_PARAMS);
+        newContextParams = (newContextParams != null) ? newContextParams : AttributeMap.empty();
+        originalContextParams = originalContextParams != null ? originalContextParams : AttributeMap.empty();
+        Validate.validState(
+                Objects.equals(originalContextParams.get(S3ClientContextParams.CROSS_REGION_ACCESS_ENABLED),
+                        newContextParams.get(S3ClientContextParams.CROSS_REGION_ACCESS_ENABLED)),
+                "CROSS_REGION_ACCESS_ENABLED cannot be modified by request level plugins");
+        updateRetryStrategyClientConfiguration(configuration);
+        return configuration.build();
+    }
+
+    private AwsS3ProtocolFactory init() {
+        return AwsS3ProtocolFactory
+                .builder()
+                .registerModeledException(
+                        ExceptionMetadata.builder().errorCode("EncryptionTypeMismatch")
+                                .exceptionBuilderSupplier(EncryptionTypeMismatchException::builder).httpStatusCode(400).build())
+                .registerModeledException(
+                        ExceptionMetadata.builder().errorCode("NoSuchUpload")
+                                .exceptionBuilderSupplier(NoSuchUploadException::builder).httpStatusCode(404).build())
+                .registerModeledException(
+                        ExceptionMetadata.builder().errorCode("InvalidObjectState")
+                                .exceptionBuilderSupplier(InvalidObjectStateException::builder).httpStatusCode(403).build())
+                .registerModeledException(
+                        ExceptionMetadata.builder().errorCode("InvalidWriteOffset")
+                                .exceptionBuilderSupplier(InvalidWriteOffsetException::builder).httpStatusCode(400).build())
+                .registerModeledException(
+                        ExceptionMetadata.builder().errorCode("BucketAlreadyOwnedByYou")
+                                .exceptionBuilderSupplier(BucketAlreadyOwnedByYouException::builder).httpStatusCode(409).build())
+                .registerModeledException(
+                        ExceptionMetadata.builder().errorCode("NoSuchKey").exceptionBuilderSupplier(NoSuchKeyException::builder)
+                                .httpStatusCode(404).build())
+                .registerModeledException(
+                        ExceptionMetadata.builder().errorCode("InvalidRequest")
+                                .exceptionBuilderSupplier(InvalidRequestException::builder).httpStatusCode(400).build())
+                .registerModeledException(
+                        ExceptionMetadata.builder().errorCode("ObjectAlreadyInActiveTierError")
+                                .exceptionBuilderSupplier(ObjectAlreadyInActiveTierErrorException::builder).httpStatusCode(403)
+                                .build())
+                .registerModeledException(
+                        ExceptionMetadata.builder().errorCode("BucketAlreadyExists")
+                                .exceptionBuilderSupplier(BucketAlreadyExistsException::builder).httpStatusCode(409).build())
+                .registerModeledException(
+                        ExceptionMetadata.builder().errorCode("NoSuchBucket")
+                                .exceptionBuilderSupplier(NoSuchBucketException::builder).httpStatusCode(404).build())
+                .registerModeledException(
+                        ExceptionMetadata.builder().errorCode("TooManyParts")
+                                .exceptionBuilderSupplier(TooManyPartsException::builder).httpStatusCode(400).build())
+                .registerModeledException(
+                        ExceptionMetadata.builder().errorCode("ObjectNotInActiveTierError")
+                                .exceptionBuilderSupplier(ObjectNotInActiveTierErrorException::builder).httpStatusCode(403)
+                                .build()).clientConfiguration(clientConfiguration)
+                .defaultServiceExceptionSupplier(S3Exception::builder).build();
+    }
+
+    /************************************** IBM Supported ***************************************************************/
+    @Override
+    public VoidHttpResponse putBucketProtectionConfiguration(PutBucketProtectionConfigurationRequest
+                         bucketProtectionConfiguration) throws AwsServiceException, SdkClientException {
+        HttpResponseHandler<Response<VoidHttpResponse>> responseHandler = protocolFactory.createCombinedResponseHandler(
+            VoidHttpResponse::builder, new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(bucketProtectionConfiguration, this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration, bucketProtectionConfiguration
+            .overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+            .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "PutBucketProtection");
+
+            return clientHandler.execute(new ClientExecutionParams<PutBucketProtectionConfigurationRequest, VoidHttpResponse>()
+                                             .withOperationName("PutBucketProtection").withProtocolMetadata(protocolMetadata)
+                                             .withCombinedResponseHandler(responseHandler).withMetricCollector(apiCallMetricCollector)
+                                             .withRequestConfiguration(clientConfiguration).withInput(bucketProtectionConfiguration)
+                                             .withMarshaller(new PutBucketProtectionConfigurationMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    @Override
+    public ListBucketsExtendedResponse listBucketsExtended() throws AwsServiceException, SdkClientException {
+        return listBucketsExtended(ListBucketsExtendedRequest.builder().build());
+    }
+
+    @Override
+    public ListBucketsExtendedResponse listBucketsExtended(ListBucketsExtendedRequest listBucketsExtendedRequest)
+        throws AwsServiceException, SdkClientException {
+        HttpResponseHandler<Response<ListBucketsExtendedResponse>> responseHandler = protocolFactory.createCombinedResponseHandler(
+            ListBucketsExtendedResponse::builder, new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(listBucketsExtendedRequest, this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration, listBucketsExtendedRequest
+            .overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+            .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "ListBucketsExtended");
+
+            return clientHandler.execute(new ClientExecutionParams<ListBucketsExtendedRequest, ListBucketsExtendedResponse>()
+                                             .withOperationName("ListBucketsExtended").withProtocolMetadata(protocolMetadata)
+                                             .withCombinedResponseHandler(responseHandler).withMetricCollector(apiCallMetricCollector)
+                                             .withRequestConfiguration(clientConfiguration).withInput(listBucketsExtendedRequest)
+                                             .withMarshaller(new ListBucketsExtendedRequestMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    @Override
+    public GetBucketProtectionConfigurationResponse getBucketProtection(GetBucketProtectionConfigurationRequest
+                 getBucketProtectionRequest) throws SdkClientException, AwsServiceException {
+        HttpResponseHandler<Response<GetBucketProtectionConfigurationResponse>> responseHandler = protocolFactory.createCombinedResponseHandler(
+            GetBucketProtectionConfigurationResponse::builder, new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(getBucketProtectionRequest, this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration, getBucketProtectionRequest
+            .overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+            .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "GetBucketProtection");
+
+            return clientHandler.execute(new ClientExecutionParams<GetBucketProtectionConfigurationRequest, GetBucketProtectionConfigurationResponse>()
+                                             .withOperationName("GetBucketProtection").withProtocolMetadata(protocolMetadata)
+                                             .withCombinedResponseHandler(responseHandler)
+                                             .withMetricCollector(apiCallMetricCollector)
+                                             .withRequestConfiguration(clientConfiguration).withInput(getBucketProtectionRequest)
+                                             .withMarshaller(new GetBucketProtectionConfigurationRequestMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    @Override
+    public VoidHttpResponse addLegalHold(AddLegalHoldRequest addLegalHoldRequest)
+        throws SdkClientException, AwsServiceException {
+        HttpResponseHandler<Response<VoidHttpResponse>> responseHandler = protocolFactory.createCombinedResponseHandler(
+            VoidHttpResponse::builder, new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(addLegalHoldRequest, this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration, addLegalHoldRequest
+            .overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+            .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "AddLegalHold");
+
+            return clientHandler.execute(new ClientExecutionParams<AddLegalHoldRequest, VoidHttpResponse>()
+                                             .withOperationName("AddLegalHold").withProtocolMetadata(protocolMetadata)
+                                             .withMetricCollector(apiCallMetricCollector)
+                                             .withCombinedResponseHandler(responseHandler)
+                                             .withRequestConfiguration(clientConfiguration).withInput(addLegalHoldRequest)
+                                             //instead of Content MD5, adding checksum 256 to header
+                                             .putExecutionAttribute(SdkInternalExecutionAttribute.HTTP_CHECKSUM,
+                                                                    HttpChecksum.builder().requestChecksumRequired(false).isRequestStreaming(true)
+                                                                                .requestAlgorithm("SHA256")
+                                                                                .requestAlgorithmHeader("x-amz-sdk-checksum-algorithm").build())
+                                             .withMarshaller(new AddLegalHoldRequestMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    @Override
+    public ListLegalHoldsResponse listLegalHolds(ListLegalHoldsRequest listLegalHoldsRequest)
+        throws SdkClientException, AwsServiceException {
+        HttpResponseHandler<Response<ListLegalHoldsResponse>> responseHandler = protocolFactory.createCombinedResponseHandler(
+            ListLegalHoldsResponse::builder, new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(listLegalHoldsRequest, this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration, listLegalHoldsRequest
+            .overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+            .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "ListLegalHold");
+
+            return clientHandler.execute(new ClientExecutionParams<ListLegalHoldsRequest, ListLegalHoldsResponse>()
+                                             .withOperationName("ListLegalHold").withProtocolMetadata(protocolMetadata)
+                                             .withMetricCollector(apiCallMetricCollector)
+                                             .withCombinedResponseHandler(responseHandler)
+                                             .withRequestConfiguration(clientConfiguration).withInput(listLegalHoldsRequest)
+                                             .withMarshaller(new ListLegalHoldsRequestMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    @Override
+    public VoidHttpResponse deleteLegalHold(DeleteLegalHoldRequest deleteLegalHoldRequest)
+        throws SdkClientException,AwsServiceException {
+        HttpResponseHandler<Response<VoidHttpResponse>> responseHandler = protocolFactory.createCombinedResponseHandler(
+            VoidHttpResponse::builder, new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(deleteLegalHoldRequest, this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration, deleteLegalHoldRequest
+            .overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+            .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "DeleteLegalHold");
+
+            return clientHandler.execute(new ClientExecutionParams<DeleteLegalHoldRequest, VoidHttpResponse>()
+                                             .withOperationName("DeleteLegalHold").withProtocolMetadata(protocolMetadata)
+                                             .withMetricCollector(apiCallMetricCollector)
+                                             .withCombinedResponseHandler(responseHandler)
+                                             .withRequestConfiguration(clientConfiguration).withInput(deleteLegalHoldRequest)
+                                             .withMarshaller(new DeleteLegalHoldRequestMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    @Override
+    public VoidHttpResponse extendObjectRetention(ExtendObjectRetentionRequest extendObjectRetentionRequest)
+        throws SdkClientException,AwsServiceException {
+        HttpResponseHandler<Response<VoidHttpResponse>> responseHandler = protocolFactory.createCombinedResponseHandler(
+            VoidHttpResponse::builder, new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(extendObjectRetentionRequest, this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration, extendObjectRetentionRequest
+            .overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+            .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "DeleteLegalHold");
+
+            Long additionalRetentionPeriod = extendObjectRetentionRequest.additionalRetentionPeriod();
+            Long extendRetentionFromCurrentTime = extendObjectRetentionRequest.extendRetentionFromCurrentTime();
+            Instant newRetentionExpirationDate = extendObjectRetentionRequest.newRetentionExpirationDate();
+            Long newRetentionPeriod = extendObjectRetentionRequest.newRetentionPeriod();
+
+            // Only one of the extend retention headers can be populated
+            String argumentExceptionMessage = "Only one of additionalRetentionPeriod, extendRetentionFromCurrentTime, newRetentionExpirationDate"
+                                              + " or newRetentionPeriod can be specified.";
+            if (additionalRetentionPeriod != null &&
+                (extendRetentionFromCurrentTime != null || newRetentionExpirationDate != null
+                 || newRetentionPeriod != null)) {
+                throw new IllegalArgumentException(argumentExceptionMessage);
+            }
+
+            if(extendRetentionFromCurrentTime != null &&
+               (newRetentionExpirationDate != null || newRetentionPeriod != null)) {
+                throw new IllegalArgumentException(argumentExceptionMessage);
+            }
+
+            if(newRetentionExpirationDate != null && newRetentionPeriod != null) {
+                throw new IllegalArgumentException(argumentExceptionMessage);
+            }
+
+            return clientHandler.execute(new ClientExecutionParams<ExtendObjectRetentionRequest, VoidHttpResponse>()
+                                             .withOperationName("DeleteLegalHold").withProtocolMetadata(protocolMetadata)
+                                             .withMetricCollector(apiCallMetricCollector)
+                                             .withCombinedResponseHandler(responseHandler)
+                                             .withRequestConfiguration(clientConfiguration).withInput(extendObjectRetentionRequest)
+                                             .withMarshaller(new ExtendObjectRetentionRequestMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    @Override
+    public VoidHttpResponse putBucketReplicationReattempt(PutBucketReplicationReattemptRequest putBucketReplicationReattemptRequest)
+        throws SdkClientException,AwsServiceException {
+        HttpResponseHandler<Response<VoidHttpResponse>> responseHandler = protocolFactory.createCombinedResponseHandler(
+            VoidHttpResponse::builder, new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(putBucketReplicationReattemptRequest, this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration, putBucketReplicationReattemptRequest
+            .overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+            .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "SetBucketReplicationReattemptRequest");
+
+            return clientHandler.execute(new ClientExecutionParams<PutBucketReplicationReattemptRequest, VoidHttpResponse>()
+                                             .withOperationName("SetBucketReplicationReattemptRequest").withProtocolMetadata(protocolMetadata)
+                                             .withMetricCollector(apiCallMetricCollector)
+                                             .withCombinedResponseHandler(responseHandler)
+                                             .withRequestConfiguration(clientConfiguration).withInput(putBucketReplicationReattemptRequest)
+                                             .withMarshaller(new PutBucketReplicationReattemptRequestMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    @Override
+    public ListBucketReplicationFailuresResponse listBucketReplicationFailures(ListBucketReplicationFailuresRequest listBucketReplicationFailuresRequest)
+        throws SdkClientException,AwsServiceException {
+        HttpResponseHandler<Response<ListBucketReplicationFailuresResponse>> responseHandler = protocolFactory.createCombinedResponseHandler(
+            ListBucketReplicationFailuresResponse::builder, new XmlOperationMetadata().withHasStreamingSuccessResponse(false));
+        SdkClientConfiguration clientConfiguration = updateSdkClientConfiguration(listBucketReplicationFailuresRequest, this.clientConfiguration);
+        List<MetricPublisher> metricPublishers = resolveMetricPublishers(clientConfiguration, listBucketReplicationFailuresRequest
+            .overrideConfiguration().orElse(null));
+        MetricCollector apiCallMetricCollector = metricPublishers.isEmpty() ? NoOpMetricCollector.create() : MetricCollector
+            .create("ApiCall");
+        try {
+            apiCallMetricCollector.reportMetric(CoreMetric.SERVICE_ID, "S3");
+            apiCallMetricCollector.reportMetric(CoreMetric.OPERATION_NAME, "SetBucketReplicationReattemptRequest");
+
+            return clientHandler.execute(new ClientExecutionParams<ListBucketReplicationFailuresRequest, ListBucketReplicationFailuresResponse>()
+                                             .withOperationName("ListBucketReplicationFailuresRequest").withProtocolMetadata(protocolMetadata)
+                                             .withMetricCollector(apiCallMetricCollector)
+                                             .withCombinedResponseHandler(responseHandler)
+                                             .withRequestConfiguration(clientConfiguration).withInput(listBucketReplicationFailuresRequest)
+                                             .withMarshaller(new ListBucketReplicationFailuresRequestMarshaller(protocolFactory)));
+        } finally {
+            metricPublishers.forEach(p -> p.publish(apiCallMetricCollector.collect()));
+        }
+    }
+
+    @Override
+    public final S3ServiceClientConfiguration serviceClientConfiguration() {
+        return new S3ServiceClientConfigurationBuilder(this.clientConfiguration.toBuilder()).build();
+    }
+
+    @Override
+    public void close() {
+        clientHandler.close();
+    }
+}

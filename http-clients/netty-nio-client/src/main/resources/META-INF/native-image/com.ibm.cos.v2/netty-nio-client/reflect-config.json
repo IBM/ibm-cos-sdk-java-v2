@@ -1,0 +1,11 @@
+[
+  {
+    "name": "com.ibm.cos.v2.http.nio.netty.NettySdkAsyncHttpService",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  }
+]

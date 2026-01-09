@@ -1,0 +1,56 @@
+/*
+ * Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License").
+ * You may not use this file except in compliance with the License.
+ * A copy of the License is located at
+ *
+ *  http://aws.amazon.com/apache2.0
+ *
+ * or in the "license" file accompanying this file. This file is distributed
+ * on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied. See the License for the specific language governing
+ * permissions and limitations under the License.
+ */
+
+package com.ibm.cos.v2.services.sts.auth;
+
+import com.ibm.cos.v2.services.sts.StsClient;
+import com.ibm.cos.v2.services.sts.model.AssumeRoleRequest;
+import com.ibm.cos.v2.services.sts.model.AssumeRoleResponse;
+import com.ibm.cos.v2.services.sts.model.AssumedRoleUser;
+import com.ibm.cos.v2.services.sts.model.Credentials;
+
+/**
+ * Validate the functionality of {@link StsAssumeRoleCredentialsProvider}.
+ * Inherits tests from {@link StsCredentialsProviderTestBase}.
+ */
+public class StsAssumeRoleCredentialsProviderTest extends StsCredentialsProviderTestBase<AssumeRoleRequest, AssumeRoleResponse> {
+    @Override
+    protected AssumeRoleRequest getRequest() {
+        return AssumeRoleRequest.builder().build();
+    }
+
+    @Override
+    protected AssumeRoleResponse getResponse(Credentials credentials) {
+        return AssumeRoleResponse.builder()
+                                 .credentials(credentials)
+                                 .assumedRoleUser(AssumedRoleUser.builder().arn(ARN).build())
+                                 .build();
+    }
+
+    @Override
+    protected StsAssumeRoleCredentialsProvider.Builder createCredentialsProviderBuilder(AssumeRoleRequest request) {
+        return StsAssumeRoleCredentialsProvider.builder().refreshRequest(request);
+    }
+
+    @Override
+    protected AssumeRoleResponse callClient(StsClient client, AssumeRoleRequest request) {
+        return client.assumeRole(request);
+    }
+
+    @Override
+    protected String providerName() {
+        return "StsAssumeRoleCredentialsProvider";
+    }
+}
