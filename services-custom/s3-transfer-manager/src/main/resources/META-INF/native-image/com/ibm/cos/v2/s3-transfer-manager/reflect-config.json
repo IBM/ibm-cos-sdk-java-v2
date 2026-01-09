@@ -1,0 +1,11 @@
+[
+  {
+    "name": "com.ibm.cos.v2.transfer.s3.internal.ApplyUserAgentInterceptor",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  }
+]

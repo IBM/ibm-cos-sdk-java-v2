@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--
+  ~ Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License").
+  ~ You may not use this file except in compliance with the License.
+  ~ A copy of the License is located at
+  ~
+  ~  http://aws.amazon.com/apache2.0
+  ~
+  ~ or in the "license" file accompanying this file. This file is distributed
+  ~ on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+  ~ express or implied. See the License for the specific language governing
+  ~ permissions and limitations under the License.
+  --><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <artifactId>ibm-cos-java-sdk-v2</artifactId>
+        <groupId>com.ibm.cos.v2</groupId>
+        <version>0.0.1</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+    <artifactId>cos-java-sdk</artifactId>
+    <name>IBM COS SDK for Java :: Packaging</name>
+    <description>The IBM COS SDK for Java provides Java APIs for building software on AWS' cost-effective,
+scalable, and reliable infrastructure products. The AWS Java SDK allows developers to code against APIs for all
+of IBM's infrastructure web services (Amazon S3 etc).</description>
+    <url>https://github.com/ibm/ibm-cos-sdk-java-v2</url>
+    <dependencies>
+        <dependency>
+            <groupId>com.ibm.cos.v2</groupId>
+            <artifactId>s3</artifactId>
+            <version>${ibmcosjavasdk.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.ibm.cos.v2</groupId>
+            <artifactId>kms</artifactId>
+            <version>${ibmcosjavasdk.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.ibm.cos.v2</groupId>
+            <artifactId>s3-transfer-manager</artifactId>
+            <version>${ibmcosjavasdk.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.ibm.cos.v2</groupId>
+            <artifactId>auth</artifactId>
+            <version>${ibmcosjavasdk.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.ibm.cos.v2</groupId>
+            <artifactId>sdk-core</artifactId>
+            <version>${ibmcosjavasdk.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.ibm.cos.v2</groupId>
+            <artifactId>apache-client</artifactId>
+            <version>${ibmcosjavasdk.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.ibm.cos.v2</groupId>
+            <artifactId>netty-nio-client</artifactId>
+            <version>${ibmcosjavasdk.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.ibm.cos.v2</groupId>
+            <artifactId>url-connection-client</artifactId>
+            <version>0.0.1</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <finalName>${project.artifactId}-${project.version}</finalName>
+        <plugins>
+            <plugin>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <groupId>org.apache.maven.plugins</groupId>
+                <configuration>
+                    <ignoredUnusedDeclaredDependencies>
+                        <ignoredUnusedDeclaredDependency>com.ibm.cos.v2:*</ignoredUnusedDeclaredDependency>
+                    </ignoredUnusedDeclaredDependencies>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>
