@@ -72,7 +72,7 @@
     <org.eclipse.text.version>3.5.101</org.eclipse.text.version>
     <rxjava.version>2.2.21</rxjava.version>
     <commons-codec.verion>1.17.1</commons-codec.verion>
-    <awscrt.version>0.38.1</awscrt.version>
+    <awscrt.version>0.42.2</awscrt.version>
     <!--Test dependencies -->
     <junit5.version>5.10.0</junit5.version>
     <mockito.junit5.version>4.6.0</mockito.junit5.version>
