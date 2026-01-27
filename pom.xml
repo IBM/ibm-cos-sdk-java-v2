@@ -89,7 +89,7 @@
     <netty-open-ssl-version>2.0.70.Final</netty-open-ssl-version>
     <sqllite.version>1.0.392</sqllite.version>
     <blockhound.version>1.0.8.RELEASE</blockhound.version>
-    <bytebuddy.version>1.14.15</bytebuddy.version>
+    <bytebuddy.version>1.18.4</bytebuddy.version>
     <archunit.version>1.3.0</archunit.version>
     <json-schema-validator.version>1.5.4</json-schema-validator.version>
     <!-- build plugin dependencies-->
