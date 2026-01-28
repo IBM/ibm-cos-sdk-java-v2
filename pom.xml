@@ -117,7 +117,7 @@
     <freemarker.version>2.3.9</freemarker.version>
     <aspectj.version>1.8.2</aspectj.version>
     <jre.version>1.8</jre.version>
-    <httpcomponents.httpclient.version>4.5.13</httpcomponents.httpclient.version>
+    <httpcomponents.httpclient.version>4.5.14</httpcomponents.httpclient.version>
     <httpcomponents.httpcore.version>4.4.16</httpcomponents.httpcore.version>
     <!-- Reactive Streams version -->
     <reactive-streams.version>1.0.4</reactive-streams.version>
