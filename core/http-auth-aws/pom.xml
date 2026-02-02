@@ -38,7 +38,7 @@
         <dependency>
             <groupId>com.ibm.cloud</groupId>
             <artifactId>sdk-core</artifactId>
-            <version>9.23.1</version>
+            <version>9.25.0</version>
         </dependency>
 
         <dependency>
