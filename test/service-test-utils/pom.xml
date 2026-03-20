@@ -21,7 +21,7 @@
     <parent>
         <groupId>com.ibm.cos.v2</groupId>
         <artifactId>ibm-cos-java-sdk-v2</artifactId>
-        <version>0.0.1</version>
+        <version>1.0.0</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <artifactId>service-test-utils</artifactId>
@@ -58,11 +58,11 @@
             <artifactId>test-utils</artifactId>
             <version>${ibmcosjavasdk.version}</version>
         </dependency>
-        <dependency>
+        <!--<dependency>
             <groupId>com.ibm.cos.v2</groupId>
             <artifactId>auth</artifactId>
             <version>${ibmcosjavasdk.version}</version>
-        </dependency>
+        </dependency> -->
         <dependency>
             <groupId>com.ibm.cos.v2</groupId>
             <artifactId>identity-spi</artifactId>

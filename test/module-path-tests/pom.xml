@@ -20,7 +20,7 @@
     <parent>
         <artifactId>ibm-cos-java-sdk-v2</artifactId>
         <groupId>com.ibm.cos.v2</groupId>
-        <version>0.0.1</version>
+        <version>1.0.0</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -49,11 +49,11 @@
             <artifactId>s3</artifactId>
             <version>${ibmcosjavasdk.version}</version>
         </dependency>
-        <dependency>
+        <!--<dependency>
             <groupId>com.ibm.cos.v2</groupId>
             <artifactId>protocol-tests</artifactId>
             <version>${ibmcosjavasdk.version}</version>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>com.ibm.cos.v2</groupId>
             <artifactId>apache-client</artifactId>
@@ -70,15 +70,9 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>com.ibm.cos.v2</groupId>
-            <artifactId>service-test-utils</artifactId>
-            <version>${ibmcosjavasdk.version}</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
             <groupId>org.hamcrest</groupId>
             <artifactId>hamcrest-all</artifactId>
-            <version>${hamcrest.version}</version>
+            <version>${hamcrest-all.version}</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>

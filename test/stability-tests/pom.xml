@@ -20,7 +20,7 @@
     <parent>
         <artifactId>ibm-cos-java-sdk-v2</artifactId>
         <groupId>com.ibm.cos.v2</groupId>
-        <version>0.0.1</version>
+        <version>1.0.0</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -107,20 +107,14 @@
         </dependency>
         <dependency>
             <groupId>com.ibm.cos.v2</groupId>
-            <artifactId>service-test-utils</artifactId>
-            <version>${ibmcosjavasdk.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.ibm.cos.v2</groupId>
             <artifactId>s3</artifactId>
             <version>${ibmcosjavasdk.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.ibm.cos.v2.crt</groupId>
+            <groupId>software.amazon.awssdk.crt</groupId>
             <artifactId>aws-crt</artifactId>
-            <version>${awscrt.version}</version>
+            <version>${aws-crt.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -130,33 +124,9 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.ibm.cos.v2</groupId>
-            <artifactId>transcribestreaming</artifactId>
-            <version>${ibmcosjavasdk.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.ibm.cos.v2</groupId>
-            <artifactId>kinesis</artifactId>
-            <version>${ibmcosjavasdk.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.ibm.cos.v2</groupId>
-            <artifactId>sqs</artifactId>
-            <version>${ibmcosjavasdk.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.ibm.cos.v2</groupId>
-            <artifactId>cloudwatch</artifactId>
-            <version>${ibmcosjavasdk.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
-            <version>${junit5.version}</version>
+            <version>${junit-bom.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>

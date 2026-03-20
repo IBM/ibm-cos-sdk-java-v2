@@ -4,7 +4,7 @@
     <parent>
         <groupId>com.ibm.cos.v2</groupId>
         <artifactId>ibm-cos-java-sdk-v2</artifactId>
-        <version>0.0.1</version>
+        <version>1.0.0</version>
     </parent>
     <artifactId>services</artifactId>
     <name>IBM COS Java SDK :: Services</name>
@@ -12,9 +12,7 @@
     <modules>
         <module>s3</module>
         <module>kms</module>
-        <!--<module>sns</module>-->
-        <module>sts</module>
-        </modules>
+    </modules>
     <description>The IBM COS Java SDK services</description>
     <url>https://github.com/ibm/ibm-cos-sdk-java-v2</url>
     <dependencyManagement>
@@ -136,7 +134,7 @@
             <groupId>org.slf4j</groupId>
             <artifactId>jcl-over-slf4j</artifactId>
             <scope>test</scope>
-            <version>${slf4j.version}</version>
+            <version>${slf4j-api.version}</version>
         </dependency>
         <dependency>
             <groupId>io.reactivex.rxjava2</groupId>

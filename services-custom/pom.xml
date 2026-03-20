@@ -19,7 +19,7 @@
     <parent>
         <groupId>com.ibm.cos.v2</groupId>
         <artifactId>ibm-cos-java-sdk-v2</artifactId>
-        <version>0.0.1</version>
+        <version>1.0.0</version>
     </parent>
     <artifactId>services-custom</artifactId>
     <name>IBM COS Java SDK :: Custom Services</name>
@@ -29,7 +29,6 @@
 
     <modules>
         <module>s3-transfer-manager</module>
-        <module>s3-event-notifications</module>
     </modules>
 
     <dependencyManagement>
@@ -64,7 +63,7 @@
             <groupId>org.slf4j</groupId>
             <artifactId>jcl-over-slf4j</artifactId>
             <scope>test</scope>
-            <version>${slf4j.version}</version>
+            <version>${slf4j-api.version}</version>
         </dependency>
     </dependencies>
 </project>

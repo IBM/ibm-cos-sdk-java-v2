@@ -17,7 +17,7 @@
     <parent>
         <groupId>com.ibm.cos.v2</groupId>
         <artifactId>ibm-cos-java-sdk-v2</artifactId>
-        <version>0.0.1</version>
+        <version>1.0.0</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>bom</artifactId>
@@ -98,22 +98,12 @@
             </dependency>
             <dependency>
                 <groupId>com.ibm.cos.v2</groupId>
-                <artifactId>protocol-core</artifactId>
-                <version>${ibmcosjavasdk.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.ibm.cos.v2</groupId>
                 <artifactId>regions</artifactId>
                 <version>${ibmcosjavasdk.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.ibm.cos.v2</groupId>
                 <artifactId>sdk-core</artifactId>
-                <version>${ibmcosjavasdk.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.ibm.cos.v2</groupId>
-                <artifactId>checksums-spi</artifactId>
                 <version>${ibmcosjavasdk.version}</version>
             </dependency>
             <dependency>
@@ -188,22 +178,12 @@
             </dependency>
             <dependency>
                 <groupId>com.ibm.cos.v2</groupId>
-                <artifactId>cloudwatch-metric-publisher</artifactId>
-                <version>${ibmcosjavasdk.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.ibm.cos.v2</groupId>
                 <artifactId>emf-metric-logging-publisher</artifactId>
                 <version>${ibmcosjavasdk.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.ibm.cos.v2</groupId>
                 <artifactId>s3-transfer-manager</artifactId>
-                <version>${ibmcosjavasdk.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.ibm.cos.v2</groupId>
-                <artifactId>s3-event-notifications</artifactId>
                 <version>${ibmcosjavasdk.version}</version>
             </dependency>
             <dependency>
@@ -235,21 +215,6 @@
             <dependency>
                 <groupId>com.ibm.cos.v2</groupId>
                 <artifactId>amplify</artifactId>
-                <version>${ibmcosjavasdk.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.ibm.cos.v2</groupId>
-                <artifactId>apigateway</artifactId>
-                <version>${ibmcosjavasdk.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.ibm.cos.v2</groupId>
-                <artifactId>apigatewaymanagementapi</artifactId>
-                <version>${ibmcosjavasdk.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.ibm.cos.v2</groupId>
-                <artifactId>apigatewayv2</artifactId>
                 <version>${ibmcosjavasdk.version}</version>
             </dependency>
             <dependency>
@@ -355,21 +320,6 @@
             <dependency>
                 <groupId>com.ibm.cos.v2</groupId>
                 <artifactId>cloudtrail</artifactId>
-                <version>${ibmcosjavasdk.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.ibm.cos.v2</groupId>
-                <artifactId>cloudwatch</artifactId>
-                <version>${ibmcosjavasdk.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.ibm.cos.v2</groupId>
-                <artifactId>cloudwatchevents</artifactId>
-                <version>${ibmcosjavasdk.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.ibm.cos.v2</groupId>
-                <artifactId>cloudwatchlogs</artifactId>
                 <version>${ibmcosjavasdk.version}</version>
             </dependency>
             <dependency>
@@ -480,21 +430,6 @@
             <dependency>
                 <groupId>com.ibm.cos.v2</groupId>
                 <artifactId>docdb</artifactId>
-                <version>${ibmcosjavasdk.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.ibm.cos.v2</groupId>
-                <artifactId>dynamodb</artifactId>
-                <version>${ibmcosjavasdk.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.ibm.cos.v2</groupId>
-                <artifactId>dynamodb-enhanced</artifactId>
-                <version>${ibmcosjavasdk.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.ibm.cos.v2</groupId>
-                <artifactId>ec2</artifactId>
                 <version>${ibmcosjavasdk.version}</version>
             </dependency>
             <dependency>
@@ -674,11 +609,6 @@
             </dependency>
             <dependency>
                 <groupId>com.ibm.cos.v2</groupId>
-                <artifactId>lambda</artifactId>
-                <version>${ibmcosjavasdk.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.ibm.cos.v2</groupId>
                 <artifactId>lexmodelbuilding</artifactId>
                 <version>${ibmcosjavasdk.version}</version>
             </dependency>
@@ -819,11 +749,6 @@
             </dependency>
             <dependency>
                 <groupId>com.ibm.cos.v2</groupId>
-                <artifactId>polly</artifactId>
-                <version>${ibmcosjavasdk.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.ibm.cos.v2</groupId>
                 <artifactId>pricing</artifactId>
                 <version>${ibmcosjavasdk.version}</version>
             </dependency>
@@ -835,16 +760,6 @@
             <dependency>
                 <groupId>com.ibm.cos.v2</groupId>
                 <artifactId>ram</artifactId>
-                <version>${ibmcosjavasdk.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.ibm.cos.v2</groupId>
-                <artifactId>rds</artifactId>
-                <version>${ibmcosjavasdk.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.ibm.cos.v2</groupId>
-                <artifactId>rdsdata</artifactId>
                 <version>${ibmcosjavasdk.version}</version>
             </dependency>
             <dependency>
@@ -890,11 +805,6 @@
             <dependency>
                 <groupId>com.ibm.cos.v2</groupId>
                 <artifactId>s3</artifactId>
-                <version>${ibmcosjavasdk.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.ibm.cos.v2</groupId>
-                <artifactId>s3control</artifactId>
                 <version>${ibmcosjavasdk.version}</version>
             </dependency>
             <dependency>
@@ -964,27 +874,12 @@
             </dependency>
             <dependency>
                 <groupId>com.ibm.cos.v2</groupId>
-                <artifactId>sns</artifactId>
-                <version>${ibmcosjavasdk.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.ibm.cos.v2</groupId>
-                <artifactId>sqs</artifactId>
-                <version>${ibmcosjavasdk.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.ibm.cos.v2</groupId>
                 <artifactId>ssm</artifactId>
                 <version>${ibmcosjavasdk.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.ibm.cos.v2</groupId>
                 <artifactId>storagegateway</artifactId>
-                <version>${ibmcosjavasdk.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.ibm.cos.v2</groupId>
-                <artifactId>sts</artifactId>
                 <version>${ibmcosjavasdk.version}</version>
             </dependency>
             <dependency>
@@ -1010,11 +905,6 @@
             <dependency>
                 <groupId>com.ibm.cos.v2</groupId>
                 <artifactId>transcribestreaming</artifactId>
-                <version>${ibmcosjavasdk.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.ibm.cos.v2</groupId>
-                <artifactId>transfer</artifactId>
                 <version>${ibmcosjavasdk.version}</version>
             </dependency>
             <dependency>
@@ -1090,11 +980,6 @@
             <dependency>
                 <groupId>com.ibm.cos.v2</groupId>
                 <artifactId>applicationinsights</artifactId>
-                <version>${ibmcosjavasdk.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.ibm.cos.v2</groupId>
-                <artifactId>ec2instanceconnect</artifactId>
                 <version>${ibmcosjavasdk.version}</version>
             </dependency>
             <dependency>
@@ -1239,11 +1124,6 @@
             </dependency>
             <dependency>
                 <groupId>com.ibm.cos.v2</groupId>
-                <artifactId>outposts</artifactId>
-                <version>${ibmcosjavasdk.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.ibm.cos.v2</groupId>
                 <artifactId>sagemakera2iruntime</artifactId>
                 <version>${ibmcosjavasdk.version}</version>
             </dependency>
@@ -1325,11 +1205,6 @@
             <dependency>
                 <groupId>com.ibm.cos.v2</groupId>
                 <artifactId>timestreamquery</artifactId>
-                <version>${ibmcosjavasdk.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.ibm.cos.v2</groupId>
-                <artifactId>s3outposts</artifactId>
                 <version>${ibmcosjavasdk.version}</version>
             </dependency>
             <dependency>
@@ -1965,11 +1840,6 @@
             <dependency>
                 <groupId>com.ibm.cos.v2</groupId>
                 <artifactId>costoptimizationhub</artifactId>
-                <version>${ibmcosjavasdk.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.ibm.cos.v2</groupId>
-                <artifactId>repostspace</artifactId>
                 <version>${ibmcosjavasdk.version}</version>
             </dependency>
             <dependency>

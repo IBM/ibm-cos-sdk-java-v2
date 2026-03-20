@@ -20,7 +20,7 @@
     <parent>
         <artifactId>ibm-cos-java-sdk-v2</artifactId>
         <groupId>com.ibm.cos.v2</groupId>
-        <version>0.0.1</version>
+        <version>1.0.0</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -51,12 +51,6 @@
 
         <dependency>
             <groupId>com.ibm.cos.v2</groupId>
-            <artifactId>dynamodb-enhanced</artifactId>
-            <version>${ibmcosjavasdk.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.ibm.cos.v2</groupId>
             <artifactId>url-connection-client</artifactId>
             <version>${ibmcosjavasdk.version}</version>
         </dependency>
@@ -71,13 +65,13 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>${slf4j.version}</version>
+            <version>${slf4j-api.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
-            <version>${slf4j.version}</version>
+            <version>${slf4j-api.version}</version>
         </dependency>
 
         <!-- Needed to adapt Apache Commons Logging used by Apache HTTP Client to Slf4j to avoid
@@ -85,7 +79,7 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>jcl-over-slf4j</artifactId>
-            <version>${slf4j.version}</version>
+            <version>${slf4j-api.version}</version>
         </dependency>
     </dependencies>
 

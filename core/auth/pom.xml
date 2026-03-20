@@ -22,7 +22,7 @@
     <parent>
         <groupId>com.ibm.cos.v2</groupId>
         <artifactId>core</artifactId>
-        <version>0.0.1</version>
+        <version>1.0.0</version>
     </parent>
 
     <artifactId>auth</artifactId>
@@ -34,6 +34,11 @@
 
 
     <dependencies>
+        <!-- IBM SDK Core for IAM -->
+        <dependency>
+            <groupId>com.ibm.cloud</groupId>
+            <artifactId>sdk-core</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
@@ -122,11 +127,11 @@
             <artifactId>eventstream</artifactId>
            <version>${eventstream.version}</version>
         </dependency>
-        <dependency>
+        <!--<dependency>
             <groupId>commons-lang</groupId>
             <artifactId>commons-lang</artifactId>
             <scope>compile</scope>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
@@ -166,7 +171,7 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
             <scope>compile</scope>
-            <version>3.12.0</version>
+            <version>${commons-lang3.version}</version>
         </dependency>
         <dependency>
             <groupId>com.google.jimfs</groupId>
@@ -184,7 +189,13 @@
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
-            <version>4.5.14</version> <!-- or latest 4.x version -->
+            <version>${httpclient.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-lang</groupId>
+                    <artifactId>commons-lang</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
@@ -211,13 +222,13 @@
         <dependency>
             <groupId>com.ibm.cos.v2</groupId>
             <artifactId>regions</artifactId>
-            <version>0.0.1</version>
+            <version>1.0.0</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.ibm.cos.v2</groupId>
             <artifactId>http-auth</artifactId>
-            <version>0.0.1</version>
+            <version>1.0.0</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>

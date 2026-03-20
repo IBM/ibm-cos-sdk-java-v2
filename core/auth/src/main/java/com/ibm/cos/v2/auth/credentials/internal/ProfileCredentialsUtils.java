@@ -15,6 +15,7 @@
 
 package com.ibm.cos.v2.auth.credentials.internal;
 
+import com.ibm.cos.v2.auth.credentials.ibmOAuth.BasicIBMOAuthCredentials;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -146,6 +147,11 @@ public final class ProfileCredentialsUtils {
             return Optional.of(basicProfileCredentialsProvider());
         }
 
+        /** IBM Supported ***/
+        if(properties.containsKey(ProfileProperty.IBM_API_KEY_ID)) {
+            return Optional.of(basicIAMProfileCredentialsProvider());
+        }
+
         return Optional.empty();
     }
 
@@ -160,6 +166,17 @@ public final class ProfileCredentialsUtils {
                                                         .secretAccessKey(properties.get(ProfileProperty.AWS_SECRET_ACCESS_KEY))
                                                         .accountId(properties.get(ProfileProperty.AWS_ACCOUNT_ID))
                                                         .build();
+        return StaticCredentialsProvider.create(credentials);
+    }
+
+    /**
+     * Load a basic set of IAM credentials that have been configured in this profile.
+     */
+    private AwsCredentialsProvider basicIAMProfileCredentialsProvider() {
+        requireProperties(ProfileProperty.IBM_API_KEY_ID,
+                          ProfileProperty.IBM_SERVICE_INSTANCE_ID);
+        AwsCredentials credentials = new BasicIBMOAuthCredentials(properties.get(ProfileProperty.IBM_API_KEY_ID),
+                                      properties.get(ProfileProperty.IBM_SERVICE_INSTANCE_ID));
         return StaticCredentialsProvider.create(credentials);
     }
 

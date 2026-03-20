@@ -21,7 +21,7 @@
     <parent>
         <artifactId>http-clients</artifactId>
         <groupId>com.ibm.cos.v2</groupId>
-        <version>0.0.1</version>
+        <version>1.0.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -51,7 +51,7 @@
         <dependency>
             <groupId>software.amazon.awssdk.crt</groupId>
             <artifactId>aws-crt</artifactId>
-            <version>${awscrt.version}</version>
+            <version>${aws-crt.version}</version>
         </dependency>
 
         <!--SDK dependencies-->
@@ -165,7 +165,7 @@
         <dependency>
             <groupId>commons-codec</groupId>
             <artifactId>commons-codec</artifactId>
-            <version>${commons-codec.verion}</version>
+            <version>${commons-codec.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>

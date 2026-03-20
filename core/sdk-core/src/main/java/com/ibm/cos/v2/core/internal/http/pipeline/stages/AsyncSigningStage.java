@@ -38,20 +38,19 @@ import com.ibm.cos.v2.core.signer.AsyncSigner;
 import com.ibm.cos.v2.core.signer.Signer;
 import com.ibm.cos.v2.http.SdkHttpFullRequest;
 import com.ibm.cos.v2.http.SdkHttpRequest;
-/*import com.ibm.cos.v2.http.auth.spi.scheme.AuthSchemeOption;
+import com.ibm.cos.v2.http.auth.spi.scheme.AuthSchemeOption;
 import com.ibm.cos.v2.http.auth.spi.signer.AsyncSignRequest;
 import com.ibm.cos.v2.http.auth.spi.signer.AsyncSignedRequest;
 import com.ibm.cos.v2.http.auth.spi.signer.BaseSignedRequest;
 import com.ibm.cos.v2.http.auth.spi.signer.HttpSigner;
 import com.ibm.cos.v2.http.auth.spi.signer.SignRequest;
-import com.ibm.cos.v2.http.auth.spi.signer.SignedRequest; */
+import com.ibm.cos.v2.http.auth.spi.signer.SignedRequest;
 import com.ibm.cos.v2.identity.spi.Identity;
 import com.ibm.cos.v2.metrics.MetricCollector;
 import com.ibm.cos.v2.utils.Logger;
 
 @SdkInternalApi
-public class AsyncSigningStage implements RequestPipeline<SdkHttpFullRequest,
-        CompletableFuture<SdkHttpFullRequest>> {
+public class AsyncSigningStage implements RequestPipeline<SdkHttpFullRequest, CompletableFuture<SdkHttpFullRequest>> {
 
     private static final Logger log = Logger.loggerFor(AsyncSigningStage.class);
 
@@ -62,7 +61,8 @@ public class AsyncSigningStage implements RequestPipeline<SdkHttpFullRequest,
     }
 
     /**
-     * Returns the response from executing one httpClientSettings request; or null for retry.
+     * Returns the response from executing one httpClientSettings request; or null
+     * for retry.
      */
     @Override
     public CompletableFuture<SdkHttpFullRequest> execute(SdkHttpFullRequest request, RequestExecutionContext context)
@@ -70,31 +70,34 @@ public class AsyncSigningStage implements RequestPipeline<SdkHttpFullRequest,
 
         updateHttpRequestInInterceptorContext(request, context.executionContext());
 
-        // Whether pre / post SRA, if old Signer is setup in context, that's the one to use
+        // Whether pre / post SRA, if old Signer is setup in context, that's the one to
+        // use
         if (context.signer() != null) {
             return signRequest(request, context);
         }
         // else if AUTH_SCHEMES != null (implies SRA), use SelectedAuthScheme
-        /*if (context.executionAttributes().getAttribute(SdkInternalExecutionAttribute.AUTH_SCHEMES) != null) { TODO:REMOVE
-            SelectedAuthScheme<?> selectedAuthScheme =
-                context.executionAttributes().getAttribute(SdkInternalExecutionAttribute.SELECTED_AUTH_SCHEME);
-            log.debug(() -> String.format("Using SelectedAuthScheme: %s", selectedAuthScheme.authSchemeOption().schemeId()));
+        if (context.executionAttributes().getAttribute(SdkInternalExecutionAttribute.AUTH_SCHEMES) != null) {
+            SelectedAuthScheme<?> selectedAuthScheme = context.executionAttributes()
+                    .getAttribute(SdkInternalExecutionAttribute.SELECTED_AUTH_SCHEME);
+            log.debug(() -> String.format("Using SelectedAuthScheme: %s",
+                    selectedAuthScheme.authSchemeOption().schemeId()));
             return sraSignRequest(request, context, selectedAuthScheme);
-        } */
-        // else, this implies pre SRA client with authType=None, so don't need to do anything
+        }
+        // else, this implies pre SRA client with authType=None, so don't need to do
+        // anything
         return CompletableFuture.completedFuture(request);
     }
 
     private <T extends Identity> CompletableFuture<SdkHttpFullRequest> sraSignRequest(SdkHttpFullRequest request,
-                                                                                      RequestExecutionContext context,
-                                                                                      SelectedAuthScheme<T> selectedAuthScheme) {
+            RequestExecutionContext context,
+            SelectedAuthScheme<T> selectedAuthScheme) {
         adjustForClockSkew(context.executionAttributes());
         CompletableFuture<? extends T> identityFuture = selectedAuthScheme.identity();
         return identityFuture.thenCompose(identity -> {
             CompletableFuture<SdkHttpFullRequest> signedRequestFuture = MetricUtils.reportDuration(
-                () -> doSraSign(request, context, selectedAuthScheme, identity),
-                context.attemptMetricCollector(),
-                CoreMetric.SIGNING_DURATION);
+                    () -> doSraSign(request, context, selectedAuthScheme, identity),
+                    context.attemptMetricCollector(),
+                    CoreMetric.SIGNING_DURATION);
 
             return signedRequestFuture.thenApply(r -> {
                 updateHttpRequestInInterceptorContext(r, context.executionContext());
@@ -104,18 +107,19 @@ public class AsyncSigningStage implements RequestPipeline<SdkHttpFullRequest,
     }
 
     private <T extends Identity> CompletableFuture<SdkHttpFullRequest> doSraSign(SdkHttpFullRequest request,
-                                                                                 RequestExecutionContext context,
-                                                                                 SelectedAuthScheme<T> selectedAuthScheme,
-                                                                                 T identity) {
-        /*AuthSchemeOption authSchemeOption = selectedAuthScheme.authSchemeOption(); TODO:REMOVE
+            RequestExecutionContext context,
+            SelectedAuthScheme<T> selectedAuthScheme,
+            T identity) {
+
+        AuthSchemeOption authSchemeOption = selectedAuthScheme.authSchemeOption();
         HttpSigner<T> signer = selectedAuthScheme.signer();
 
         if (context.requestProvider() == null) {
             SignRequest.Builder<T> signRequestBuilder = SignRequest
-                .builder(identity)
-                .putProperty(HttpSigner.SIGNING_CLOCK, signingClock())
-                .request(request)
-                .payload(request.contentStreamProvider().orElse(null));
+                    .builder(identity)
+                    .putProperty(HttpSigner.SIGNING_CLOCK, signingClock())
+                    .request(request)
+                    .payload(request.contentStreamProvider().orElse(null));
             authSchemeOption.forEachSignerProperty(signRequestBuilder::putProperty);
 
             SignedRequest signedRequest = signer.sign(signRequestBuilder.build());
@@ -123,10 +127,10 @@ public class AsyncSigningStage implements RequestPipeline<SdkHttpFullRequest,
         }
 
         AsyncSignRequest.Builder<T> signRequestBuilder = AsyncSignRequest
-            .builder(identity)
-            .putProperty(HttpSigner.SIGNING_CLOCK, signingClock())
-            .request(request)
-            .payload(context.requestProvider());
+                .builder(identity)
+                .putProperty(HttpSigner.SIGNING_CLOCK, signingClock())
+                .request(request)
+                .payload(context.requestProvider());
         authSchemeOption.forEachSignerProperty(signRequestBuilder::putProperty);
 
         CompletableFuture<AsyncSignedRequest> signedRequestFuture = signer.signAsync(signRequestBuilder.build());
@@ -134,11 +138,12 @@ public class AsyncSigningStage implements RequestPipeline<SdkHttpFullRequest,
             SdkHttpFullRequest result = toSdkHttpFullRequest(signedRequest);
             updateAsyncRequestBodyInContexts(context, signedRequest);
             return CompletableFuture.completedFuture(result);
-        }); */
-        return null;
+        });
+
     }
 
-    /*private static void updateAsyncRequestBodyInContexts(RequestExecutionContext context, AsyncSignedRequest signedRequest) { TODO:REMOVE
+    private static void updateAsyncRequestBodyInContexts(RequestExecutionContext context,
+            AsyncSignedRequest signedRequest) {
         AsyncRequestBody newAsyncRequestBody;
         Optional<Publisher<ByteBuffer>> optionalPayload = signedRequest.payload();
         if (optionalPayload.isPresent()) {
@@ -156,11 +161,12 @@ public class AsyncSigningStage implements RequestPipeline<SdkHttpFullRequest,
 
         ExecutionContext executionContext = context.executionContext();
         executionContext.interceptorContext(executionContext.interceptorContext()
-                                                            .copy(b -> b.asyncRequestBody(newAsyncRequestBody)));
+                .copy(b -> b.asyncRequestBody(newAsyncRequestBody)));
     }
 
     private SdkHttpFullRequest toSdkHttpFullRequest(SignedRequest signedRequest) {
-        return toSdkHttpFullRequestBuilder(signedRequest).contentStreamProvider(signedRequest.payload().orElse(null)).build();
+        return toSdkHttpFullRequestBuilder(signedRequest).contentStreamProvider(
+                signedRequest.payload().orElse(null)).build();
     }
 
     private SdkHttpFullRequest toSdkHttpFullRequest(AsyncSignedRequest signedRequest) {
@@ -174,20 +180,20 @@ public class AsyncSigningStage implements RequestPipeline<SdkHttpFullRequest,
     private SdkHttpFullRequest.Builder toSdkHttpFullRequestBuilder(BaseSignedRequest<?> baseSignedRequest) {
         SdkHttpRequest request = baseSignedRequest.request();
         return SdkHttpFullRequest.builder()
-                                 .protocol(request.protocol())
-                                 .method(request.method())
-                                 .host(request.host())
-                                 .port(request.port())
-                                 .encodedPath(request.encodedPath())
-                                 .applyMutation(r -> request.forEachHeader(r::putHeader))
-                                 .applyMutation(r -> request.forEachRawQueryParameter(r::putRawQueryParameter));
-    } */
+                .protocol(request.protocol())
+                .method(request.method())
+                .host(request.host())
+                .port(request.port())
+                .encodedPath(request.encodedPath())
+                .applyMutation(r -> request.forEachHeader(r::putHeader))
+                .applyMutation(r -> request.forEachRawQueryParameter(r::putRawQueryParameter));
+    }
 
     /**
      * Sign the request if the signer is provided and credentials are present.
      */
     private CompletableFuture<SdkHttpFullRequest> signRequest(SdkHttpFullRequest request,
-                                                              RequestExecutionContext context) {
+            RequestExecutionContext context) {
         Signer signer = context.signer();
         MetricCollector metricCollector = context.attemptMetricCollector();
 
@@ -196,11 +202,10 @@ public class AsyncSigningStage implements RequestPipeline<SdkHttpFullRequest,
         AsyncSigner asyncSigner = asAsyncSigner(signer, context);
 
         long signingStart = System.nanoTime();
-        CompletableFuture<SdkHttpFullRequest> signedRequestFuture =  asyncSigner.sign(request, context.requestProvider(),
+        CompletableFuture<SdkHttpFullRequest> signedRequestFuture = asyncSigner.sign(request, context.requestProvider(),
                 context.executionAttributes());
-        signedRequestFuture.whenComplete((r, t) ->
-                    metricCollector.reportMetric(CoreMetric.SIGNING_DURATION,
-                            Duration.ofNanos(System.nanoTime() - signingStart)));
+        signedRequestFuture.whenComplete((r, t) -> metricCollector.reportMetric(CoreMetric.SIGNING_DURATION,
+                Duration.ofNanos(System.nanoTime() - signingStart)));
 
         return signedRequestFuture.thenApply(r -> {
             updateHttpRequestInInterceptorContext(r, context.executionContext());
@@ -216,7 +221,8 @@ public class AsyncSigningStage implements RequestPipeline<SdkHttpFullRequest,
     }
 
     /**
-     * Returns the {@link Clock} used for signing that already accounts for clock skew when detected by the retryable stage.
+     * Returns the {@link Clock} used for signing that already accounts for clock
+     * skew when detected by the retryable stage.
      */
     private Clock signingClock() {
         int offsetInSeconds = dependencies.timeOffset();
@@ -231,7 +237,8 @@ public class AsyncSigningStage implements RequestPipeline<SdkHttpFullRequest,
     }
 
     /**
-     * Simple method to adapt a sync Signer to an AsyncSigner if necessary to make the signing code path a little cleaner
+     * Simple method to adapt a sync Signer to an AsyncSigner if necessary to make
+     * the signing code path a little cleaner
      */
     private AsyncSigner asAsyncSigner(Signer signer, RequestExecutionContext context) {
         if (signer instanceof AsyncSigner) {
@@ -242,11 +249,10 @@ public class AsyncSigningStage implements RequestPipeline<SdkHttpFullRequest,
             SdkHttpFullRequest signedRequest = signer.sign(request, executionAttributes);
 
             if (signer instanceof AsyncRequestBodySigner) {
-                //Transform request body provider with signing operator
-                AsyncRequestBody transformedRequestProvider =
-                        ((AsyncRequestBodySigner) signer)
-                                .signAsyncRequestBody(signedRequest, context.requestProvider(),
-                                        context.executionAttributes());
+                // Transform request body provider with signing operator
+                AsyncRequestBody transformedRequestProvider = ((AsyncRequestBodySigner) signer)
+                        .signAsyncRequestBody(signedRequest, context.requestProvider(),
+                                context.executionAttributes());
                 context.requestProvider(transformedRequestProvider);
             }
 

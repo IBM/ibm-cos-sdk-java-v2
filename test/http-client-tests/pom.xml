@@ -21,7 +21,7 @@
     <parent>
         <artifactId>ibm-cos-java-sdk-v2</artifactId>
         <groupId>com.ibm.cos.v2</groupId>
-        <version>0.0.1</version>
+        <version>1.0.0</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <artifactId>http-client-tests</artifactId>

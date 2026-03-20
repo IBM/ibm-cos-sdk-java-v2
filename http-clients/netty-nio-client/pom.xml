@@ -20,7 +20,7 @@
     <parent>
         <artifactId>http-clients</artifactId>
         <groupId>com.ibm.cos.v2</groupId>
-        <version>0.0.1</version>
+        <version>1.0.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -59,10 +59,12 @@
         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-codec-http2</artifactId>
+            <version>${netty-codec-http2.version}</version>
         </dependency>
         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-codec</artifactId>
+            <version>${netty-codec.version}</version>
         </dependency>
         <dependency>
             <groupId>io.netty</groupId>
@@ -190,7 +192,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>${maven.surefire.version}</version>
+                <version>${maven-surefire-plugin.version}</version>
                 <configuration>
                     <properties>
                         <property>
@@ -204,12 +206,12 @@
                     <dependency>
                         <groupId>org.apache.maven.surefire</groupId>
                         <artifactId>surefire-junit-platform</artifactId>
-                        <version>${maven.surefire.version}</version>
+                        <version>${maven-surefire-plugin.version}</version>
                     </dependency>
                     <dependency>
                         <groupId>org.apache.maven.surefire</groupId>
                         <artifactId>surefire-testng</artifactId>
-                        <version>${maven.surefire.version}</version>
+                        <version>${maven-surefire-plugin.version}</version>
                     </dependency>
                 </dependencies>
             </plugin>

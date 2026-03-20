@@ -34,6 +34,17 @@ public final class ProfileProperty {
      */
     public static final String AWS_SECRET_ACCESS_KEY = "aws_secret_access_key";
 
+    /** IBM Supported ***/
+    /**
+     * Property name for specifying the IBM API Key
+     */
+    public static final String IBM_API_KEY_ID = "ibm.apiKeyId";
+
+    /**
+     * Property name for specifying the IBM Service Instance ID
+     */
+    public static final String IBM_SERVICE_INSTANCE_ID = "ibm.serviceInstanceId";
+
     /**
      * Property name for specifying the Amazon AWS Session Token
      */

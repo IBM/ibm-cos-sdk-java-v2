@@ -20,7 +20,7 @@
     <parent>
         <artifactId>ibm-cos-java-sdk-v2</artifactId>
         <groupId>com.ibm.cos.v2</groupId>
-        <version>0.0.1</version>
+        <version>1.0.0</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -46,7 +46,7 @@
             <artifactId>http-auth-aws</artifactId>
             <version>${ibmcosjavasdk.version}</version>
         </dependency>
-        <dependency>
+       <!-- <dependency>
             <groupId>com.ibm.cos.v2</groupId>
             <artifactId>aws-json-protocol</artifactId>
             <version>${ibmcosjavasdk.version}</version>
@@ -55,7 +55,7 @@
             <groupId>com.ibm.cos.v2</groupId>
             <artifactId>aws-core</artifactId>
             <version>${ibmcosjavasdk.version}</version>
-        </dependency>
+        </dependency> -->
         <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>

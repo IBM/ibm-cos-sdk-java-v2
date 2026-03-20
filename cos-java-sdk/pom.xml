@@ -17,7 +17,7 @@
     <parent>
         <artifactId>ibm-cos-java-sdk-v2</artifactId>
         <groupId>com.ibm.cos.v2</groupId>
-        <version>0.0.1</version>
+        <version>1.0.0</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>cos-java-sdk</artifactId>
@@ -65,7 +65,7 @@ of IBM's infrastructure web services (Amazon S3 etc).</description>
         <dependency>
             <groupId>com.ibm.cos.v2</groupId>
             <artifactId>url-connection-client</artifactId>
-            <version>0.0.1</version>
+            <version>1.0.0</version>
         </dependency>
     </dependencies>
 

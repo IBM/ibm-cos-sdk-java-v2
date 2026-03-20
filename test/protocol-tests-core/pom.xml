@@ -20,7 +20,7 @@
     <parent>
         <artifactId>ibm-cos-java-sdk-v2</artifactId>
         <groupId>com.ibm.cos.v2</groupId>
-        <version>0.0.1</version>
+        <version>1.0.0</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -52,11 +52,11 @@
             <artifactId>sdk-core</artifactId>
             <version>${ibmcosjavasdk.version}</version>
         </dependency>
-        <dependency>
+       <!-- <dependency>
             <groupId>com.ibm.cos.v2</groupId>
             <artifactId>auth</artifactId>
             <version>${ibmcosjavasdk.version}</version>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>com.ibm.cos.v2</groupId>
             <artifactId>regions</artifactId>
@@ -75,31 +75,26 @@
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpcore</artifactId>
         </dependency>
-        <dependency>
+        <!--<dependency>
             <groupId>org.unitils</groupId>
             <artifactId>unitils-core</artifactId>
             <scope>compile</scope>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>xmlunit</groupId>
             <artifactId>xmlunit</artifactId>
             <scope>compile</scope>
         </dependency>
-        <dependency>
-            <groupId>com.ibm.cos.v2</groupId>
-            <artifactId>codegen</artifactId>
-            <version>${ibmcosjavasdk.version}</version>
-        </dependency>
-        <dependency>
+        <!--<dependency>
             <groupId>com.ibm.cos.v2</groupId>
             <artifactId>aws-core</artifactId>
             <version>${ibmcosjavasdk.version}</version>
-        </dependency>
-        <dependency>
+        </dependency> -->
+        <!--<dependency>
             <groupId>com.github.tomakehurst</groupId>
             <artifactId>wiremock-jre8</artifactId>
             <scope>compile</scope>
-        </dependency>
+        </dependency> -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>

@@ -20,7 +20,7 @@
     <parent>
         <artifactId>ibm-cos-java-sdk-v2</artifactId>
         <groupId>com.ibm.cos.v2</groupId>
-        <version>0.0.1</version>
+        <version>1.0.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -32,112 +32,112 @@
             <dependency>
                 <groupId>commons-io</groupId>
                 <artifactId>commons-io</artifactId>
-                <version>${commons.io.version}</version>
+                <version>${commons-io.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.jr</groupId>
                 <artifactId>jackson-jr-objects</artifactId>
-                <version>${jacksonjr.version}</version>
+                <version>${jackson-jr-objects.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.jr</groupId>
                 <artifactId>jackson-jr-stree</artifactId>
-                <version>${jacksonjr.version}</version>
+                <version>${jackson-jr-stree.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
-                <version>${slf4j.version}</version>
+                <version>${slf4j-api.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-databind</artifactId>
-                <version>${jackson.databind.version}</version>
+                <version>${jackson-databind.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-core</artifactId>
-                <version>${jackson.version}</version>
+                <version>${jackson-core.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-annotations</artifactId>
-                <version>${jackson.version}</version>
+                <version>${jackson-annotations.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.dataformat</groupId>
                 <artifactId>jackson-dataformat-cbor</artifactId>
-                <version>${jackson.version}</version>
+                <version>${jackson-dataformat-cbor.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.datatype</groupId>
                 <artifactId>jackson-datatype-jdk8</artifactId>
-                <version>${jackson.version}</version>
+                <version>${jackson-datatype-jdk8.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.datatype</groupId>
                 <artifactId>jackson-datatype-jsr310</artifactId>
-                <version>${jackson.version}</version>
+                <version>${jackson-datatype-jsr310.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.httpcomponents</groupId>
                 <artifactId>httpclient</artifactId>
-                <version>${httpcomponents.httpclient.version}</version>
+                <version>${httpclient.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.httpcomponents</groupId>
                 <artifactId>httpcore</artifactId>
-                <version>${httpcomponents.httpcore.version}</version>
+                <version>${httpcore.version}</version>
             </dependency>
             <dependency>
                 <groupId>commons-codec</groupId>
                 <artifactId>commons-codec</artifactId>
-                <version>${commons-codec.verion}</version>
+                <version>${commons-codec.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.netty</groupId>
                 <artifactId>netty-codec-http</artifactId>
-                <version>${netty.version}</version>
+                <version>${netty-codec-http.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.netty</groupId>
                 <artifactId>netty-codec-http2</artifactId>
-                <version>${netty.version}</version>
+                <version>${netty-codec-http2.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.netty</groupId>
                 <artifactId>netty-handler</artifactId>
-                <version>${netty.version}</version>
+                <version>${netty-handler.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.netty</groupId>
                 <artifactId>netty-codec</artifactId>
-                <version>${netty.version}</version>
+                <version>${netty-codec.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.netty</groupId>
                 <artifactId>netty-transport</artifactId>
-                <version>${netty.version}</version>
+                <version>${netty-transport.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.netty</groupId>
                 <artifactId>netty-common</artifactId>
-                <version>${netty.version}</version>
+                <version>${netty-common.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.netty</groupId>
                 <artifactId>netty-buffer</artifactId>
-                <version>${netty.version}</version>
+                <version>${netty-buffer.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.netty</groupId>
                 <artifactId>netty-resolver</artifactId>
-                <version>${netty.version}</version>
+                <version>${netty-resolver.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.netty</groupId>
                 <artifactId>netty-resolver-dns</artifactId>
-                <version>${netty.version}</version>
+                <version>${netty-resolver-dns.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.reactivestreams</groupId>
@@ -147,12 +147,12 @@
             <dependency>
                 <groupId>io.netty</groupId>
                 <artifactId>netty-transport-classes-epoll</artifactId>
-                <version>${netty.version}</version>
+                <version>${netty-transport-classes-epoll.version}</version>
             </dependency>
             <dependency>
                 <artifactId>org.eclipse.jdt.core</artifactId>
                 <groupId>org.eclipse.jdt</groupId>
-                <version>${org.eclipse.jdt.version}</version>
+                <version>${org.eclipse.jdt.core.version}</version>
             </dependency>
             <dependency>
                 <artifactId>org.eclipse.text</artifactId>
@@ -205,7 +205,7 @@
             <dependency>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>${maven.surefire.version}</version>
+                <version>${maven-surefire-plugin.version}</version>
             </dependency>
 
             <!-- Test Dependencies -->
@@ -218,19 +218,13 @@
             <dependency>
                 <artifactId>commons-lang3</artifactId>
                 <groupId>org.apache.commons</groupId>
-                <version>${commons.lang.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>commons-lang</groupId>
-                <artifactId>commons-lang</artifactId>
-                <version>${commons-lang.verson}</version>
+                <version>${commons-lang3.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.unitils</groupId>
                 <artifactId>unitils-core</artifactId>
-                <version>${unitils.version}</version>
+                <version>${unitils-core.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
@@ -242,13 +236,13 @@
             <dependency>
                 <groupId>org.mockito</groupId>
                 <artifactId>mockito-core</artifactId>
-                <version>${mockito.version}</version>
+                <version>${mockito-core.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.mockito</groupId>
                 <artifactId>mockito-inline</artifactId>
-                <version>${mockito.version}</version>
+                <version>${mockito-inline.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
@@ -261,21 +255,21 @@
                 <!-- Log4j2 API -->
                 <groupId>org.apache.logging.log4j</groupId>
                 <artifactId>log4j-api</artifactId>
-                <version>${log4j.version}</version>
+                <version>${log4j-api.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <!-- Log4j2 Core -->
                 <groupId>org.apache.logging.log4j</groupId>
                 <artifactId>log4j-core</artifactId>
-                <version>${log4j.version}</version>
+                <version>${log4j-core.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <!-- Bind SLF4J to Log4j2 -->
                 <groupId>org.apache.logging.log4j</groupId>
                 <artifactId>log4j-slf4j-impl</artifactId>
-                <version>${log4j.version}</version>
+                <version>${log4j-slf4j-impl.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
@@ -287,7 +281,7 @@
             <dependency>
                 <groupId>org.assertj</groupId>
                 <artifactId>assertj-core</artifactId>
-                <version>${assertj.version}</version>
+                <version>${assertj-core.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
@@ -299,7 +293,7 @@
             <dependency>
                 <groupId>com.github.tomakehurst</groupId>
                 <artifactId>wiremock-jre8</artifactId>
-                <version>${wiremock.version}</version>
+                <version>${wiremock-jre8.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
@@ -311,13 +305,13 @@
             <dependency>
                 <groupId>org.mockito</groupId>
                 <artifactId>mockito-junit-jupiter</artifactId>
-                <version>${mockito.junit5.version}</version>
+                <version>${mockito-junit-jupiter.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
-                <version>${junit4.version}</version>
+                <version>${junit.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
@@ -329,19 +323,19 @@
             <dependency>
                 <groupId>org.hamcrest</groupId>
                 <artifactId>hamcrest-all</artifactId>
-                <version>${hamcrest.version}</version>
+                <version>${hamcrest-all.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.hamcrest</groupId>
                 <artifactId>hamcrest-core</artifactId>
-                <version>${hamcrest.version}</version>
+                <version>${hamcrest-core.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.reactivestreams</groupId>
                 <artifactId>reactive-streams-tck</artifactId>
-                <version>${reactive-streams.version}</version>
+                <version>${reactive-streams-tck.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
@@ -353,7 +347,7 @@
             <dependency>
                 <groupId>com.tngtech.archunit</groupId>
                 <artifactId>archunit-junit5</artifactId>
-                <version>${archunit.version}</version>
+                <version>${archunit-junit5.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
@@ -365,47 +359,47 @@
             <dependency>
                 <groupId>io.netty</groupId>
                 <artifactId>netty-tcnative-boringssl-static</artifactId>
-                <version>${netty-open-ssl-version}</version>
+                <version>${netty-tcnative-boringssl-static.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>com.almworks.sqlite4java</groupId>
                 <artifactId>sqlite4java</artifactId>
-                <version>${sqllite.version}</version>
+                <version>${sqlite4java.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>com.almworks.sqlite4java</groupId>
                 <artifactId>sqlite4java-win32-x86</artifactId>
-                <version>${sqllite.version}</version>
+                <version>${sqlite4java-win32-x86.version}</version>
                 <type>dll</type>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>com.almworks.sqlite4java</groupId>
                 <artifactId>sqlite4java-win32-x64</artifactId>
-                <version>${sqllite.version}</version>
+                <version>${sqlite4java-win32-x64.version}</version>
                 <type>dll</type>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>com.almworks.sqlite4java</groupId>
                 <artifactId>libsqlite4java-osx</artifactId>
-                <version>${sqllite.version}</version>
+                <version>${libsqlite4java-osx.version}</version>
                 <type>dylib</type>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>com.almworks.sqlite4java</groupId>
                 <artifactId>libsqlite4java-linux-i386</artifactId>
-                <version>${sqllite.version}</version>
+                <version>${libsqlite4java-linux-i386.version}</version>
                 <type>so</type>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>com.almworks.sqlite4java</groupId>
                 <artifactId>libsqlite4java-linux-amd64</artifactId>
-                <version>${sqllite.version}</version>
+                <version>${libsqlite4java-linux-amd64.version}</version>
                 <type>so</type>
                 <scope>test</scope>
             </dependency>
@@ -417,13 +411,13 @@
             <dependency>
                 <groupId>net.bytebuddy</groupId>
                 <artifactId>byte-buddy</artifactId>
-                <version>${bytebuddy.version}</version>
+                <version>${byte-buddy.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.junit</groupId>
                 <artifactId>junit-bom</artifactId>
-                <version>${junit5.version}</version>
+                <version>${junit-bom.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>

@@ -21,7 +21,7 @@
     <parent>
         <artifactId>ibm-cos-java-sdk-v2</artifactId>
         <groupId>com.ibm.cos.v2</groupId>
-        <version>0.0.1</version>
+        <version>1.0.0</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
@@ -42,88 +42,18 @@
 
     <dependencies>
         <dependency>
-            <artifactId>dynamodb-enhanced</artifactId>
-            <groupId>com.ibm.cos.v2</groupId>
-            <version>${ibmcosjavasdk.version}</version>
-        </dependency>
-        <dependency>
-            <artifactId>cloudwatch-metric-publisher</artifactId>
-            <groupId>com.ibm.cos.v2</groupId>
-            <version>${ibmcosjavasdk.version}</version>
-        </dependency>
-        <dependency>
-            <artifactId>emf-metric-logging-publisher</artifactId>
-            <groupId>com.ibm.cos.v2</groupId>
-            <version>${ibmcosjavasdk.version}</version>
-        </dependency>
-        <dependency>
             <artifactId>s3</artifactId>
             <groupId>com.ibm.cos.v2</groupId>
             <version>${ibmcosjavasdk.version}</version>
         </dependency>
         <dependency>
-            <artifactId>sqs</artifactId>
-            <groupId>com.ibm.cos.v2</groupId>
-            <version>${ibmcosjavasdk.version}</version>
-        </dependency>
-        <dependency>
-            <artifactId>sts</artifactId>
-            <groupId>com.ibm.cos.v2</groupId>
-            <version>${ibmcosjavasdk.version}</version>
-        </dependency>
-        <dependency>
-            <artifactId>rds</artifactId>
-            <groupId>com.ibm.cos.v2</groupId>
-            <version>${ibmcosjavasdk.version}</version>
-        </dependency>
-        <dependency>
-            <artifactId>iam</artifactId>
-            <groupId>com.ibm.cos.v2</groupId>
-            <version>${ibmcosjavasdk.version}</version>
-        </dependency>
-        <dependency>
-            <artifactId>dynamodb</artifactId>
-            <groupId>com.ibm.cos.v2</groupId>
-            <version>${ibmcosjavasdk.version}</version>
-        </dependency>
-        <dependency>
-            <artifactId>kinesis</artifactId>
-            <groupId>com.ibm.cos.v2</groupId>
-            <version>${ibmcosjavasdk.version}</version>
-        </dependency>
-        <dependency>
-            <artifactId>transcribestreaming</artifactId>
-            <groupId>com.ibm.cos.v2</groupId>
-            <version>${ibmcosjavasdk.version}</version>
-        </dependency>
-        <dependency>
-            <artifactId>glacier</artifactId>
+            <artifactId>kms</artifactId>
             <groupId>com.ibm.cos.v2</groupId>
             <version>${ibmcosjavasdk.version}</version>
         </dependency>
         <dependency>
             <artifactId>s3-transfer-manager</artifactId>
             <groupId>com.ibm.cos.v2</groupId>
-            <version>${ibmcosjavasdk.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.ibm.cos.v2</groupId>
-            <artifactId>s3-event-notifications</artifactId>
-            <version>${ibmcosjavasdk.version}</version>
-        </dependency>
-        <dependency>
-            <artifactId>sso</artifactId>
-            <groupId>com.ibm.cos.v2</groupId>
-            <version>${ibmcosjavasdk.version}</version>
-        </dependency>
-        <dependency>
-            <artifactId>cloudfront</artifactId>
-            <groupId>com.ibm.cos.v2</groupId>
-            <version>${ibmcosjavasdk.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.ibm.cos.v2</groupId>
-            <artifactId>imds</artifactId>
             <version>${ibmcosjavasdk.version}</version>
         </dependency>
         <dependency>

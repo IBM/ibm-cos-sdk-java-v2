@@ -22,7 +22,7 @@
     <parent>
         <groupId>com.ibm.cos.v2</groupId>
         <artifactId>core</artifactId>
-        <version>0.0.1</version>
+        <version>1.0.0</version>
     </parent>
 
     <artifactId>identity-spi</artifactId>
@@ -67,8 +67,13 @@
         <dependency>
             <groupId>com.ibm.cloud</groupId>
             <artifactId>sdk-core</artifactId>
-            <version>9.23.1</version>
             <scope>compile</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-lang</groupId>
+                    <artifactId>commons-lang</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
 

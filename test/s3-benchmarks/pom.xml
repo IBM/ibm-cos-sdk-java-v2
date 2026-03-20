@@ -20,7 +20,7 @@
     <parent>
         <artifactId>ibm-cos-java-sdk-v2</artifactId>
         <groupId>com.ibm.cos.v2</groupId>
-        <version>0.0.1</version>
+        <version>1.0.0</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -67,14 +67,9 @@
             <version>${ibmcosjavasdk.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.ibm.cos.v2.crt</groupId>
+            <groupId>software.amazon.awssdk.crt</groupId>
             <artifactId>aws-crt</artifactId>
-            <version>${awscrt.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.ibm.cos.v2</groupId>
-            <artifactId>ibm-cos-java-sdk-s3</artifactId>
-            <version>${sdk-v1.version}</version>
+            <version>${aws-crt.version}</version>
         </dependency>
         <dependency>
             <groupId>com.ibm.cos.v2</groupId>

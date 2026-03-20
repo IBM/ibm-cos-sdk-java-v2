@@ -21,7 +21,7 @@
     <parent>
         <groupId>com.ibm.cos.v2</groupId>
         <artifactId>services</artifactId>
-        <version>0.0.1</version>
+        <version>1.0.0</version>
     </parent>
     <artifactId>s3</artifactId>
     <name>IBM COS Java SDK :: Services :: IBM COS S3</name>
@@ -105,13 +105,6 @@
             <artifactId>checksums-spi</artifactId>
             <version>${ibmcosjavasdk.version}</version>
         </dependency>
-        <!--<dependency> TODO:REMOVE
-            <groupId>com.ibm.cos.v2.crt</groupId>
-            <artifactId>aws-crt</artifactId>
-            <version>${awscrt.version}</version> -->
-            <!-- Only required for certain features such as S3 CRT client -->
-           <!-- <optional>true</optional>
-        </dependency> -->
         <dependency>
             <groupId>com.ibm.cos.v2</groupId>
             <artifactId>retries-spi</artifactId>
@@ -123,17 +116,12 @@
             <groupId>commons-io</groupId>
             <scope>test</scope>
         </dependency>
-        <!--<dependency> TODO: REMOVE AS IT IS NOT NEEDED SERVICE
-            <artifactId>sns</artifactId>
-            <groupId>com.ibm.cos.v2</groupId>
-            <version>${ibmcosjavasdk.version}</version>
-            <scope>test</scope>
-        </dependency>-->
         <dependency>
-            <artifactId>sts</artifactId>
-            <groupId>com.ibm.cos.v2</groupId>
-            <version>${ibmcosjavasdk.version}</version>
-            <scope>test</scope>
+            <groupId>software.amazon.awssdk.crt</groupId>
+            <artifactId>aws-crt</artifactId>
+            <version>${aws-crt.version}</version>
+            <!-- Only required for certain features such as S3 CRT client -->
+            <optional>true</optional>
         </dependency>
         <dependency>
             <artifactId>kms</artifactId>
@@ -144,6 +132,7 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
+            <version>3.18.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>

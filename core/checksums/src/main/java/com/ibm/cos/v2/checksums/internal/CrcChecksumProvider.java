@@ -41,8 +41,8 @@ public final class CrcChecksumProvider {
     private static final String CRT_CRC32C_CLASS_PATH = "com.ibm.cos.v2.crt.checksums.CRC32C";
     private static final String JAVA_CRC32C_CLASS_PATH = "java.util.zip.CRC32C";
     private static final ConstructorCache CONSTRUCTOR_CACHE = new ConstructorCache();
-    private static final String CRT_CRC64NVME_PATH = "com.ibm.cos.v2.crt.checksums.CRC64NVME";
-    private static final String CRT_MODULE = "com.ibm.cos.v2.crt:aws-crt";
+    private static final String CRT_CRC64NVME_PATH = "software.amazon.awssdk.crt.checksums.CRC64NVME";
+    private static final String CRT_MODULE =  "software.amazon.awssdk.crt:aws-crt";
 
     // Private constructor to prevent instantiation
     private CrcChecksumProvider() {

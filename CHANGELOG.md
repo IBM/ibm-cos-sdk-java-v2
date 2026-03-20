@@ -1,7 +1,17 @@
-# 0.0.1
+# CHANGELOG
 
-## Content
+## 1.0.0
 
-### Features
+### Content
 
-- BETA Release
+#### Features
+
+* GA Release
+
+## 0.0.1
+
+### Content
+
+#### Features
+
+* BETA Release

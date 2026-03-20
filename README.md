@@ -1,15 +1,7 @@
-# IBM Cloud Object Storage - Java SDK v2 Beta Release
-
-Welcome to the Java SDK v2 Beta. This release is an early version of our SDK and is intended for testing and feedback purposes.
+# IBM Cloud Object Storage - Java SDK v2
 
 This package allows Java developers to write software that interacts with [IBM Cloud Object Storage](https://www.ibm.com/cloud/object-storage).
 It is a fork of the [AWS SDK for Java v2](https://github.com/aws/aws-sdk-java-v2) library and can stand as a drop-in replacement for applications that use S3-compatible APIs and do not depend on other AWS services.
-
-***
-
-## Important Notes
-
-This is a **beta release** - APIs may change before the GA release, and use in production environments is **not recommended** at this time.
 
 ***
 
@@ -91,7 +83,7 @@ To begin using the SDK, add the dependency to your Maven project:
 <dependency>
     <groupId>com.ibm.cos.v2</groupId>
     <artifactId>cos-java-sdk</artifactId>
-    <version>0.0.1</version>
+    <version>1.0.0</version>
 </dependency>
 ```
 

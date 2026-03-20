@@ -155,10 +155,14 @@ The IBM COS SDK for Java v2 introduces significant changes to the S3 client, inc
 
 3. Change v1 constructors to v2 builders.
 4. Replace v1 `Result` response objects with v2 `Response` equivalents.
-    - A consistent difference between v1 and v2 is that all response objects in v2 end with `Response` instead of `Result`.
-5. Make API changes:
-    - Setter methods do not use the `set` or `with` prefix.
-    - Getter methods prefixed with `get` are also gone.
+
+- A consistent difference between v1 and v2 is that all response objects in v2 end with `Response` instead of `Result`.
+
+Make API changes:
+
+- Setter methods do not use the `set` or `with` prefix.
+- Getter methods prefixed with `get` are also gone.
+
 Instead we use the field names.
 
 | Area          | v1 (Old SDK)                    | v2 (New SDK)                         |
@@ -195,19 +199,19 @@ Refer to below snippet for one way to configure these required setting:
 
 ```xml
 <project>
-    <properties>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
-    </properties>
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>${maven.compiler.plugin.version}</version>
-            </plugin>
-        </plugins>
-    </build>
+  <properties>
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
+  </properties>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>${maven.compiler.plugin.version}</version>
+      </plugin>
+    </plugins>
+  </build>
 </project>
 ```
 
@@ -215,18 +219,18 @@ Alternatively, you can configure the compiler configuration inline with the plug
 
 ```xml
 <project>
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>1.8</source>
+          <target>1.8</target>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>
 ```
 
@@ -238,9 +242,9 @@ To use the IBM COS SDK for Java in your project, you need to declare it as a dep
 
 ```xml
 <dependency>
-    <groupId>com.ibm.cos</groupId>
-    <artifactId>ibm-cos-java-sdk</artifactId>
-    <version>v1.x</version>
+  <groupId>com.ibm.cos</groupId>
+  <artifactId>ibm-cos-java-sdk</artifactId>
+  <version>v1.x</version>
 </dependency>
 ```
 
@@ -250,25 +254,25 @@ v2 uses modularized components, now that you have configured the SDK, you can ad
 
 ```xml
 <project>
-    <dependencies>
-        <dependency>
-            <groupId>com.ibm.cos.v2</groupId>
-            <artifactId>s3</artifactId>
-            <version>0.0.1</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.ibm.cos.v2</groupId>
-                    <artifactId>netty-nio-client</artifactId>
-                    <version>0.0.1</version>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.ibm.cos.v2</groupId>
-                    <artifactId>apache-client</artifactId>
-                    <version>0.0.1</version>
-                </exclusion>
-            </exclusions>
-        </dependency>
-    </dependencies>
+  <dependencies>
+    <dependency>
+      <groupId>com.ibm.cos.v2</groupId>
+      <artifactId>s3</artifactId>
+      <version>1.0.0</version>
+      <exclusions>
+        <exclusion>
+          <groupId>com.ibm.cos.v2</groupId>
+          <artifactId>netty-nio-client</artifactId>
+          <version>1.0.0</version>
+        </exclusion>
+        <exclusion>
+          <groupId>com.ibm.cos.v2</groupId>
+          <artifactId>apache-client</artifactId>
+          <version>1.0.0</version>
+        </exclusion>
+      </exclusions>
+    </dependency>
+  </dependencies>
 </project>
 ```
 
@@ -278,13 +282,13 @@ To optimize your application, we strongly recommend that you pull in only the co
 
 ```xml
 <project>
-    <dependencies>
-        <dependency>
-            <groupId>com.ibm.cos.v2</groupId>
-            <artifactId>cos-java-sdk</artifactId>
-            <version>0.0.1</version>
-        </dependency>
-    </dependencies>
+  <dependencies>
+    <dependency>
+      <groupId>com.ibm.cos.v2</groupId>
+      <artifactId>cos-java-sdk</artifactId>
+      <version>1.0.0</version>
+    </dependency>
+  </dependencies>
 </project>
 ```
 
@@ -341,11 +345,11 @@ AmazonS3ClientBuilder.standard()
 ProxyConfiguration.Builder proxyConfig = ProxyConfiguration.builder();
 
 ApacheHttpClient.Builder httpClientBuilder =
-    ApacheHttpClient.builder()
-                    .proxyConfiguration(proxyConfig.build());
+        ApacheHttpClient.builder()
+                        .proxyConfiguration(proxyConfig.build());
 
 ClientOverrideConfiguration.Builder overrideConfig =
-    ClientOverrideConfiguration.builder();
+        ClientOverrideConfiguration.builder();
 
 S3Client client = S3Client.builder()
                           .httpClientBuilder(httpClientBuilder)
@@ -357,13 +361,13 @@ S3Client client = S3Client.builder()
 
 ```java
 NettyNioAsyncHttpClient.Builder httpClientBuilder =
-    NettyNioAsyncHttpClient.builder();
+        NettyNioAsyncHttpClient.builder();
 
 ClientOverrideConfiguration.Builder overrideConfig =
-    ClientOverrideConfiguration.builder();
+        ClientOverrideConfiguration.builder();
 
 ClientAsyncConfiguration.Builder asyncConfig =
-    ClientAsyncConfiguration.builder();
+        ClientAsyncConfiguration.builder();
 
 S3Client client = S3Client.builder()
                           .httpClientBuilder(httpClientBuilder)
@@ -411,7 +415,7 @@ String location = <YOUR_LOCATION>;
 
 // Wrap IBM OAuth credentials in a provider
 AwsCredentialsProvider credentials =
-    StaticCredentialsProvider.create(new BasicIBMOAuthCredentials(api_key, service_instance_id));
+        StaticCredentialsProvider.create(new BasicIBMOAuthCredentials(api_key, service_instance_id));
 
 S3Client cosClient = S3Client.builder()
                              .credentialsProvider(credentials)
@@ -447,7 +451,7 @@ String endpointUrl = <YOUR_ENDPOINT_URL>;
 String location = <YOUR_LOCATION>;
 
 AwsCredentialsProvider credentialsProvider = StaticCredentialsProvider.create
-                                                                          (AwsBasicCredentials.create(accessKey, secretKey));
+                                                                              (AwsBasicCredentials.create(accessKey, secretKey));
 
 S3Client cosClient = S3Client.builder()
                              .credentialsProvider(credentials)
@@ -604,7 +608,7 @@ ibm.apiKeyId=xxxx
 ibm.serviceInstanceId=yyyy
 
 AWSCredentialsProvider provider =
-    new PropertiesFileCredentialsProvider("credentials.properties");
+        new PropertiesFileCredentialsProvider("credentials.properties");
 ```
 
 #### SDK v2 example
@@ -622,9 +626,9 @@ ProfileFile profileFile = ProfileFile.builder()
                                      .build();
 
 ProfileCredentialsProvider provider =
-    ProfileCredentialsProvider.builder()
-                              .profileFile(profileFile)
-                              .build();
+        ProfileCredentialsProvider.builder()
+                                  .profileFile(profileFile)
+                                  .build();
 
 ```
 
@@ -701,8 +705,8 @@ clientConfiguration.setRequestTimeout(5000);  // 5 seconds
 ClientConfiguration clientConfiguration = new ClientConfiguration();
 clientConfiguration.setRequestTimeout(Duration.ofMillis(5000));// 5 seconds
 
-    // Or more clearly:
-    clientConfiguration.setRequestTimeout(Duration.ofSeconds(5));// 5 seconds
+        // Or more clearly:
+        clientConfiguration.setRequestTimeout(Duration.ofSeconds(5));// 5 seconds
 ```
 
 You can use the following `Duration` factory methods for timeout values:
@@ -792,14 +796,14 @@ PutObjectResult result = V1CLIENT.putObject("bucket-name", "key", "input-stream"
 Map<String, String> userMetadata;
 
 PutObjectResponse putResultA = V2CLIENT.putObject(
-    PutObjectRequest.builder()
-                    .bucket("bucket-name")
-                    .key(key)
-                    .contentLength(size) //to set Content length
-                    .contentType("content-type") //to set Content type
-                    .metadata(userMetadata) //to set user meta data 
-                    .build(),
-    RequestBody.fromInputStream("input-stream", size));
+        PutObjectRequest.builder()
+                        .bucket("bucket-name")
+                        .key(key)
+                        .contentLength(size) //to set Content length
+                        .contentType("content-type") //to set Content type
+                        .metadata(userMetadata) //to set user meta data 
+                        .build(),
+        RequestBody.fromInputStream("input-stream", size));
 ```
 
 > **Note:** S3 converts all user-defined metadata keys to lowercase when storing and returning them.
@@ -1086,9 +1090,9 @@ ObjectListing objectListing = s3ClientV1.listObjects("bucket-Name");
 while (objectListing.isTruncated()) {
 objectListing = s3ClientV1.listNextBatchOfObjects(objectListing);
     for (S3ObjectSummary summary : objectListing.getObjectSummaries()) {
-    System.out.println(summary.getKey());
-    }
-    }
+        System.out.println(summary.getKey());
+        }
+        }
 ```
 
 #### V2 (Builder Pattern) - Paginator Iteration
@@ -1102,10 +1106,10 @@ ListObjectsV2Request request = ListObjectsV2Request.builder()
 ListObjectsV2Iterable responses=s3ClientV2.listObjectsV2Paginator(request);
 
 for (ListObjectsV2Response page : responses) {
-    page.contents().forEach(content -> {
-    System.out.println(content.key());
-    });
-    }
+        page.contents().forEach(content -> {
+        System.out.println(content.key());
+        });
+        }
 ```
 
 -----
@@ -1127,25 +1131,25 @@ Let’s see what GroupGrantee.AllUsers looked like internally in v1:
 
 ```java
 public enum GroupGrantee implements Grantee {
-    AllUsers("http://acs.amazonaws.com/groups/global/AllUsers"),
-    AuthenticatedUsers("http://acs.amazonaws.com/groups/global/AuthenticatedUsers"),
-    LogDelivery("http://acs.amazonaws.com/groups/s3/LogDelivery");
+  AllUsers("http://acs.amazonaws.com/groups/global/AllUsers"),
+  AuthenticatedUsers("http://acs.amazonaws.com/groups/global/AuthenticatedUsers"),
+  LogDelivery("http://acs.amazonaws.com/groups/s3/LogDelivery");
 
-    private final String uri;
+  private final String uri;
 
-    private GroupGrantee(String uri) {
-        this.uri = uri;
-    }
+  private GroupGrantee(String uri) {
+    this.uri = uri;
+  }
 
-    @Override
-    public String getIdentifier() {
-        return this.uri;  // ← Notice this!
-    }
+  @Override
+  public String getIdentifier() {
+    return this.uri;  // ← Notice this!
+  }
 
-    @Override
-    public void setIdentifier(String id) {
-        // no-op
-    }
+  @Override
+  public void setIdentifier(String id) {
+    // no-op
+  }
 }
 ```
 
@@ -1156,19 +1160,21 @@ In v2, the model was **rebuilt from scratch** (stricter to AWS spec)
 
 ```java
 public final class Grantee {
-    private final Type type;
-    private final String id;
-    private final String displayName;
-    private final String emailAddress;
-    private final String uri;
+  private final Type type;
+  private final String id;
+  private final String displayName;
+  private final String emailAddress;
+  private final String uri;
 }
 ```
 
 1. Each field now has a **specific meaning**, matching S3’s actual XML structure:
-    - id → for CanonicalUser (the AWS account ID)
-    - uri → for Group
-    - emailAddress → legacy (not used)
-2. The SDK no longer aliases or reuses uri as id.
+
+- id → for CanonicalUser (the AWS account ID)
+- uri → for Group
+- emailAddress → legacy (not used)
+
+The SDK no longer aliases or reuses uri as id.
 
 'GROUP' Grant will be built as below in v2:
 
@@ -1251,7 +1257,7 @@ GetBucketAclResponse acl = CLIENT.getBucketAcl(getBucketAclRequest);
 List<Grant> grants = acl.grants();
 
 for (Grant grant : grants) {
-    System.out.println(grant);
+        System.out.println(grant);
 }
 ```
 
@@ -1308,22 +1314,22 @@ CreateBucketRequest createBucketRequest = CreateBucketRequest.builder()
 // SDK V1
 List<Grant> grants = acl.grants();
 for (Grant grant : grants) {
-    if(grant.getGrantee() instanceOf grant.getGrantee()){
-    // Confirm that owner has full control
-    System.out.println(grant.getPermission().toString().equals("FULL_CONTROL"));
-    System.out.println(((CanonicalGrantee) canonicalUser.getGrantee()).getDisplayName());
-    }
-    }
+        if(grant.getGrantee() instanceOf grant.getGrantee()){
+        // Confirm that owner has full control
+        System.out.println(grant.getPermission().toString().equals("FULL_CONTROL"));
+        System.out.println(((CanonicalGrantee) canonicalUser.getGrantee()).getDisplayName());
+        }
+        }
 
 // SDK V2
 List<Grant> grants = acl.grants();
 for (Grant grant : grants) {
-    if (grant.grantee().type() == Type.CANONICAL_USER){
-    // Confirm that owner has full control
-    System.out.println((grant.permissionAsString().equals("FULL_CONTROL")));
-    System.out.println(grant.grantee().displayName());
-    }
-    }
+        if (grant.grantee().type() == Type.CANONICAL_USER){
+        // Confirm that owner has full control
+        System.out.println((grant.permissionAsString().equals("FULL_CONTROL")));
+        System.out.println(grant.grantee().displayName());
+        }
+        }
 ```
 
 ### Object Level ACL
@@ -1487,12 +1493,12 @@ ListObjectsV2Response listObjectsV2Response = s3Client.listObjectsV2(listObjects
 List<S3Object> summaries = listObjectsV2Response.contents();
 
 for (S3Object summary : summaries) {
-    summary.key(); // bucket name
+        summary.key(); // bucket name
 }
 ```
 
 - Note: `CLIENT.listObjects(objectsRequest)` -> Accepting ListObjectRequest Builder instead of bucket name exists as extending support for V1 (to support Backward Compatibility).
-Returns a ListObjectsResponse that contains:
+  Returns a ListObjectsResponse that contains:
   - `contents()`: list of object summaries
   - `commonPrefixes()`:when using delimiters
   - `marker` and `nextMarker` for pagination.
@@ -1569,8 +1575,8 @@ V1CLIENT.deleteObjects(deleteRequest);
 
 ```java
 List<ObjectIdentifier> keys = Arrays.asList(
-    ObjectIdentifier.builder().key(key1).build(),
-    ObjectIdentifier.builder().key(key2).build()
+        ObjectIdentifier.builder().key(key1).build(),
+        ObjectIdentifier.builder().key(key2).build()
 );
 
 DeleteObjectsRequest deleteRequest = DeleteObjectsRequest.builder()
@@ -1645,7 +1651,7 @@ The following system properties no longer supported from (SDKGlobalConfiguration
 - DISABLE_REMOTE_REGIONS_FILE_SYSTEM_PROPERTY
 - DISABLE_S3_IMPLICIT_GLOBAL_CLIENTS_SYSTEM_PROPERTY
 - ENABLE_IN_REGION_OPTIMIZED_MODE
-  
+
 -----
 
 ### Bucket Tagging
@@ -1686,7 +1692,7 @@ List<Tag> tagList = taggingResponse.tagSet();
 CLIENT.putBucketTagging(PutBucketTaggingRequest.builder()
                         .bucket("bucketName")
                         .tagging(createTagSet())
-    .build());
+        .build());
 
 // Get Bucket Tagging Config – In v2
 GetBucketTaggingRequest getBucketTaggingRequest = GetBucketTaggingRequest.builder()
@@ -1711,9 +1717,9 @@ metadata.setContentType("application/zip");
 metadata.addUserMetadata("mykey", "myvalue");
 
 InitiateMultipartUploadRequest initRequest =  new InitiateMultipartUploadRequest(
-    "bucket-name",
-    "object-key",
-    metadata);
+        "bucket-name",
+        "object-key",
+        metadata);
 
 InitiateMultipartUploadResult initResponse = s3ClientV1.initiateMultipartUpload(initRequest);
 String uploadId = initResponse.getUploadId();
@@ -1754,18 +1760,18 @@ String uploadId = initResult.getUploadId();
 
 // Upload parts
 UploadPartRequest uploadRequest = new UploadPartRequest()
-    .withBucketName("bucket-name")
-    .withKey(key)
-    .withUploadId(uploadId)
-    .withPartNumber(range.part())
-    .withFileOffset(range.start())
-    .withFile(input.fileHandle())
-    .withPartSize(range.size());
+        .withBucketName("bucket-name")
+        .withKey(key)
+        .withUploadId(uploadId)
+        .withPartNumber(range.part())
+        .withFileOffset(range.start())
+        .withFile(input.fileHandle())
+        .withPartSize(range.size());
 UploadPartResult partResult = V1CLIENT1.uploadPart(uploadRequest);
 
 //Abort Multipart Upload
 AbortMultipartUploadRequest abortRequest =
-    new AbortMultipartUploadRequest("bucket-name", "key", uploadId);
+        new AbortMultipartUploadRequest("bucket-name", "key", uploadId);
 CLIENT1.abortMultipartUpload(abortRequest);
 
 // List multipart uploads
@@ -1827,23 +1833,23 @@ UploadPartRequest uploadRequest = UploadPartRequest.builder()
                                                    .build();
 
     try (InputStream in = new FileInputStream(file.fileHandle())) {
-    in.skip(range.start());
+        in.skip(range.start());
 
 UploadPartResponse partResult = V2CLIENT.uploadPart(uploadRequest,RequestBody.fromInputStream(in, range.size()));
 
         eTags.add(CompletedPart.builder()
                     .partNumber(range.part())
-    .eTag(partResult.eTag())
-    .build());
+        .eTag(partResult.eTag())
+        .build());
 
-    } catch (FileNotFoundException e) {
-    throw new RuntimeException(e);
+        } catch (FileNotFoundException e) {
+        throw new RuntimeException(e);
     } catch (IOException e) {
-    throw new RuntimeException(e);
+        throw new RuntimeException(e);
     }
 
-        //2b. Upload parts – file
-        for (ChunkedFileNoise.Range range : uploadFile) {
+            //2b. Upload parts – file
+            for (ChunkedFileNoise.Range range : uploadFile) {
 UploadPartRequest uploadRequest = UploadPartRequest.builder()
                                                    .bucket(bucketName)
                                                    .key(uploadFile.name())
@@ -1857,7 +1863,7 @@ UploadPartResponse partResult = V2CLIENT.uploadPart(uploadRequest,requestBody);
       
    eTags.add(CompletedPart.builder()
    .partNumber(range.part()).eTag(partResult.eTag()).build());
-    }
+        }
 
 
 // 3. Abort Multipart Upload (if you want to cancel)
@@ -2095,7 +2101,7 @@ replaced with `GetBucketCorsRequest`, and build using builder
 
 ```java
 GetBucketCorsResponse getCorsResponse = CLIENT.getBucketCors(
-    GetBucketCorsRequest.builder().bucket("bucket-name").build()
+        GetBucketCorsRequest.builder().bucket("bucket-name").build()
 );
 ```
 
@@ -2142,9 +2148,9 @@ CLIENT.setBucketCrossOriginConfiguration("bucket-name", cors);
 PutBucketCorsRequest putCorsRequest = PutBucketCorsRequest.builder()
                                                           .bucket("bucket-name")
                                                           .corsConfiguration(
-                                                              CORSConfiguration.builder()
-                                                                               .corsRules(Arrays.asList(rule1, rule2, rule3, rule4))
-                                                                               .build()
+                                                                  CORSConfiguration.builder()
+                                                                                   .corsRules(Arrays.asList(rule1, rule2, rule3, rule4))
+                                                                                   .build()
                                                           )
                                                           .build();
 
