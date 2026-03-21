@@ -106,8 +106,6 @@ com.ibm.cos.v2.core.util
 com.ibm.cos.v2.core.waiters
 com.ibm.cos.v2.crtcore
 com.ibm.cos.v2.endpoints
-com.ibm.cos.v2.eventnotifications.s3.internal
-com.ibm.cos.v2.eventnotifications.s3.model
 com.ibm.cos.v2.http
 com.ibm.cos.v2.http.apache
 com.ibm.cos.v2.http.apache.internal
@@ -221,15 +219,6 @@ com.ibm.cos.v2.services.s3.s3express
 com.ibm.cos.v2.services.s3.transform
 com.ibm.cos.v2.services.s3.waiters
 com.ibm.cos.v2.services.s3.waiters.internal
-com.ibm.cos.v2.services.sts
-com.ibm.cos.v2.services.sts.auth
-com.ibm.cos.v2.services.sts.auth.scheme
-com.ibm.cos.v2.services.sts.auth.scheme.internal
-com.ibm.cos.v2.services.sts.endpoints
-com.ibm.cos.v2.services.sts.endpoints.internal
-com.ibm.cos.v2.services.sts.internal
-com.ibm.cos.v2.services.sts.model
-com.ibm.cos.v2.services.sts.transform
 com.ibm.cos.v2.testutils
 com.ibm.cos.v2.testutils.hamcrest
 com.ibm.cos.v2.testutils.retry
