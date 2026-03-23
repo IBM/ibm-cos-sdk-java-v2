@@ -154,7 +154,7 @@
     <!-- Reactive Streams version -->
     <reactive-streams.version>1.0.4</reactive-streams.version>
     <!-- S3 Access Grants plugin version -->
-    <s3accessgrants.version>2.1.0</s3accessgrants.version>
+    <s3accessgrants.version>2.4.1</s3accessgrants.version>
     <v2.migration.tests.skip>true</v2.migration.tests.skip>
     <integTestSourceDirectory>${project.basedir}/src/it/java</integTestSourceDirectory>
     <scm.github.url>https://github.com/aws/ibm-cos-java-sdk-v2</scm.github.url>
