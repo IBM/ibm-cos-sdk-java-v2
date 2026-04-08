@@ -10,102 +10,101 @@ Meanwhile, applications written using the original v1 API may require updates in
 
 ## Table of Contents
 
-- [IBM Cloud Object Storage Java SDK: Migration Guide (v1 → v2)](#ibm-cloud-object-storage-java-sdk-migration-guide-v1--v2)
-  - [Introduction](#introduction)
-  - [Table of Contents](#table-of-contents)
-  - [Understanding the Migration](#understanding-the-migration)
-    - [Why a New SDK Version?](#why-a-new-sdk-version)
-    - [Overview of steps](#overview-of-steps)
-  - [Project Setup](#project-setup)
-    - [Java Version Requirements](#java-version-requirements)
-    - [Working with Maven](#working-with-maven)
-    - [Declaring SDK for JAVA v2 as dependency](#declaring-sdk-for-java-v2-as-dependency)
-  - [Configuring service clients](#configuring-service-clients)
-    - [Creating a service client](#creating-a-service-client)
-      - [Client configuration example](#client-configuration-example)
-        - [Example of client configuration in v1](#example-of-client-configuration-in-v1)
-        - [Example of synchronous client configuration in v2](#example-of-synchronous-client-configuration-in-v2)
-        - [Example of asynchronous client configuration in v2](#example-of-asynchronous-client-configuration-in-v2)
-      - [Example for creating IAM Client](#example-for-creating-iam-client)
-      - [Example for creating HMAC Client](#example-for-creating-hmac-client)
-      - [Client Override Configuration](#client-override-configuration)
-    - [Credential Provider](#credential-provider)
-      - [AWSCredentialsProvider](#awscredentialsprovider)
-      - [DefaultAWSCredentialsProviderChain](#defaultawscredentialsproviderchain)
-      - [AWSStaticCredentialsProvider](#awsstaticcredentialsprovider)
-      - [EnvironmentVariableCredentialsProvider](#environmentvariablecredentialsprovider)
-      - [SystemPropertiesCredentialsProvider](#systempropertiescredentialsprovider)
-      - [ProfileCredentialsProvider](#profilecredentialsprovider)
-    - [Trust-All Certificates (Self-Signed TLS)](#trust-all-certificates-self-signed-tls)
-  - [Migrating common operations, requests and responses](#migrating-common-operations-requests-and-responses)
-    - [Date parameter changes](#date-parameter-changes)
-    - [Timeout parameter changes](#timeout-parameter-changes)
-    - [Streaming operation](#streaming-operation)
-      - [Put Object with Metadata:](#put-object-with-metadata)
-    - [Serialization differences between v1 and v2 of IBM COS SDK](#serialization-differences-between-v1-and-v2-of-ibm-cos-sdk)
-    - [Deserialization differences between v1 and v2 of IBM COS SDK](#deserialization-differences-between-v1-and-v2-of-ibm-cos-sdk)
-      - [Empty Collections in V2 compared to `nulls` in V1](#empty-collections-in-v2-compared-to-nulls-in-v1)
-  - [Exception Changes](#exception-changes)
-  - [S3 Operation Changes](#s3-operation-changes)
-  - [Operational Examples](#operational-examples)
-    - [Create Request](#create-request)
-    - [Adding a Custom Header](#adding-a-custom-header)
-    - [List Objects From an S3 Bucket](#list-objects-from-an-s3-bucket)
-    - [Access Control List (ACL)](#access-control-list-acl)
-      - [Example for creating Grant](#example-for-creating-grant)
-      - [V1's setBucketAcl() to V2's putBucketAcl()](#v1s-setbucketacl-to-v2s-putbucketacl)
-      - [Getting Bucket Grants](#getting-bucket-grants)
-      - [Operation with Canned ACL](#operation-with-canned-acl)
-      - [V1 to V2 Mappings for BucketACL](#v1-to-v2-mappings-for-bucketacl)
-      - [Example to check if Owner has FULL\_ACCESS](#example-to-check-if-owner-has-full_access)
-      - [Object Level ACL](#object-level-acl)
-        - [Example for setObjectAcl with Canned ACL](#example-for-setobjectacl-with-canned-acl)
-        - [Getting Object Grants](#getting-object-grants)
-    - [GetObject in V2](#getobject-in-v2)
-      - [V1’s withMatchingETagConstraint to V2’s ifMatch() while building the request](#v1s-withmatchingetagconstraint-to-v2s-ifmatch-while-building-the-request)
-      - [V1’s withModifiedSinceConstraint() to V2’s .ifModifiedSince(Instant)](#v1s-withmodifiedsinceconstraint-to-v2s-ifmodifiedsinceinstant)
-      - [Example to work with Response Input Stream](#example-to-work-with-response-input-stream)
-    - [getObjectAsString()](#getobjectasstring)
-    - [ListObjectsV2](#listobjectsv2)
-      - [To work with ListObjectsV2Response and S3Object.](#to-work-with-listobjectsv2response-and-s3object)
-      - [CHANGES: (wrt Listing Objects)](#changes-wrt-listing-objects)
-    - [Deleting Object](#deleting-object)
-    - [Delete Object Request with Keys](#delete-object-request-with-keys)
-    - [Deleting Bucket](#deleting-bucket)
-    - [Deleting Objects and Buckets](#deleting-objects-and-buckets)
-    - [Head Bucket](#head-bucket)
-    - [Bucket Exist](#bucket-exist)
-    - [List of Global properties removed](#list-of-global-properties-removed)
-    - [Bucket Tagging](#bucket-tagging)
-      - [API CHANGES](#api-changes)
-      - [Example for Bucket Tagging (setBucketTaggingConfiguration, getBucketTagging)](#example-for-bucket-tagging-setbuckettaggingconfiguration-getbuckettagging)
-    - [Multipart](#multipart)
-      - [V1's initiateMultipartUpload to V2's createMultipartUpload](#v1s-initiatemultipartupload-to-v2s-createmultipartupload)
-      - [Implementation differences](#implementation-differences)
-      - [Multipart Full Example](#multipart-full-example)
-      - [Multipart upload using Input Stream (Simpler way)](#multipart-upload-using-input-stream-simpler-way)
-    - [Copy Request](#copy-request)
-      - [Example for copying from source Bucket to Destination bucket](#example-for-copying-from-source-bucket-to-destination-bucket)
-      - [Metadata behavior in SDK v2 during Copy Request](#metadata-behavior-in-sdk-v2-during-copy-request)
-    - [Website Configuration](#website-configuration)
-    - [Pre signed URL](#pre-signed-url)
-    - [CORS](#cors)
-      - [To create CORS rule](#to-create-cors-rule)
-      - [Set bucket CORS config](#set-bucket-cors-config)
-    - [Versioned Object Deletion](#versioned-object-deletion)
-    - [System Properties](#system-properties)
-    - [ProfileCredentialsProvider](#profilecredentialsprovider-1)
-    - [S3 Transfer Manager](#s3-transfer-manager)
-    - [IBM Supported Features](#ibm-supported-features)
-      - [Bucket Protection (WORM)](#bucket-protection-worm)
-        - [1. setBucketProtectionConfiguration()](#1-setbucketprotectionconfiguration)
-        - [2. getBucketProtection()](#2-getbucketprotection)
-        - [3. addLegalHold()](#3-addlegalhold)
-        - [4. listLegalHolds()](#4-listlegalholds)
-        - [5. deleteLegalHold()](#5-deletelegalhold)
-      - [Key Protect (SSE-KMS)](#key-protect-sse-kms)
-      - [Extended Listing](#extended-listing)
-  - [Best practices for using the IBM COS SDK for Java v2](#best-practices-for-using-the-ibm-cos-sdk-for-java-v2)
+- [Introduction](#introduction)
+- [Table of Contents](#table-of-contents)
+- [Understanding the Migration](#understanding-the-migration)
+  - [Why a New SDK Version?](#why-a-new-sdk-version)
+  - [Overview of steps](#overview-of-steps)
+- [Project Setup](#project-setup)
+  - [Java Version Requirements](#java-version-requirements)
+  - [Working with Maven](#working-with-maven)
+  - [Declaring SDK for JAVA v2 as dependency](#declaring-sdk-for-java-v2-as-dependency)
+- [Configuring service clients](#configuring-service-clients)
+  - [Creating a service client](#creating-a-service-client)
+    - [Client configuration example](#client-configuration-example)
+      - [Example of client configuration in v1](#example-of-client-configuration-in-v1)
+      - [Example of synchronous client configuration in v2](#example-of-synchronous-client-configuration-in-v2)
+      - [Example of asynchronous client configuration in v2](#example-of-asynchronous-client-configuration-in-v2)
+    - [Example for creating IAM Client](#example-for-creating-iam-client)
+    - [Example for creating HMAC Client](#example-for-creating-hmac-client)
+    - [Client Override Configuration](#client-override-configuration)
+  - [Credential Provider](#credential-provider)
+    - [AWSCredentialsProvider](#awscredentialsprovider)
+    - [DefaultAWSCredentialsProviderChain](#defaultawscredentialsproviderchain)
+    - [AWSStaticCredentialsProvider](#awsstaticcredentialsprovider)
+    - [EnvironmentVariableCredentialsProvider](#environmentvariablecredentialsprovider)
+    - [SystemPropertiesCredentialsProvider](#systempropertiescredentialsprovider)
+    - [ProfileCredentialsProvider](#profilecredentialsprovider)
+  - [Trust-All Certificates (Self-Signed TLS)](#trust-all-certificates-self-signed-tls)
+- [Migrating common operations, requests and responses](#migrating-common-operations-requests-and-responses)
+  - [Date parameter changes](#date-parameter-changes)
+  - [Timeout parameter changes](#timeout-parameter-changes)
+  - [Streaming operation](#streaming-operation)
+    - [Put Object with Metadata:](#put-object-with-metadata)
+  - [Serialization differences between v1 and v2 of IBM COS SDK](#serialization-differences-between-v1-and-v2-of-ibm-cos-sdk)
+  - [Deserialization differences between v1 and v2 of IBM COS SDK](#deserialization-differences-between-v1-and-v2-of-ibm-cos-sdk)
+    - [Empty Collections in V2 compared to `nulls` in V1](#empty-collections-in-v2-compared-to-nulls-in-v1)
+- [Exception Changes](#exception-changes)
+- [S3 Operation Changes](#s3-operation-changes)
+- [Operational Examples](#operational-examples)
+  - [Create Request](#create-request)
+  - [Adding a Custom Header](#adding-a-custom-header)
+  - [List Objects From an S3 Bucket](#list-objects-from-an-s3-bucket)
+  - [Access Control List (ACL)](#access-control-list-acl)
+    - [Example for creating Grant](#example-for-creating-grant)
+    - [V1's setBucketAcl() to V2's putBucketAcl()](#v1s-setbucketacl-to-v2s-putbucketacl)
+    - [Getting Bucket Grants](#getting-bucket-grants)
+    - [Operation with Canned ACL](#operation-with-canned-acl)
+    - [V1 to V2 Mappings for BucketACL](#v1-to-v2-mappings-for-bucketacl)
+    - [Example to check if Owner has FULL\_ACCESS](#example-to-check-if-owner-has-full_access)
+    - [Object Level ACL](#object-level-acl)
+      - [Example for setObjectAcl with Canned ACL](#example-for-setobjectacl-with-canned-acl)
+      - [Getting Object Grants](#getting-object-grants)
+  - [GetObject in V2](#getobject-in-v2)
+    - [V1’s withMatchingETagConstraint to V2’s ifMatch() while building the request](#v1s-withmatchingetagconstraint-to-v2s-ifmatch-while-building-the-request)
+    - [V1’s withModifiedSinceConstraint() to V2’s .ifModifiedSince(Instant)](#v1s-withmodifiedsinceconstraint-to-v2s-ifmodifiedsinceinstant)
+    - [Example to work with Response Input Stream](#example-to-work-with-response-input-stream)
+  - [getObjectAsString()](#getobjectasstring)
+  - [ListObjectsV2](#listobjectsv2)
+    - [To work with ListObjectsV2Response and S3Object.](#to-work-with-listobjectsv2response-and-s3object)
+    - [CHANGES: (wrt Listing Objects)](#changes-wrt-listing-objects)
+  - [Deleting Object](#deleting-object)
+  - [Delete Object Request with Keys](#delete-object-request-with-keys)
+  - [Deleting Bucket](#deleting-bucket)
+  - [Deleting Objects and Buckets](#deleting-objects-and-buckets)
+  - [Head Bucket](#head-bucket)
+  - [Bucket Exist](#bucket-exist)
+  - [List of Global properties removed](#list-of-global-properties-removed)
+  - [Bucket Tagging](#bucket-tagging)
+    - [API CHANGES](#api-changes)
+    - [Example for Bucket Tagging (setBucketTaggingConfiguration, getBucketTagging)](#example-for-bucket-tagging-setbuckettaggingconfiguration-getbuckettagging)
+  - [Multipart](#multipart)
+    - [V1's initiateMultipartUpload to V2's createMultipartUpload](#v1s-initiatemultipartupload-to-v2s-createmultipartupload)
+    - [Implementation differences](#implementation-differences)
+    - [Multipart Full Example](#multipart-full-example)
+    - [Multipart upload using Input Stream (Simpler way)](#multipart-upload-using-input-stream-simpler-way)
+  - [Copy Request](#copy-request)
+    - [Example for copying from source Bucket to Destination bucket](#example-for-copying-from-source-bucket-to-destination-bucket)
+    - [Metadata behavior in SDK v2 during Copy Request](#metadata-behavior-in-sdk-v2-during-copy-request)
+  - [Website Configuration](#website-configuration)
+  - [Pre signed URL](#pre-signed-url)
+  - [CORS](#cors)
+    - [To create CORS rule](#to-create-cors-rule)
+    - [Set bucket CORS config](#set-bucket-cors-config)
+  - [Versioned Object Deletion](#versioned-object-deletion)
+  - [System Properties](#system-properties)
+  - [ProfileCredentialsProvider](#profilecredentialsprovider-1)
+  - [S3 Transfer Manager](#s3-transfer-manager)
+  - [IBM Supported Features](#ibm-supported-features)
+    - [Bucket Protection (WORM)](#bucket-protection-worm)
+      - [1. setBucketProtectionConfiguration()](#1-setbucketprotectionconfiguration)
+      - [2. getBucketProtection()](#2-getbucketprotection)
+      - [3. addLegalHold()](#3-addlegalhold)
+      - [4. listLegalHolds()](#4-listlegalholds)
+      - [5. deleteLegalHold()](#5-deletelegalhold)
+    - [Key Protect (SSE-KMS)](#key-protect-sse-kms)
+    - [Extended Listing](#extended-listing)
+- [Best practices for using the IBM COS SDK for Java v2](#best-practices-for-using-the-ibm-cos-sdk-for-java-v2)
 
 -----
 
@@ -499,7 +498,7 @@ These below changes are only at client level, not at request level.
 | Change Category | V1                                                                            | V2                                                                                                          |
 |-----------------|-------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------|
 | Initialization  | `ClientConfiguration clientConfig = new ClientConfiguration()`                | `ClientOverrideConfiguration.Builder overrideConfigBuilder = ClientOverrideConfiguration.builder()`         |
-| Max error retry | `clientConfig.setMaxErrorRetry(...)` or `clientConfig.withMaxErrorRetry(...)` | // Configure the default retry strategy.  `overrideConfigBuilder.retryStrategy(b -> b.maxAttempts(...));` |
+| Max error retry | `clientConfig.setMaxErrorRetry(...)` or `clientConfig.withMaxErrorRetry(...)` | // Configure the default retry strategy.  `overrideConfigBuilder.retryStrategy(b -> b.maxAttempts(...));`   |
 
 -----
 
@@ -527,68 +526,68 @@ These below changes are only at client level, not at request level.
 
 ### AWSCredentialsProvider
 
-| Change Category    | V1                                                        | V2                                                                    |
-|--------------------|-----------------------------------------------------------|-----------------------------------------------------------------------|
-| Package/class name | `com.ibm.cloud.objectstorage.auth.AWSCredentialsProvider` | `com.ibm.cos.v2.auth.credentials.AwsCredentialsProvider` |
-| Method name        | `getCredentials`                                          | `resolveCredentials`                                                  |
-| Unsupported method | `refresh`                                                 | Not supported                                                         |
+| Change Category    | V1                                                        | V2                                                         |
+|--------------------|-----------------------------------------------------------|------------------------------------------------------------|
+| Package/class name | `com.ibm.cloud.objectstorage.auth.AWSCredentialsProvider` | `com.ibm.cos.v2.auth.credentials.AwsCredentialsProvider`   |
+| Method name        | `getCredentials`                                          | `resolveCredentials`                                       |
+| Unsupported method | `refresh`                                                 | Not supported                                              |
 
 -----
 
 ### DefaultAWSCredentialsProviderChain
 
-| Change Category                     | V1                                                                    | V2                                                                        |
-|-------------------------------------|-----------------------------------------------------------------------|---------------------------------------------------------------------------|
-| Package/class name                  | `com.ibm.cloud.objectstorage.auth.DefaultAWSCredentialsProviderChain` | `com.ibm.cos.v2.auth.credentials.DefaultCredentialsProvider` |
-| Creation                            | `new DefaultAWSCredentialsProviderChain`                              | `DefaultCredentialsProvider.create`                                       |
-| Unsupported method                  | `getInstance`                                                         | Not supported                                                             |
-| Priority order of external settings | Environment variables before system properties                        | System properties before environment variables                            |
+| Change Category                     | V1                                                                    | V2                                                             |
+|-------------------------------------|-----------------------------------------------------------------------|----------------------------------------------------------------|
+| Package/class name                  | `com.ibm.cloud.objectstorage.auth.DefaultAWSCredentialsProviderChain` | `com.ibm.cos.v2.auth.credentials.DefaultCredentialsProvider`   |
+| Creation                            | `new DefaultAWSCredentialsProviderChain`                              | `DefaultCredentialsProvider.create`                            |
+| Unsupported method                  | `getInstance`                                                         | Not supported                                                  |
+| Priority order of external settings | Environment variables before system properties                        | System properties before environment variables                 |
 
 -----
 
 ### AWSStaticCredentialsProvider
 
-| Change Category    | V1                                                              | V2                                                                       |
-|--------------------|-----------------------------------------------------------------|--------------------------------------------------------------------------|
-| Package/class name | `com.ibm.cloud.objectstorage.auth.AWSStaticCredentialsProvider` | `com.ibm.cos.v2.auth.credentials.StaticCredentialsProvider` |
-| Creation           | `new AWSStaticCredentialsProvider`                              | `StaticCredentialsProvider.create`                                       |
+| Change Category    | V1                                                              | V2                                                            |
+|--------------------|-----------------------------------------------------------------|---------------------------------------------------------------|
+| Package/class name | `com.ibm.cloud.objectstorage.auth.AWSStaticCredentialsProvider` | `com.ibm.cos.v2.auth.credentials.StaticCredentialsProvider`   |
+| Creation           | `new AWSStaticCredentialsProvider`                              | `StaticCredentialsProvider.create`                            |
 
 -----
 
 ### EnvironmentVariableCredentialsProvider
 
-| Change Category           | V1                                                                            | V2                                                                                            |
-|---------------------------|-------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------|
-| Package/class name        | `com.ibm.cloud.objectstorage.auth.EnvironmentVariableCredentialsProvider`     | `com.ibm.cos.v2.auth.credentials.EnvironmentVariableCredentialsProvider`         |
-| Creation                  | `new EnvironmentVariableCredentialsProvider`                                  | `EnvironmentVariableCredentialsProvider.create`                                               |
-| Environment variable name | `AWS_ACCESS_KEY`  `SDKGlobalConfiguration.ACCESS_KEY_ENV_VAR`               | `AWS_ACCESS_KEY_ID`    `SdkSystemSetting.AWS_ACCESS_KEY_ID.environmentVariable()`             |
-| Environment variable name | `AWS_SECRET_KEY`  `SDKGlobalConfiguration.SECRET_KEY_ENV_VAR`               | `AWS_SECRET_ACCESS_KEY`  `SdkSystemSetting.AWS_SECRET_ACCESS_KEY.environmentVariable()`     |
-| Environment variable name | `IBM_API_KEY_ID`  `SDKGlobalConfiguration.IBM_API_KEY`                      | `IBM_API_KEY_ID`  `SdkSystemSetting.IBM_API_KEY_ID.environmentVariable()`                   |
-| Environment variable name | `IBM_SERVICE_INSTANCE_ID`  `SDKGlobalConfiguration.IBM_SERVICE_INSTANCE_ID` | `IBM_SERVICE_INSTANCE_ID`  `SdkSystemSetting.IBM_SERVICE_INSTANCE_ID.environmentVariable()` |
+| Change Category           | V1                                                                            | V2                                                                                              |
+|---------------------------|-------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------|
+| Package/class name        | `com.ibm.cloud.objectstorage.auth.EnvironmentVariableCredentialsProvider`     | `com.ibm.cos.v2.auth.credentials.EnvironmentVariableCredentialsProvider`                        |
+| Creation                  | `new EnvironmentVariableCredentialsProvider`                                  | `EnvironmentVariableCredentialsProvider.create`                                                 |
+| Environment variable name | `AWS_ACCESS_KEY`  `SDKGlobalConfiguration.ACCESS_KEY_ENV_VAR`                 | `AWS_ACCESS_KEY_ID`    `SdkSystemSetting.AWS_ACCESS_KEY_ID.environmentVariable()`               |
+| Environment variable name | `AWS_SECRET_KEY`  `SDKGlobalConfiguration.SECRET_KEY_ENV_VAR`                 | `AWS_SECRET_ACCESS_KEY`  `SdkSystemSetting.AWS_SECRET_ACCESS_KEY.environmentVariable()`         |
+| Environment variable name | `IBM_API_KEY_ID`  `SDKGlobalConfiguration.IBM_API_KEY`                        | `IBM_API_KEY_ID`  `SdkSystemSetting.IBM_API_KEY_ID.environmentVariable()`                       |
+| Environment variable name | `IBM_SERVICE_INSTANCE_ID`  `SDKGlobalConfiguration.IBM_SERVICE_INSTANCE_ID`   | `IBM_SERVICE_INSTANCE_ID`  `SdkSystemSetting.IBM_SERVICE_INSTANCE_ID.environmentVariable()`     |
 
 -----
 
 ### SystemPropertiesCredentialsProvider
 
-| Change Category           | V1                                                                                                                                    | V2                                                                                                                         |
-|---------------------------|---------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------|
-| Package/class name        | `com.ibm.cloud.objectstorage.auth.SystemPropertiesCredentialsProvider`                                                                | `com.ibm.cos.v2.auth.credentials.SystemPropertiesCredentialsProvider`                                         |
-| Creation                  | `new SystemPropertiesCredentialsProvider`                                                                                             | `SystemPropertiesCredentialsProvider.create`                                                                               |
-| Environment variable name | `aws.accessKeyId`  `System.setProperty(SDKGlobalConfiguration.ACCESS_KEY_SYSTEM_PROPERTY, API_KEY);`                                | `aws.accessKeyId`    `System.setProperty(SdkSystemSetting.AWS_ACCESS_KEY_ID.property(), ACCESS_KEY);`                      |
-| Environment variable name | `aws.secretKey`  `System.setProperty(SDKGlobalConfiguration.SECRET_KEY_SYSTEM_PROPERTY, API_KEY);`                                  | `aws.secretAccessKey`    `System.setProperty(SdkSystemSetting.AWS_SECRET_ACCESS_KEY.property(), SECRET_ACCESS_KEY);`       |
-| Environment variable name | `ibm.apiKeyId`  `System.setProperty(SDKGlobalConfiguration.IBM_API_KEY_SYSTEM_PROPERTY, API_KEY);`                                  | `ibm.apiKeyId`    `System.setProperty(SdkSystemSetting.IBM_API_KEY_ID.property(), API_KEY);`                               |
-| Environment variable name | `ibm.serviceInstanceId`    `System.setProperty(SDKGlobalConfiguration.IBM_SERVICE_INSTANCE_ID_SYSTEM_PROPERTY, SERVICE_INSTANCE_ID);` | `ibm.serviceInstanceId`    `System.setProperty(SdkSystemSetting.IBM_SERVICE_INSTANCE_ID.property(), SERVICE_INSTANCE_ID);` |
+| Change Category           | V1                                                                                                                                    | V2                                                                                                                           |
+|---------------------------|---------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------|
+| Package/class name        | `com.ibm.cloud.objectstorage.auth.SystemPropertiesCredentialsProvider`                                                                | `com.ibm.cos.v2.auth.credentials.SystemPropertiesCredentialsProvider`                                                        |
+| Creation                  | `new SystemPropertiesCredentialsProvider`                                                                                             | `SystemPropertiesCredentialsProvider.create`                                                                                 |
+| Environment variable name | `aws.accessKeyId`  `System.setProperty(SDKGlobalConfiguration.ACCESS_KEY_SYSTEM_PROPERTY, API_KEY);`                                  | `aws.accessKeyId`    `System.setProperty(SdkSystemSetting.AWS_ACCESS_KEY_ID.property(), ACCESS_KEY);`                        |
+| Environment variable name | `aws.secretKey`  `System.setProperty(SDKGlobalConfiguration.SECRET_KEY_SYSTEM_PROPERTY, API_KEY);`                                    | `aws.secretAccessKey`    `System.setProperty(SdkSystemSetting.AWS_SECRET_ACCESS_KEY.property(), SECRET_ACCESS_KEY);`         |
+| Environment variable name | `ibm.apiKeyId`  `System.setProperty(SDKGlobalConfiguration.IBM_API_KEY_SYSTEM_PROPERTY, API_KEY);`                                    | `ibm.apiKeyId`    `System.setProperty(SdkSystemSetting.IBM_API_KEY_ID.property(), API_KEY);`                                 |
+| Environment variable name | `ibm.serviceInstanceId`    `System.setProperty(SDKGlobalConfiguration.IBM_SERVICE_INSTANCE_ID_SYSTEM_PROPERTY, SERVICE_INSTANCE_ID);` | `ibm.serviceInstanceId`    `System.setProperty(SdkSystemSetting.IBM_SERVICE_INSTANCE_ID.property(), SERVICE_INSTANCE_ID);`   |
 
 -----
 
 ### ProfileCredentialsProvider
 
-| Change Category            | V1                                                                                 | V2                                                                                                                                                                                                                                                                             |
-|----------------------------|------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Package/class name         | `com.ibm.cloud.objectstorage.auth.ProfileCredentialsProvider`                      | `com.ibm.cos.v2.auth.credentials.ProfileCredentialsProvider`                                                                                                                                                                                                                   |
-| Creation                   | `new ProfileCredentialsProvider`                                                   | `ProfileCredentialsProvider.create`                                                                                                                                                                                                                                            |
-| Location of custom profile | `AWS_CREDENTIAL_PROFILES_FILE` environment variable                                | `AWS_SHARED_CREDENTIALS_FILE` environment variable                                                                                                                                                                                                                             |
-|Example                    | `AWSCredentialsProvider provider = new ProfileCredentialsProvider(VALID_PROFILE);` | `ProfileFile profileFile = ProfileFile.builder().content(Paths.get(VALID_PROFILE)) // Same as ~/.aws/credentials .type(ProfileFile.Type.CREDENTIALS).build();`  `ProfileCredentialsProvider provider = ProfileCredentialsProvider.builder().profileFile(profileFile).build();` |
+| Change Category              | V1                                                                                 | V2                                                                                                                                                                                                                                                                                |
+|------------------------------|------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Package/class name           | `com.ibm.cloud.objectstorage.auth.ProfileCredentialsProvider`                      | `com.ibm.cos.v2.auth.credentials.ProfileCredentialsProvider`                                                                                                                                                                                                                      |
+| Creation                     | `new ProfileCredentialsProvider`                                                   | `ProfileCredentialsProvider.create`                                                                                                                                                                                                                                               |
+| Location of custom profile   | `AWS_CREDENTIAL_PROFILES_FILE` environment variable                                | `AWS_SHARED_CREDENTIALS_FILE` environment variable                                                                                                                                                                                                                                |
+| Example                      | `AWSCredentialsProvider provider = new ProfileCredentialsProvider(VALID_PROFILE);` | `ProfileFile profileFile = ProfileFile.builder().content(Paths.get(VALID_PROFILE)) // Same as ~/.aws/credentials .type(ProfileFile.Type.CREDENTIALS).build();`  `ProfileCredentialsProvider provider = ProfileCredentialsProvider.builder().profileFile(profileFile).build();`    |
 
 -----
 
@@ -841,10 +840,10 @@ The SDK for Java v1 and v2 differ in how they serialize `List` objects to reques
 Consider a service with a `SampleOperation` that takes a `SampleRequest`.
 The `SampleRequest` accepts a `String` type `str1` and a `List` type `listParam`.
 
-| Version            | Example Code Snippet                                                                                                      | Wire-level Logging (Partial Request)                                 | `listParam` Serialization |
-|--------------------|---------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------|---------------------------|
-| **v1**             | `SampleRequest v1Request = new SampleRequest().withStr1("TestName");`    `sampleS3V1Client.sampleOperation(v1Request);` | `Action=SampleOperation&Version=2011-01-01&str1=TestName`            | Not serialized            |
-| **v2**             | `sampleS3V2Client.sampleOperation(b -> b.str1("TestName"));`                                                              | `Action=SampleOperation&Version=2011-01-01&str1=TestName&listParam=` | Serialized with no value  |
+| Version            | Example Code Snippet                                                                                                      | Wire-level Logging (Partial Request)                                  | `listParam` Serialization   |
+|--------------------|---------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------|-----------------------------|
+| **v1**             | `SampleRequest v1Request = new SampleRequest().withStr1("TestName");`    `sampleS3V1Client.sampleOperation(v1Request);`   | `Action=SampleOperation&Version=2011-01-01&str1=TestName`             | Not serialized              |
+| **v2**             | `sampleS3V2Client.sampleOperation(b -> b.str1("TestName"));`                                                              | `Action=SampleOperation&Version=2011-01-01&str1=TestName&listParam=`  | Serialized with no value    |
 
 ### POJOs in V1 compared to Builders in V2
 
@@ -857,8 +856,8 @@ The two SDK versions differ in their use of model objects for de/serialization.
 
 | Version | Serialization/Deserialization Approach | Key Code Difference (Using `ObjectMapper`)                                                                                                                                                                   |
 |---------|----------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| V1      | Uses POJOs                             | `String v1Serialized = mapper.writeValueAsString(resultV1);`    `HeadBucketResult deserializedV1 = mapper.readValue(v1Serialized, HeadBucketResult.class);`                                                |
-| V2      | Uses Builders                          | `String v2Serialized = mapper.writeValueAsString(v2Response.toBuilder());`    `HeadBucketResponse v2Deserialized = mapper.readValue(v2Serialized, HeadBucketResponse.serializableBuilderClass()).build();` |
+| V1      | Uses POJOs                             | `String v1Serialized = mapper.writeValueAsString(resultV1);`    `HeadBucketResult deserializedV1 = mapper.readValue(v1Serialized, HeadBucketResult.class);`                                                  |
+| V2      | Uses Builders                          | `String v2Serialized = mapper.writeValueAsString(v2Response.toBuilder());`    `HeadBucketResponse v2Deserialized = mapper.readValue(v2Serialized, HeadBucketResponse.serializableBuilderClass()).build();`   |
 
 -----
 
@@ -871,10 +870,10 @@ The SDKs differ in how they deserialize JSON responses when a property modeled a
 - **V1 Behavior:** Deserializes a missing property to **`null`**.
 - **V2 Behavior:** Deserializes a missing property to an **immutable empty collection object** (e.g., `Collections.emptyList()`) 29].
 
-| Version                   | Behavior for Empty Response                   | Code Snippet                                                                                                                                                  | Output                                     | Null Check Requirement                                                        |
-|---------------------------|-----------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------|-------------------------------------------------------------------------------|
-| **V1** (null collection)  | Returns `null` for missing collections.       | `if (resultV1.getObjectSummaries() != null) { ... } else { System.out.println("Contents list is <null>");  }` | `Contents list is <null>`                  | Yes, explicit `null` checks are required.|
-| **V2** (empty collection) | Returns an immutable empty collection (`[]`). | `System.out.println(responseV2.hasContents());`    `System.out.println(responseV2.contents().isEmpty());`    `System.out.println(responseV2.contents());`| `false`    `true`    `[] - empty list` | No, promotes safer, more concise code by avoiding explicit `null` checks 31]. |
+| Version                   | Behavior for Empty Response                   | Code Snippet                                                                                                                                              | Output                                   | Null Check Requirement                                                          |
+|---------------------------|-----------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------|---------------------------------------------------------------------------------|
+| **V1** (null collection)  | Returns `null` for missing collections.       | `if (resultV1.getObjectSummaries() != null) { ... } else { System.out.println("Contents list is <null>");  }`                                             | `Contents list is <null>`                | Yes, explicit `null` checks are required.                                       |
+| **V2** (empty collection) | Returns an immutable empty collection (`[]`). | `System.out.println(responseV2.hasContents());`    `System.out.println(responseV2.contents().isEmpty());`    `System.out.println(responseV2.contents());` | `false`    `true`    `[] - empty list`   | No, promotes safer, more concise code by avoiding explicit `null` checks 31].   |
 
 The V2 SDK also provides a `has` method (e.g., `hasContents`) to check if an attribute was returned by the service.
 
@@ -1606,10 +1605,10 @@ V2CLIENT.deleteBucket(deleteBucketRequest);
 
 | Operation               | V1 (POJO/String)                                            | V2 (Builder Pattern)                                                                                                                                                         |
 |-------------------------|-------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Delete Single Object    | `V1CLIENT.deleteObject( BUCKET_NAME ,summary.key());`       | `DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder().bucket("bucketName").key(summary.key()).build();`   `V2CLIENT.deleteObject(deleteObjectRequest);` |
+| Delete Single Object    | `V1CLIENT.deleteObject( BUCKET_NAME ,summary.key());`       | `DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder().bucket("bucketName").key(summary.key()).build();`   `V2CLIENT.deleteObject(deleteObjectRequest);`   |
 | Delete Versioned Object | `DeleteVersionRequest` class used.                          | `DeleteObjectRequest.builder().versionId(...)` used                                                                                                                          |
 | Delete Multiple Objects | Uses `KeyVersion` and `DeleteObjectsRequest.setKeys(keys)`. | Uses `ObjectIdentifier` and `DeleteObjectsRequest.delete(Delete.builder().objects(keys))`.                                                                                   |
-| Delete Bucket           | `V1CLIENT.deleteBucket("bucketName");`                      | `DeleteBucketRequest deleteBucketRequest = DeleteBucketRequest.builder().bucket("bucketName").build();`  `V2CLIENT.deleteBucket(deleteBucketRequest);`                     |
+| Delete Bucket           | `V1CLIENT.deleteBucket("bucketName");`                      | `DeleteBucketRequest deleteBucketRequest = DeleteBucketRequest.builder().bucket("bucketName").build();`  `V2CLIENT.deleteBucket(deleteBucketRequest);`                       |
 
 -----
 
@@ -1663,11 +1662,11 @@ Instead, tagging uses the `putBucketTagging()` and `getBucketTagging()` APIs wit
 
 #### API CHANGES
 
-|V1 | V2 |
-|---|------------------|
-|getBucketTaggingConfiguration | getBucketTagging |
-|setBucketTaggingConfiguration | putBucketTagging |
-|deleteBucketTaggingConfiguration | deleteBucketTagging |
+| V1                               | V2                  |
+|----------------------------------|---------------------|
+| getBucketTaggingConfiguration    | getBucketTagging    |
+| setBucketTaggingConfiguration    | putBucketTagging    |
+| deleteBucketTaggingConfiguration | deleteBucketTagging |
 
 #### Example for Bucket Tagging (setBucketTaggingConfiguration, getBucketTagging)
 
@@ -1743,10 +1742,10 @@ String uploadId = response.uploadId();
 
 The default `Content-Type` header value for the following methods differ as shown in the following table.
 
-| SDK version | Method | Default Content-Type value |
-|-------------|--------------------------|----------------------------|
-| version 1 | initiateMultipartUpload | application/octet-stream |
-| version 2 | createMultipartUpload | binary/octet-stream |
+| SDK version | Method                    | Default Content-Type value |
+|-------------|---------------------------|----------------------------|
+| version 1   | initiateMultipartUpload   | application/octet-stream   |
+| version 2   | createMultipartUpload     | binary/octet-stream        |
 
 #### Multipart Full Example
 

@@ -30,7 +30,7 @@ public final class UserAgentConstant {
     public static final String LANG_METADATA = "lang";
     public static final String UA_METADATA = "ua";
     public static final String ENV_METADATA = "exec-env";
-    public static final String JAVA_SDK_METADATA = "ibm-cos-java-sdk";
+    public static final String JAVA_SDK_METADATA = "ibm-cos-sdk-java-v2";
     public static final String FEATURE_METADATA = "ft";
     public static final String CONFIG_METADATA = "cfg";
     public static final String FRAMEWORK_METADATA = "lib";

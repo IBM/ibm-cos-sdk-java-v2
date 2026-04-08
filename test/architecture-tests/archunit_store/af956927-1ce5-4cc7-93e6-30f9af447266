@@ -1,1 +1,0 @@
-Method <com.ibm.cos.v2.core.interceptor.SdkExecutionAttribute.signerChecksumReadMapping(com.ibm.cos.v2.core.checksums.ChecksumSpecs, com.ibm.cos.v2.core.SelectedAuthScheme)> calls method <com.ibm.cos.v2.http.auth.aws.internal.signer.util.ChecksumUtil.checksumHeaderName(com.ibm.cos.v2.checksums.spi.ChecksumAlgorithm)> in (SdkExecutionAttribute.java:201)

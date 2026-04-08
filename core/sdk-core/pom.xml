@@ -21,7 +21,7 @@
     <parent>
         <groupId>com.ibm.cos.v2</groupId>
         <artifactId>core</artifactId>
-        <version>1.0.0</version>
+        <version>1.0.1</version>
     </parent>
     <artifactId>sdk-core</artifactId>
     <name>IBM COS Java SDK :: SDK Core</name>
@@ -232,13 +232,13 @@
         <dependency>
             <groupId>com.ibm.cos.v2</groupId>
             <artifactId>http-auth-spi</artifactId>
-            <version>1.0.0</version>
+            <version>1.0.1</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.ibm.cos.v2</groupId>
             <artifactId>http-auth-aws</artifactId>
-            <version>1.0.0</version>
+            <version>1.0.1</version>
             <scope>compile</scope>
         </dependency>
         <dependency>

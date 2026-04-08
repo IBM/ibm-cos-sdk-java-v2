@@ -20,7 +20,7 @@
     <parent>
         <artifactId>http-clients</artifactId>
         <groupId>com.ibm.cos.v2</groupId>
-        <version>1.0.0</version>
+        <version>1.0.1</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -107,12 +107,6 @@
         </dependency>
 
         <!--Test Dependencies-->
-        <dependency>
-            <groupId>com.ibm.cos.v2</groupId>
-            <artifactId>http-client-tests</artifactId>
-            <version>${ibmcosjavasdk.version}</version>
-            <scope>test</scope>
-        </dependency>
         <dependency>
             <groupId>com.github.tomakehurst</groupId>
             <artifactId>wiremock-jre8</artifactId>

@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.ibm.cos.v2</groupId>
   <artifactId>ibm-cos-java-sdk-v2</artifactId>
-  <version>1.0.0</version>
+  <version>1.0.1</version>
   <packaging>pom</packaging>
   <name>IBM COS Java SDK :: Parent</name>
   <description>The IBM COS SDK for Java provides Java APIs
@@ -29,7 +29,6 @@
   <modules>
     <module>cos-java-sdk</module>
     <module>test/test-utils</module>
-    <module>test/http-client-tests</module>
     <module>core</module>
     <module>services</module>
     <module>services-custom</module>
@@ -63,17 +62,17 @@
     <!-- Netty Dependencies -->
     <!-- Update netty-tcnative-boringssl-static.version accordingly whenever we update netty versions-->
     <!-- https://github.com/netty/netty/blob/4.1/pom.xml search "tcnative.version" -->
-    <netty-codec-http.version>4.2.9.Final</netty-codec-http.version>
-    <netty-codec-http2.version>4.2.9.Final</netty-codec-http2.version>
-    <netty-codec.version>4.2.9.Final</netty-codec.version>
-    <netty-handler.version>4.2.9.Final</netty-handler.version>
-    <netty-transport.version>4.2.9.Final</netty-transport.version>
-    <netty-common.version>4.2.9.Final</netty-common.version>
-    <netty-buffer.version>4.2.9.Final</netty-buffer.version>
-    <netty-resolver.version>4.2.9.Final</netty-resolver.version>
-    <netty-resolver-dns.version>4.2.9.Final</netty-resolver-dns.version>
-    <netty-transport-classes-epoll.version>4.2.9.Final</netty-transport-classes-epoll.version>
-    <netty-tcnative-boringssl-static.version>2.0.70.Final</netty-tcnative-boringssl-static.version>
+    <netty-codec-http.version>4.2.12.Final</netty-codec-http.version>
+    <netty-codec-http2.version>4.2.12.Final</netty-codec-http2.version>
+    <netty-codec.version>4.2.12.Final</netty-codec.version>
+    <netty-handler.version>4.2.12.Final</netty-handler.version>
+    <netty-transport.version>4.2.12.Final</netty-transport.version>
+    <netty-common.version>4.2.12.Final</netty-common.version>
+    <netty-buffer.version>4.2.12.Final</netty-buffer.version>
+    <netty-resolver.version>4.2.12.Final</netty-resolver.version>
+    <netty-resolver-dns.version>4.2.12.Final</netty-resolver-dns.version>
+    <netty-transport-classes-epoll.version>4.2.12.Final</netty-transport-classes-epoll.version>
+    <netty-tcnative-boringssl-static.version>2.0.74.Final</netty-tcnative-boringssl-static.version>
     <!-- Apache HTTP Components -->
     <httpclient.version>4.5.13</httpclient.version>
     <httpcore.version>4.4.16</httpcore.version>

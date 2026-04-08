@@ -27,7 +27,7 @@ import com.ibm.cos.v2.annotations.SdkProtectedApi;
 import com.ibm.cos.v2.annotations.ThreadSafe;
 import com.ibm.cos.v2.core.SdkSystemSetting;
 import com.ibm.cos.v2.core.util.SystemUserAgent;
-//import com.ibm.cos.v2.core.util.VersionInfo; TODO:REMOVE
+import com.ibm.cos.v2.core.util.VersionInfo;
 import com.ibm.cos.v2.utils.JavaSystemSetting;
 import com.ibm.cos.v2.utils.SystemSetting;
 
@@ -42,7 +42,7 @@ public final class DefaultSystemUserAgent implements SystemUserAgent {
 
     private static volatile DefaultSystemUserAgent instance;
 
-    //private final String sdkVersion; TODO:REMOVE
+    private final String sdkVersion;
     private final String osMetadata;
     private final String langMetadata;
     private final String envMetadata;
@@ -53,7 +53,7 @@ public final class DefaultSystemUserAgent implements SystemUserAgent {
     private final String systemUserAgent;
 
     private DefaultSystemUserAgent() {
-        //sdkVersion = VersionInfo.SDK_VERSION; TODO:REMOVE
+        sdkVersion = VersionInfo.SDK_VERSION;
         osMetadata = uaPair(systemSetting(JavaSystemSetting.OS_NAME), systemSetting(JavaSystemSetting.OS_VERSION));
         langMetadata = uaPair("java", systemSetting(JavaSystemSetting.JAVA_VERSION));
         envMetadata = systemSetting(SdkSystemSetting.AWS_EXECUTION_ENV);
@@ -87,14 +87,9 @@ public final class DefaultSystemUserAgent implements SystemUserAgent {
     }
 
     @Override
-    public String sdkVersion() { //TODO:REMOVE
-        return "";
-    }
-
-    /*@Override
-    public String sdkVersion() { TODO:REMOVE
+    public String sdkVersion() {
         return sdkVersion;
-    } */
+    }
 
     @Override
     public String osMetadata() {

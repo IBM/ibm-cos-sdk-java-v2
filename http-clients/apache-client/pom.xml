@@ -21,7 +21,7 @@
     <parent>
         <artifactId>http-clients</artifactId>
         <groupId>com.ibm.cos.v2</groupId>
-        <version>1.0.0</version>
+        <version>1.0.1</version>
     </parent>
 
     <artifactId>apache-client</artifactId>
@@ -59,13 +59,6 @@
         <dependency>
             <groupId>commons-codec</groupId>
             <artifactId>commons-codec</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>com.ibm.cos.v2</groupId>
-            <artifactId>http-client-tests</artifactId>
-            <version>${ibmcosjavasdk.version}</version>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>

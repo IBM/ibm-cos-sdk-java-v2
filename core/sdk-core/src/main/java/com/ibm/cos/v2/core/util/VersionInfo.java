@@ -13,19 +13,23 @@
  * permissions and limitations under the License.
  */
 
-package com.ibm.cos.v2.http.nio.netty.internal;
+package com.ibm.cos.v2.core.util;
 
-import io.netty.channel.embedded.EmbeddedChannel;
+import com.ibm.cos.v2.annotations.SdkProtectedApi;
 
-public class MockChannel extends EmbeddedChannel {
-    public MockChannel() throws Exception {
-        super.doRegister();
-    }
+/**
+ * Provides version information for the IBM COS SDK for Java.
+ */
+@SdkProtectedApi
+public final class VersionInfo {
 
-    public void runAllPendingTasks() throws InterruptedException {
-        super.runPendingTasks();
-        while (runScheduledPendingTasks() != -1) {
-            Thread.sleep(1);
-        }
+    /**
+     * The current version of the IBM COS SDK for Java.
+     */
+    public static final String SDK_VERSION = "1.0.1";
+
+    private VersionInfo() {
+        // Prevent instantiation
     }
 }
+

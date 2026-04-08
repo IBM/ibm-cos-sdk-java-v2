@@ -12,18 +12,11 @@ Suggestions for enhancements and reports of unexpected behavior are welcome.
 
 ***
 
-## Notice
-
-IBM has added a [Language Support Policy](https://github.ibm.com/cos-clevos/ibm-cos-sdk-go-v2/tree/feature/beta-release?tab=readme-ov-file#language-support-policy).
-Language versions will be deprecated on the published schedule without additional notice.
-
-***
-
 ## Documentation
 
 * [Core documentation for IBM COS](https://cloud.ibm.com/docs/cloud-object-storage?topic=cloud-object-storage-getting-started-cloud-object-storage)
-* [Code Examples](https://cloud.ibm.com/docs/cloud-object-storage?topic=cloud-object-storage-java)
-* [Java API reference documentation](https://ibm.github.io/ibm-cos-sdk-java)
+* [Code Examples](./examples)
+* [Java API reference documentation](https://ibm.github.io/ibm-cos-sdk-java-v2/)
 * [REST API reference documentation](https://cloud.ibm.com/docs/cloud-object-storage/api-reference/about-api.html?group=api-reference)
 
 For release notes, see the [CHANGELOG](CHANGELOG.md).
@@ -38,10 +31,11 @@ For release notes, see the [CHANGELOG](CHANGELOG.md).
 
 You'll need:
 
-* An instance of IBM COS.
-* An API key from [IBM Cloud Identity and Access Management](https://cloud.ibm.com/docs/account?topic=account-userapikey&interface=ui) with at least `Writer` permissions.
-* The ID of the instance of COS that you are working with.
-* Token acquisition endpoint.
+* An [IBM Cloud](https://cloud.ibm.com/registration) account.
+* An instance of IBM Cloud Object Storage (COS).
+* An IAM API key from [IBM Cloud API keys page](https://cloud.ibm.com/iam/apikeys) with at least `Writer` permissions.
+* The service instance ID of your COS instance.
+* IAM Token endpoint.
 * Service endpoint.
 
 These values can be found in the IBM Cloud UI by [generating a service credential](https://cloud.ibm.com/docs/services/cloud-object-storage/iam?topic=cloud-object-storage-service-credentials#service-credentials).
@@ -154,7 +148,7 @@ mvn clean install
 java -cp target/your-jar.jar BucketCreate
 ```
 
-More examples can be found [here](./examples).
+More examples can be found [examples directory](./examples).
 
 ***
 
@@ -168,12 +162,6 @@ Feel free to use GitHub issues for tracking bugs and feature requests, but for h
 * If it turns out that you may have found a bug, please [open an issue](https://github.com/ibm/ibm-cos-sdk-java-v2/issues/new).
 
 ***
-
-## Language Support Policy
-
-IBM supports [current public releases](https://golang.org/doc/devel/release.html).
-IBM will deprecate language versions 90 days after a version reaches end-of-life.
-All clients will need to upgrade to a supported version before the end of the grace period.
 
 ## License
 
