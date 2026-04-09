@@ -79,7 +79,7 @@
     <!-- Commons Libraries -->
     <commons-io.version>2.15.1</commons-io.version>
     <commons-lang3.version>3.18.0</commons-lang3.version>
-    <commons-codec.version>1.17.1</commons-codec.version>
+    <commons-codec.version>1.21.0</commons-codec.version>
     <!-- Logging Dependencies -->
     <slf4j-api.version>1.7.36</slf4j-api.version>
     <log4j-api.version>2.25.3</log4j-api.version>
