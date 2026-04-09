@@ -146,8 +146,6 @@ com.ibm.cos.v2.http.nio.netty.internal
 com.ibm.cos.v2.http.nio.netty.internal.http2
 com.ibm.cos.v2.http.nio.netty.internal.nrs
 com.ibm.cos.v2.http.nio.netty.internal.utils
-com.ibm.cos.v2.http.proxy
-com.ibm.cos.v2.http.server
 com.ibm.cos.v2.http.urlconnection
 com.ibm.cos.v2.identity.spi
 com.ibm.cos.v2.identity.spi.internal
