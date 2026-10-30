@@ -26,7 +26,7 @@ public final class VersionInfo {
     /**
      * The current version of the IBM COS SDK for Java.
      */
-    public static final String SDK_VERSION = "1.0.1";
+    public static final String SDK_VERSION = "1.0.2";
 
     private VersionInfo() {
         // Prevent instantiation

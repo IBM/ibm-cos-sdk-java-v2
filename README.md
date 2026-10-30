@@ -77,7 +77,7 @@ To begin using the SDK, add the dependency to your Maven project:
 <dependency>
     <groupId>com.ibm.cos.v2</groupId>
     <artifactId>cos-java-sdk</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.2</version>
 </dependency>
 ```
 
