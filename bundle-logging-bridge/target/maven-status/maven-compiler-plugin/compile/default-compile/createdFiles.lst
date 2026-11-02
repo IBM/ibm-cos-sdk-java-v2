@@ -1,0 +1,14 @@
+com/ibm/cos/v2/thirdparty/org/slf4j/impl/StaticMarkerBinder.class
+com/ibm/cos/v2/thirdparty/org/slf4j/impl/internal/ErrorUtil.class
+com/ibm/cos/v2/thirdparty/org/slf4j/impl/internal/ShadedMarkerAdapter.class
+com/ibm/cos/v2/thirdparty/org/slf4j/impl/StaticLoggerBinder$State.class
+com/ibm/cos/v2/thirdparty/org/slf4j/impl/internal/InvocationHelper.class
+com/ibm/cos/v2/thirdparty/org/slf4j/impl/internal/ILoggerFactoryAdapter.class
+com/ibm/cos/v2/thirdparty/org/slf4j/impl/internal/LoggerAdapter.class
+com/ibm/cos/v2/thirdparty/org/slf4j/impl/StaticMarkerBinder$State.class
+com/ibm/cos/v2/thirdparty/org/slf4j/impl/StaticLoggerBinder.class
+com/ibm/cos/v2/thirdparty/org/slf4j/impl/internal/IMarkerFactoryAdapter.class
+com/ibm/cos/v2/thirdparty/org/slf4j/impl/internal/MarkerUtils.class
+com/ibm/cos/v2/thirdparty/org/slf4j/impl/internal/ShadedMarkerAdapter$IteratorAdapter.class
+com/ibm/cos/v2/thirdparty/org/slf4j/impl/internal/UnshadedMarkerAdapter$IteratorAdapter.class
+com/ibm/cos/v2/thirdparty/org/slf4j/impl/internal/UnshadedMarkerAdapter.class

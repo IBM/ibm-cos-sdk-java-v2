@@ -1,0 +1,9 @@
+com/ibm/cos/v2/identity/spi/AwsSessionCredentialsIdentityTest.class
+com/ibm/cos/v2/identity/spi/ResolveIdentityRequestTest.class
+com/ibm/cos/v2/identity/spi/IdentityPropertyTest.class
+com/ibm/cos/v2/identity/spi/IdentityProvidersTest.class
+com/ibm/cos/v2/identity/spi/IdentityProvidersTest$1.class
+com/ibm/cos/v2/identity/spi/IdentityProvidersTest$AwsCredentialsProvider.class
+com/ibm/cos/v2/identity/spi/AwsCredentialsIdentityTest.class
+com/ibm/cos/v2/identity/spi/IdentityProvidersTest$AwsSessionCredentialsProvider.class
+com/ibm/cos/v2/identity/spi/IdentityProvidersTest$TokenProvider.class

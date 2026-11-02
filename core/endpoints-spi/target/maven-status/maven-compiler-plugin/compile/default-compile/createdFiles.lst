@@ -1,0 +1,6 @@
+com/ibm/cos/v2/endpoints/EndpointProvider.class
+com/ibm/cos/v2/endpoints/Endpoint.class
+com/ibm/cos/v2/endpoints/EndpointAttributeKey.class
+com/ibm/cos/v2/endpoints/Endpoint$BuilderImpl.class
+com/ibm/cos/v2/endpoints/Endpoint$Builder.class
+com/ibm/cos/v2/endpoints/Endpoint$1.class

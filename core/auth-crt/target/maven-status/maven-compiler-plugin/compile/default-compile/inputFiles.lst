@@ -1,0 +1,10 @@
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/auth-crt/src/main/java/com/ibm/cos/v2/authcrt/signer/internal/SigningConfigProvider.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/auth-crt/src/main/java/com/ibm/cos/v2/authcrt/signer/internal/AwsCrt4aSigningAdapter.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/auth-crt/src/main/java/com/ibm/cos/v2/authcrt/signer/internal/SigningUtils.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/auth-crt/src/main/java/com/ibm/cos/v2/authcrt/signer/internal/CrtHttpRequestConverter.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/auth-crt/src/main/java/com/ibm/cos/v2/authcrt/signer/internal/SdkSigningResult.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/auth-crt/src/main/java/com/ibm/cos/v2/authcrt/signer/internal/DefaultAwsCrtV4aSigner.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/auth-crt/src/main/java/com/ibm/cos/v2/authcrt/signer/internal/chunkedencoding/AwsS3V4aChunkSigner.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/auth-crt/src/main/java/com/ibm/cos/v2/authcrt/signer/AwsCrtS3V4aSigner.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/auth-crt/src/main/java/com/ibm/cos/v2/authcrt/signer/AwsCrtV4aSigner.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/auth-crt/src/main/java/com/ibm/cos/v2/authcrt/signer/internal/DefaultAwsCrtS3V4aSigner.java

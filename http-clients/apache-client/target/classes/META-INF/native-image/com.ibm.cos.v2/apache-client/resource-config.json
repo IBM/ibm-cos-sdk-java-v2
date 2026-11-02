@@ -1,0 +1,7 @@
+{
+  "resources": [
+    {
+      "pattern": "\\Qcom.ibm.cos.v2.http.SdkHttpService\\E"
+    }
+  ]
+}

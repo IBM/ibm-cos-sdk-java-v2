@@ -1,0 +1,10 @@
+com/ibm/cos/v2/retries/api/internal/backoff/ExponentialDelayWithJitterTest.class
+com/ibm/cos/v2/retries/api/internal/backoff/ExponentialDelayWithJitterTest$TestCase.class
+com/ibm/cos/v2/retries/api/internal/backoff/FixedDelayWithJitterTest$TestCase.class
+com/ibm/cos/v2/retries/api/RetryStrategyBuilderTest.class
+com/ibm/cos/v2/retries/api/internal/backoff/FixedDelayWithJitterTest$ComputedNextInt.class
+com/ibm/cos/v2/retries/api/RetryStrategyBuilderTest$TestCase.class
+com/ibm/cos/v2/retries/api/RetryStrategyBuilderTest$DummyRetryStrategy.class
+com/ibm/cos/v2/retries/api/internal/backoff/ExponentialDelayWithJitterTest$ComputedNextInt.class
+com/ibm/cos/v2/retries/api/RetryStrategyBuilderTest$BuilderToTestDefaults.class
+com/ibm/cos/v2/retries/api/internal/backoff/FixedDelayWithJitterTest.class

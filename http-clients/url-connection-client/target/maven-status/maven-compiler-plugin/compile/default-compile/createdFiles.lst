@@ -1,0 +1,13 @@
+com/ibm/cos/v2/http/urlconnection/ProxyConfiguration$DefaultClientProxyConfigurationBuilder.class
+com/ibm/cos/v2/http/urlconnection/UrlConnectionFactory.class
+com/ibm/cos/v2/http/urlconnection/ProxyConfiguration.class
+com/ibm/cos/v2/http/urlconnection/UrlConnectionHttpClient$DefaultBuilder.class
+com/ibm/cos/v2/http/urlconnection/UrlConnectionHttpClient$1.class
+com/ibm/cos/v2/http/urlconnection/ProxyConfiguration$1.class
+com/ibm/cos/v2/http/urlconnection/UrlConnectionHttpClient$NoOpHostNameVerifier.class
+com/ibm/cos/v2/http/urlconnection/UrlConnectionHttpClient$Builder.class
+com/ibm/cos/v2/http/urlconnection/ProxyConfiguration$Builder.class
+com/ibm/cos/v2/http/urlconnection/UrlConnectionHttpClient$TrustAllManager.class
+com/ibm/cos/v2/http/urlconnection/UrlConnectionHttpClient.class
+com/ibm/cos/v2/http/urlconnection/UrlConnectionHttpClient$RequestCallable.class
+com/ibm/cos/v2/http/urlconnection/UrlConnectionSdkHttpService.class

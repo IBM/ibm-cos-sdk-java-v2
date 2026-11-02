@@ -1,0 +1,6 @@
+com/ibm/cos/v2/metrics/LoggingMetricPublisherTest.class
+com/ibm/cos/v2/metrics/MetricLevelTest.class
+com/ibm/cos/v2/metrics/internal/DefaultSdkMetricTest.class
+com/ibm/cos/v2/metrics/internal/DefaultSdkMetricRecordTest.class
+com/ibm/cos/v2/metrics/internal/DefaultMetricCollectionTest.class
+com/ibm/cos/v2/metrics/internal/DefaultMetricCollectorTest.class

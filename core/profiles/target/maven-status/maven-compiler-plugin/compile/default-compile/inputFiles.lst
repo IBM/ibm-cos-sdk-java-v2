@@ -1,0 +1,10 @@
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/profiles/src/main/java/com/ibm/cos/v2/profiles/ProfileFileSupplierBuilder.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/profiles/src/main/java/com/ibm/cos/v2/profiles/ProfileFile.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/profiles/src/main/java/com/ibm/cos/v2/profiles/ProfileFileSupplier.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/profiles/src/main/java/com/ibm/cos/v2/profiles/internal/ProfileFileReader.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/profiles/src/main/java/com/ibm/cos/v2/profiles/Profile.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/profiles/src/main/java/com/ibm/cos/v2/profiles/ProfileFileLocation.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/profiles/src/main/java/com/ibm/cos/v2/profiles/internal/ProfileSection.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/profiles/src/main/java/com/ibm/cos/v2/profiles/internal/ProfileFileRefresher.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/profiles/src/main/java/com/ibm/cos/v2/profiles/ProfileFileSystemSetting.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/profiles/src/main/java/com/ibm/cos/v2/profiles/ProfileProperty.java

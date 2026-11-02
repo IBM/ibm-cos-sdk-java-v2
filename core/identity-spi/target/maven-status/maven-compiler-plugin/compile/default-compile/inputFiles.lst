@@ -1,0 +1,15 @@
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/identity-spi/src/main/java/com/ibm/cos/v2/identity/spi/internal/DefaultIdentityProviders.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/identity-spi/src/main/java/com/ibm/cos/v2/identity/spi/internal/DefaultAwsCredentialsIdentity.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/identity-spi/src/main/java/com/ibm/cos/v2/identity/spi/IdentityProviders.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/identity-spi/src/main/java/com/ibm/cos/v2/identity/spi/internal/IBMOAuthIdentity.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/identity-spi/src/main/java/com/ibm/cos/v2/identity/spi/IdentityProvider.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/identity-spi/src/main/java/com/ibm/cos/v2/identity/spi/TokenIdentity.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/identity-spi/src/main/java/com/ibm/cos/v2/identity/spi/ResolveIdentityRequest.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/identity-spi/src/main/java/com/ibm/cos/v2/identity/spi/IdentityProperty.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/identity-spi/src/main/java/com/ibm/cos/v2/identity/spi/internal/DefaultIAMCredentialsIdentity.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/identity-spi/src/main/java/com/ibm/cos/v2/identity/spi/AwsSessionCredentialsIdentity.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/identity-spi/src/main/java/com/ibm/cos/v2/identity/spi/internal/IBMIamAuthProperties.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/identity-spi/src/main/java/com/ibm/cos/v2/identity/spi/internal/DefaultResolveIdentityRequest.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/identity-spi/src/main/java/com/ibm/cos/v2/identity/spi/Identity.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/identity-spi/src/main/java/com/ibm/cos/v2/identity/spi/internal/DefaultAwsSessionCredentialsIdentity.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/identity-spi/src/main/java/com/ibm/cos/v2/identity/spi/AwsCredentialsIdentity.java

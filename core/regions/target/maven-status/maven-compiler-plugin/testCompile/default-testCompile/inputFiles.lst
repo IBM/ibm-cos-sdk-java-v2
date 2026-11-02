@@ -1,0 +1,11 @@
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/regions/src/test/java/com/ibm/cos/v2/regions/PartitionServiceMetadataTest.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/regions/src/test/java/com/ibm/cos/v2/regions/RegionTest.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/regions/src/test/java/com/ibm/cos/v2/regions/PartitionEndpointKeyTest.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/regions/src/test/java/com/ibm/cos/v2/regions/providers/AwsRegionProviderChainTest.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/regions/src/test/java/com/ibm/cos/v2/regions/internal/util/ConnectionUtilsComponentTest.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/regions/src/test/java/com/ibm/cos/v2/regions/util/HttpCredentialsUtilsTest.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/regions/src/test/java/com/ibm/cos/v2/regions/internal/util/SocketUtils.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/regions/src/test/java/com/ibm/cos/v2/regions/internal/RegionScopeTest.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/regions/src/test/java/com/ibm/cos/v2/regions/ServiceEndpointKeyTest.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/regions/src/test/java/com/ibm/cos/v2/regions/providers/LazyAwsRegionProviderTest.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/regions/src/test/java/com/ibm/cos/v2/regions/servicemetadata/GeneratedServiceMetadataProviderTest.java

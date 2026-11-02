@@ -1,0 +1,11 @@
+com/ibm/cos/v2/checksums/internal/Crc32ChecksumTest.class
+com/ibm/cos/v2/checksums/internal/DigestAlgorithmTest.class
+com/ibm/cos/v2/checksums/internal/Crc32CChecksumTest.class
+com/ibm/cos/v2/checksums/internal/Crc64NvmeChecksumTest.class
+com/ibm/cos/v2/checksums/internal/SdkImplmenetedCRC32CChecksumTest.class
+com/ibm/cos/v2/checksums/internal/DefaultCRC32CChecksumTest.class
+com/ibm/cos/v2/checksums/internal/CrcChecksumBase.class
+com/ibm/cos/v2/checksums/internal/Java9BasedCRC32CChecksumTest.class
+com/ibm/cos/v2/checksums/internal/DefaultChecksumAlgorithmTest.class
+com/ibm/cos/v2/checksums/ConstructorCacheTest.class
+com/ibm/cos/v2/checksums/SdkChecksumTest.class

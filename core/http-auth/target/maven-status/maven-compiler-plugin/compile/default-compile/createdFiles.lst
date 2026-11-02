@@ -1,0 +1,10 @@
+com/ibm/cos/v2/http/auth/internal/scheme/DefaultBearerAuthScheme.class
+com/ibm/cos/v2/http/auth/internal/scheme/DefaultNoAuthAuthScheme$2.class
+com/ibm/cos/v2/http/auth/scheme/NoAuthAuthScheme$AnonymousIdentity.class
+com/ibm/cos/v2/http/auth/internal/scheme/DefaultNoAuthAuthScheme$1.class
+com/ibm/cos/v2/http/auth/scheme/BearerAuthScheme.class
+com/ibm/cos/v2/http/auth/scheme/NoAuthAuthScheme.class
+com/ibm/cos/v2/http/auth/internal/scheme/DefaultNoAuthAuthScheme$3.class
+com/ibm/cos/v2/http/auth/internal/scheme/DefaultNoAuthAuthScheme.class
+com/ibm/cos/v2/http/auth/internal/signer/DefaultBearerHttpSigner.class
+com/ibm/cos/v2/http/auth/signer/BearerHttpSigner.class

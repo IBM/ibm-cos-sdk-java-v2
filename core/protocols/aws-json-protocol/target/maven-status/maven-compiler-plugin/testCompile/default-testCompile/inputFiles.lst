@@ -1,0 +1,12 @@
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/protocols/aws-json-protocol/src/test/java/com/ibm/cos/v2/protocols/json/ValidSdkObjects.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/protocols/aws-json-protocol/src/test/java/com/ibm/cos/v2/protocols/json/SdkJsonGeneratorTest.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/protocols/aws-json-protocol/src/test/java/com/ibm/cos/v2/protocols/json/FaultStatusCodeMappingTest.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/protocols/aws-json-protocol/src/test/java/com/ibm/cos/v2/protocols/json/AwsJsonErrorMessageParserTest.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/protocols/aws-json-protocol/src/test/java/com/ibm/cos/v2/protocols/json/internal/unmarshall/ListOfStringsCopier.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/protocols/aws-json-protocol/src/test/java/com/ibm/cos/v2/protocols/json/internal/dom/DocumentUnmarshallerTest.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/protocols/aws-json-protocol/src/test/java/com/ibm/cos/v2/protocols/json/AWSQueryModeTest.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/protocols/aws-json-protocol/src/test/java/com/ibm/cos/v2/protocols/json/internal/unmarshall/JsonUnmarshallingParserTest.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/protocols/aws-json-protocol/src/test/java/com/ibm/cos/v2/protocols/json/internal/unmarshall/MapOfStringToStringCopier.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/protocols/aws-json-protocol/src/test/java/com/ibm/cos/v2/protocols/json/JsonErrorCodeParserTest.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/protocols/aws-json-protocol/src/test/java/com/ibm/cos/v2/protocols/json/internal/unmarshall/ComplexStructure.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/protocols/aws-json-protocol/src/test/java/com/ibm/cos/v2/protocols/json/internal/unmarshall/TestRequest.java

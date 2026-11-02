@@ -1,0 +1,8 @@
+com/ibm/cos/v2/protocols/cbor/internal/SdkCborGenerator.class
+com/ibm/cos/v2/protocols/cbor/AwsCborProtocolFactory$1.class
+com/ibm/cos/v2/protocols/cbor/internal/SdkStructuredCborFactory$CborGeneratorSupplier.class
+com/ibm/cos/v2/protocols/cbor/internal/SdkStructuredCborFactory.class
+com/ibm/cos/v2/protocols/cbor/AwsCborProtocolFactory.class
+com/ibm/cos/v2/protocols/cbor/internal/AwsStructuredCborFactory$1.class
+com/ibm/cos/v2/protocols/cbor/internal/AwsStructuredCborFactory.class
+com/ibm/cos/v2/protocols/cbor/AwsCborProtocolFactory$Builder.class

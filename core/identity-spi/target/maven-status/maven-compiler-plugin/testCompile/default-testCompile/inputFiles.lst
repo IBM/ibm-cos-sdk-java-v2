@@ -1,0 +1,5 @@
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/identity-spi/src/test/java/com/ibm/cos/v2/identity/spi/IdentityProvidersTest.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/identity-spi/src/test/java/com/ibm/cos/v2/identity/spi/AwsCredentialsIdentityTest.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/identity-spi/src/test/java/com/ibm/cos/v2/identity/spi/AwsSessionCredentialsIdentityTest.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/identity-spi/src/test/java/com/ibm/cos/v2/identity/spi/IdentityPropertyTest.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/identity-spi/src/test/java/com/ibm/cos/v2/identity/spi/ResolveIdentityRequestTest.java

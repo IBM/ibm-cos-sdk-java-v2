@@ -1,0 +1,14 @@
+com/ibm/cos/v2/authcrt/signer/internal/ChunkedEncodingFunctionalTest.class
+com/ibm/cos/v2/authcrt/signer/internal/SigningConfigProviderTest.class
+com/ibm/cos/v2/authcrt/signer/AwsCrtV4aSignerTest.class
+com/ibm/cos/v2/authcrt/signer/internal/AwsCrt4aSigningAdapterTest.class
+com/ibm/cos/v2/authcrt/signer/SignerTestUtils.class
+com/ibm/cos/v2/authcrt/signer/SigningTestCase.class
+com/ibm/cos/v2/authcrt/signer/internal/AwsCrtV4aSignerSigningScopeTest.class
+com/ibm/cos/v2/authcrt/signer/internal/checksum/CrtBasedChecksumTest.class
+com/ibm/cos/v2/authcrt/signer/internal/DefaultAwsCrtS3V4aSignerTest.class
+com/ibm/cos/v2/authcrt/signer/internal/AwsCrtS3V4aSignerSigningScopeTest.class
+com/ibm/cos/v2/authcrt/signer/internal/AwsChunkedEncodingInputStreamTest.class
+com/ibm/cos/v2/authcrt/signer/internal/CrtHttpRequestConverterTest.class
+com/ibm/cos/v2/authcrt/signer/AwsCrtS3V4aSignerTest.class
+com/ibm/cos/v2/authcrt/signer/internal/BaseSigningScopeTest.class

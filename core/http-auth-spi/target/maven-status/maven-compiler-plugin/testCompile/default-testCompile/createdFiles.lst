@@ -1,0 +1,7 @@
+com/ibm/cos/v2/http/auth/spi/signer/AsyncSignedRequestTest.class
+com/ibm/cos/v2/http/auth/spi/signer/HttpSignerTest$TestSigner.class
+com/ibm/cos/v2/http/auth/spi/signer/HttpSignerTest$1.class
+com/ibm/cos/v2/http/auth/spi/scheme/AuthSchemeOptionTest.class
+com/ibm/cos/v2/http/auth/spi/signer/SignerPropertyTest.class
+com/ibm/cos/v2/http/auth/spi/signer/SignedRequestTest.class
+com/ibm/cos/v2/http/auth/spi/signer/HttpSignerTest.class

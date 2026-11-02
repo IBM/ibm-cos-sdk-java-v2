@@ -1,0 +1,6 @@
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/http-auth/src/main/java/com/ibm/cos/v2/http/auth/signer/BearerHttpSigner.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/http-auth/src/main/java/com/ibm/cos/v2/http/auth/internal/signer/DefaultBearerHttpSigner.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/http-auth/src/main/java/com/ibm/cos/v2/http/auth/internal/scheme/DefaultBearerAuthScheme.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/http-auth/src/main/java/com/ibm/cos/v2/http/auth/internal/scheme/DefaultNoAuthAuthScheme.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/http-auth/src/main/java/com/ibm/cos/v2/http/auth/scheme/NoAuthAuthScheme.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/http-auth/src/main/java/com/ibm/cos/v2/http/auth/scheme/BearerAuthScheme.java

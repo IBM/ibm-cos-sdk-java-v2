@@ -1,0 +1,15 @@
+[
+  [
+    "org.apache.http.conn.HttpClientConnectionManager",
+    "org.apache.http.pool.ConnPoolControl",
+    "com.ibm.cos.v2.http.apache.internal.conn.Wrapped"
+  ],
+  [
+    "org.apache.http.conn.HttpClientConnectionManager",
+    "com.ibm.cos.v2.http.apache.internal.conn.Wrapped"
+  ],
+  [
+    "org.apache.http.conn.ConnectionRequest",
+    "com.ibm.cos.v2.http.apache.internal.conn.Wrapped"
+  ]
+]

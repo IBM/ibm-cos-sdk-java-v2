@@ -1,0 +1,10 @@
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/http-client-spi/src/test/java/com/ibm/cos/v2/http/SdkHttpExecutionAttributesTest.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/http-client-spi/src/test/java/com/ibm/cos/v2/http/ClientTlsAuthTestBase.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/http-client-spi/src/test/java/com/ibm/cos/v2/http/TlsKeyManagersProviderTest.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/http-client-spi/src/test/java/com/ibm/cos/v2/http/SdkHttpRequestResponseTest.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/http-client-spi/src/test/java/com/ibm/cos/v2/http/HttpStatusFamilyTest.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/http-client-spi/src/test/java/com/ibm/cos/v2/http/async/AbortableInputStreamSubscriberTest.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/http-client-spi/src/test/java/com/ibm/cos/v2/http/com/ibm/cos/v2/internal/http/NoneTlsKeyManagersProviderTest.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/http-client-spi/src/test/java/com/ibm/cos/v2/http/SystemPropertyTlsKeyManagersProviderTest.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/http-client-spi/src/test/java/com/ibm/cos/v2/http/FileStoreTlsKeyManagersProviderTest.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/http-client-spi/src/test/java/com/ibm/cos/v2/http/ContentStreamProviderTest.java

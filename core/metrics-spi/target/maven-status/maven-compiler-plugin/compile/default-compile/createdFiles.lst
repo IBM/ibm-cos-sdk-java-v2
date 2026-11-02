@@ -1,0 +1,15 @@
+com/ibm/cos/v2/metrics/MetricLevel.class
+com/ibm/cos/v2/metrics/LoggingMetricPublisher$Format.class
+com/ibm/cos/v2/metrics/internal/DefaultMetricRecord.class
+com/ibm/cos/v2/metrics/internal/DefaultMetricCollector.class
+com/ibm/cos/v2/metrics/MetricCollector.class
+com/ibm/cos/v2/metrics/MetricPublisher.class
+com/ibm/cos/v2/metrics/MetricRecord.class
+com/ibm/cos/v2/metrics/MetricCategory.class
+com/ibm/cos/v2/metrics/NoOpMetricCollector.class
+com/ibm/cos/v2/metrics/internal/EmptyMetricCollection.class
+com/ibm/cos/v2/metrics/SdkMetric.class
+com/ibm/cos/v2/metrics/LoggingMetricPublisher.class
+com/ibm/cos/v2/metrics/internal/DefaultSdkMetric.class
+com/ibm/cos/v2/metrics/MetricCollection.class
+com/ibm/cos/v2/metrics/internal/DefaultMetricCollection.class

@@ -1,0 +1,13 @@
+com/ibm/cos/v2/annotations/ReviewBeforeRelease.class
+com/ibm/cos/v2/annotations/SdkProtectedApi.class
+com/ibm/cos/v2/annotations/SdkInternalApi.class
+com/ibm/cos/v2/annotations/SdkPublicApi.class
+com/ibm/cos/v2/annotations/ToBuilderIgnoreField.class
+com/ibm/cos/v2/annotations/NotNull.class
+com/ibm/cos/v2/annotations/Generated.class
+com/ibm/cos/v2/annotations/SdkTestInternalApi.class
+com/ibm/cos/v2/annotations/ThreadSafe.class
+com/ibm/cos/v2/annotations/Mutable.class
+com/ibm/cos/v2/annotations/SdkPreviewApi.class
+com/ibm/cos/v2/annotations/NotThreadSafe.class
+com/ibm/cos/v2/annotations/Immutable.class

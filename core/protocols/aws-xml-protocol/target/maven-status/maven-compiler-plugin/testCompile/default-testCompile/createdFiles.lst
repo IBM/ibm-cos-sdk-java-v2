@@ -1,0 +1,9 @@
+com/ibm/cos/v2/protocols/xml/internal/unmarshall/AwsXmlResponseHandlerTest$FakeResponse$Builder.class
+com/ibm/cos/v2/protocols/xml/internal/unmarshall/AwsXmlResponseHandlerTest$FakeSdkPojo.class
+com/ibm/cos/v2/protocols/xml/internal/unmarshall/AwsXmlUnmarshallingContextTest.class
+com/ibm/cos/v2/protocols/xml/internal/unmarshall/DecorateErrorFromResponseBodyUnmarshallerTest.class
+com/ibm/cos/v2/protocols/xml/internal/unmarshall/AwsXmlResponseHandlerTest.class
+com/ibm/cos/v2/protocols/xml/internal/unmarshall/AwsXmlResponseHandlerTest$FakeResponse.class
+com/ibm/cos/v2/protocols/xml/internal/marshall/S3XmlWriterTest.class
+com/ibm/cos/v2/protocols/xml/internal/unmarshall/AwsXmlResponseHandlerTest$1.class
+com/ibm/cos/v2/protocols/xml/internal/unmarshall/AwsXmlResponseHandlerTest$TestSdkHttpFullResponse.class

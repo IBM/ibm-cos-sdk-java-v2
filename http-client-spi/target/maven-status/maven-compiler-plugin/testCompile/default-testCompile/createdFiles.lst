@@ -1,0 +1,16 @@
+com/ibm/cos/v2/http/SdkHttpRequestResponseTest.class
+com/ibm/cos/v2/http/ContentStreamProviderTest$1.class
+com/ibm/cos/v2/http/FileStoreTlsKeyManagersProviderTest.class
+com/ibm/cos/v2/http/SdkHttpRequestResponseTest$3.class
+com/ibm/cos/v2/http/TlsKeyManagersProviderTest.class
+com/ibm/cos/v2/http/ContentStreamProviderTest.class
+com/ibm/cos/v2/http/ClientTlsAuthTestBase.class
+com/ibm/cos/v2/http/SdkHttpRequestResponseTest$2.class
+com/ibm/cos/v2/http/SdkHttpRequestResponseTest$BuilderProxy.class
+com/ibm/cos/v2/http/SdkHttpExecutionAttributesTest$TestExecutionAttribute.class
+com/ibm/cos/v2/http/async/AbortableInputStreamSubscriberTest.class
+com/ibm/cos/v2/http/SdkHttpRequestResponseTest$1.class
+com/ibm/cos/v2/http/HttpStatusFamilyTest.class
+com/ibm/cos/v2/http/SystemPropertyTlsKeyManagersProviderTest.class
+com/ibm/cos/v2/http/SdkHttpExecutionAttributesTest.class
+com/ibm/cos/v2/http/com/ibm/cos/v2/internal/http/NoneTlsKeyManagersProviderTest.class

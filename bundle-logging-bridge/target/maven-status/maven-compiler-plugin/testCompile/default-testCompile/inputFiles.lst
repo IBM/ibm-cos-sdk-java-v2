@@ -1,0 +1,7 @@
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/bundle-logging-bridge/src/test/java/com/ibm/cos/v2/thirdparty/org/slf4j/impl/internal/LoggerAdapterTest.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/bundle-logging-bridge/src/test/java/com/ibm/cos/v2/thirdparty/org/slf4j/impl/internal/ILoggerFactoryAdapterTest.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/bundle-logging-bridge/src/test/java/com/ibm/cos/v2/thirdparty/org/slf4j/impl/StaticMarkerBinderTest.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/bundle-logging-bridge/src/test/java/com/ibm/cos/v2/thirdparty/org/slf4j/impl/StaticLoggerBinderTest.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/bundle-logging-bridge/src/test/java/com/ibm/cos/v2/thirdparty/org/slf4j/impl/internal/IMarkerFactoryAdapterTest.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/bundle-logging-bridge/src/test/java/com/ibm/cos/v2/thirdparty/org/slf4j/impl/internal/ShadedMarkerAdapterTest.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/bundle-logging-bridge/src/test/java/com/ibm/cos/v2/thirdparty/org/slf4j/impl/internal/UnshadedMarkerAdapterTest.java

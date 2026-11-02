@@ -1,0 +1,5 @@
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/http-auth-spi/src/test/java/com/ibm/cos/v2/http/auth/spi/signer/AsyncSignedRequestTest.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/http-auth-spi/src/test/java/com/ibm/cos/v2/http/auth/spi/signer/SignedRequestTest.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/http-auth-spi/src/test/java/com/ibm/cos/v2/http/auth/spi/signer/SignerPropertyTest.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/http-auth-spi/src/test/java/com/ibm/cos/v2/http/auth/spi/scheme/AuthSchemeOptionTest.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/http-auth-spi/src/test/java/com/ibm/cos/v2/http/auth/spi/signer/HttpSignerTest.java

@@ -1,0 +1,12 @@
+com/ibm/cos/v2/retries/internal/RetryStrategyCommonTest$TestCaseForAdaptive.class
+com/ibm/cos/v2/retries/internal/LegacyRetryStrategyTest$ThrottlingException.class
+com/ibm/cos/v2/retries/internal/RetryStrategyCircuitBreakerRemembersStateTest.class
+com/ibm/cos/v2/retries/internal/ratelimiter/RateLimiterTokenBucketTest.class
+com/ibm/cos/v2/retries/internal/RetryStrategyCommonTest$BusinessLogic.class
+com/ibm/cos/v2/retries/internal/RetryStrategyCommonTest$TestCaseForStandard.class
+com/ibm/cos/v2/retries/internal/LegacyRetryStrategyTest.class
+com/ibm/cos/v2/retries/internal/ratelimiter/RateLimiterTokenBucketTest$TestCase.class
+com/ibm/cos/v2/retries/internal/RetryStrategyCommonTest.class
+com/ibm/cos/v2/retries/internal/ratelimiter/RateLimiterTokenBucketTest$MutableClock.class
+com/ibm/cos/v2/retries/internal/RetryStrategyCommonTest$TestCase.class
+com/ibm/cos/v2/retries/internal/RetryStrategyCommonTest$TestCaseForLegacy.class

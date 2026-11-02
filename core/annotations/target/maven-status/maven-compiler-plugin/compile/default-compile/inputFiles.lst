@@ -1,0 +1,14 @@
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/annotations/src/main/java/com/ibm/cos/v2/annotations/NotThreadSafe.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/annotations/src/main/java/com/ibm/cos/v2/annotations/Immutable.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/annotations/src/main/java/com/ibm/cos/v2/annotations/ReviewBeforeRelease.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/annotations/src/main/java/com/ibm/cos/v2/annotations/SdkPreviewApi.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/annotations/src/main/java/com/ibm/cos/v2/annotations/package-info.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/annotations/src/main/java/com/ibm/cos/v2/annotations/NotNull.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/annotations/src/main/java/com/ibm/cos/v2/annotations/Mutable.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/annotations/src/main/java/com/ibm/cos/v2/annotations/SdkPublicApi.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/annotations/src/main/java/com/ibm/cos/v2/annotations/ThreadSafe.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/annotations/src/main/java/com/ibm/cos/v2/annotations/SdkTestInternalApi.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/annotations/src/main/java/com/ibm/cos/v2/annotations/ToBuilderIgnoreField.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/annotations/src/main/java/com/ibm/cos/v2/annotations/SdkProtectedApi.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/annotations/src/main/java/com/ibm/cos/v2/annotations/SdkInternalApi.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/annotations/src/main/java/com/ibm/cos/v2/annotations/Generated.java

@@ -1,0 +1,4 @@
+com/ibm/cos/v2/protocols/core/NonGreedyPathMarshallerTest.class
+com/ibm/cos/v2/protocols/core/NumberToInstantTest.class
+com/ibm/cos/v2/protocols/core/ProtocolUtilsTest.class
+com/ibm/cos/v2/protocols/core/GreedyPathMarshallerTest.class

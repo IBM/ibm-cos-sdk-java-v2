@@ -1,0 +1,14 @@
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/auth-crt/src/test/java/com/ibm/cos/v2/authcrt/signer/internal/AwsCrtS3V4aSignerSigningScopeTest.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/auth-crt/src/test/java/com/ibm/cos/v2/authcrt/signer/AwsCrtV4aSignerTest.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/auth-crt/src/test/java/com/ibm/cos/v2/authcrt/signer/internal/CrtHttpRequestConverterTest.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/auth-crt/src/test/java/com/ibm/cos/v2/authcrt/signer/internal/AwsCrtV4aSignerSigningScopeTest.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/auth-crt/src/test/java/com/ibm/cos/v2/authcrt/signer/internal/AwsCrt4aSigningAdapterTest.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/auth-crt/src/test/java/com/ibm/cos/v2/authcrt/signer/SigningTestCase.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/auth-crt/src/test/java/com/ibm/cos/v2/authcrt/signer/internal/DefaultAwsCrtS3V4aSignerTest.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/auth-crt/src/test/java/com/ibm/cos/v2/authcrt/signer/internal/SigningConfigProviderTest.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/auth-crt/src/test/java/com/ibm/cos/v2/authcrt/signer/AwsCrtS3V4aSignerTest.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/auth-crt/src/test/java/com/ibm/cos/v2/authcrt/signer/internal/ChunkedEncodingFunctionalTest.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/auth-crt/src/test/java/com/ibm/cos/v2/authcrt/signer/SignerTestUtils.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/auth-crt/src/test/java/com/ibm/cos/v2/authcrt/signer/internal/AwsChunkedEncodingInputStreamTest.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/auth-crt/src/test/java/com/ibm/cos/v2/authcrt/signer/internal/BaseSigningScopeTest.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/auth-crt/src/test/java/com/ibm/cos/v2/authcrt/signer/internal/checksum/CrtBasedChecksumTest.java

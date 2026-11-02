@@ -1,0 +1,13 @@
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/protocols/protocol-core/src/main/java/com/ibm/cos/v2/protocols/core/StringToValueConverter.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/protocols/protocol-core/src/main/java/com/ibm/cos/v2/protocols/core/Marshaller.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/protocols/protocol-core/src/main/java/com/ibm/cos/v2/protocols/core/NumberToInstant.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/protocols/protocol-core/src/main/java/com/ibm/cos/v2/protocols/core/ProtocolMarshaller.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/protocols/protocol-core/src/main/java/com/ibm/cos/v2/protocols/core/OperationMetadataAttribute.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/protocols/protocol-core/src/main/java/com/ibm/cos/v2/protocols/core/PathMarshaller.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/protocols/protocol-core/src/main/java/com/ibm/cos/v2/protocols/core/StringToInstant.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/protocols/protocol-core/src/main/java/com/ibm/cos/v2/protocols/core/InstantToString.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/protocols/protocol-core/src/main/java/com/ibm/cos/v2/protocols/core/AbstractMarshallingRegistry.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/protocols/protocol-core/src/main/java/com/ibm/cos/v2/protocols/core/ProtocolUtils.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/protocols/protocol-core/src/main/java/com/ibm/cos/v2/protocols/core/ValueToStringConverter.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/protocols/protocol-core/src/main/java/com/ibm/cos/v2/protocols/core/ExceptionMetadata.java
+/Users/dikshamali/COS-SDK/SDK_RELEASE/Java-V2/ibm-cos-sdk-java-v2/core/protocols/protocol-core/src/main/java/com/ibm/cos/v2/protocols/core/OperationInfo.java
